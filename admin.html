@@ -325,6 +325,7 @@
     import { mostrarToast } from "./js/ui/toast.js";
     import { cerrarSesion } from "./js/auth.js";
     import * as gestion from "./js/vistas/admin/gestion.js";
+    import { nombreAreaApoyo } from "./js/util/areas-apoyo.js";
 
     // Escapa datos de usuario antes de interpolarlos en plantillas HTML
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -454,6 +455,7 @@
                 <strong>${esc(item.perfil?.nombre)}</strong> (@${esc(item.perfil?.username)})
                 <div style="font-size: 0.8rem; color: var(--texto-suave);">${esc(item.perfil?.correo)} · ${esc([item.municipio, item.departamento].filter(Boolean).join(", "))}</div>
                 <div style="font-size: 0.8rem; color: var(--texto-suave);">Rol solicitado: <span class="chip chip-turquesa">${esc(item.rol_solicitado)}</span></div>
+                ${item.area_apoyo ? `<div style="font-size: 0.8rem; margin-top: 0.25rem;">Puede ayudar en: <span class="chip chip-ambar">${esc(nombreAreaApoyo(item.area_apoyo, item.area_apoyo_otro))}</span></div>` : ""}
               </div>
               <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
             </div>

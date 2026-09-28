@@ -17,6 +17,7 @@ import {
 import { obtenerPublicacionesDePerfil, editarPublicacion, eliminarPublicacion } from "../../servicios/publicaciones.js";
 import { iniciarConversacion } from "../../servicios/mensajes.js";
 import { solicitarInsignia } from "../../servicios/verificacion.js";
+import { nombreAreaApoyo } from "../../util/areas-apoyo.js";
 
 async function siguiendoA(miId, otroId) {
   const { data } = await supabase.from("seguidores").select("seguido_id")
@@ -299,6 +300,7 @@ export function montarAjustes(cont, miUsuario, { onSolicitarInsignia, onCerrarSe
       dato("Departamento", miUsuario.departamento_nombre),
       dato("Municipio", miUsuario.municipio_nombre),
       miUsuario.cargo_titulo ? dato("Etiqueta", miUsuario.cargo_titulo) : null,
+      miUsuario.area_apoyo ? dato("Puedo ayudar en", nombreAreaApoyo(miUsuario.area_apoyo, miUsuario.area_apoyo_otro)) : null,
       el("label", { className: "campo-etiqueta", for: "ajustes-bio", style: "margin-top: 1rem; display: block;", textContent: "Biografía" }),
       bio,
       el("div", { style: "display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;" }, [contador, btnGuardar])

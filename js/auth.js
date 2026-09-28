@@ -54,6 +54,8 @@ export async function registrarse({
   telefono = null,
   ocupacion = null,
   intereses = [],
+  areaApoyo = null,
+  areaApoyoOtro = null,
   captchaToken = null
 }) {
   const opciones = {
@@ -71,6 +73,8 @@ export async function registrarse({
         telefono,
         ocupacion,
         intereses,
+        area_apoyo: areaApoyo,
+        area_apoyo_otro: areaApoyoOtro,
         acepta_terminos: true,
         autoriza_datos_sensibles: true,
         mayor_de_edad: true,

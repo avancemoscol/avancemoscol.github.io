@@ -15,6 +15,7 @@ import { comprimirImagenWebP } from "../../util/imagenes.js";
 import { comprimirAudio } from "../../util/audio.js";
 import { renderizarResultados, renderizarMediaAnuncio } from "../../ui/anuncios.js";
 import * as api from "../../servicios/admin.js";
+import { AREAS_APOYO, nombreAreaApoyo } from "../../util/areas-apoyo.js";
 
 const ROLES = [
   ["simpatizante", "Simpatizante"], ["voluntario", "Voluntario"], ["lider", "Líder"],
@@ -78,18 +79,19 @@ export async function montarUsuarios(cont, ctx) {
   cont.innerHTML = "";
   const busqueda = input({ type: "search", placeholder: "Buscar por nombre, usuario o correo..." });
   const estado = select([["", "Todos los estados"], ...ESTADOS_CUENTA.map(e => [e, e])]);
+  const area = select([["", "Todas las áreas de apoyo"], ...AREAS_APOYO]);
   const lista = el("div", { className: "admin-lista" });
-  cont.append(barra(busqueda, estado), lista);
+  cont.append(barra(busqueda, estado, area), lista);
 
   let t;
   const cargar = async () => {
     lista.innerHTML = "<div class='esqueleto' style='height: 120px;'></div>";
     try {
-      const usuarios = await api.listarUsuarios(busqueda.value.trim(), ctx.depto(), estado.value);
+      const usuarios = await api.listarUsuarios(busqueda.value.trim(), ctx.depto(), estado.value, area.value);
       lista.innerHTML = "";
       if (!usuarios.length) return lista.appendChild(vacio("No hay usuarios con esos filtros."));
       const tabla = el("table", { className: "admin-tabla" }, [
-        el("thead", {}, [el("tr", {}, ["Usuario", "Nombre", "Correo", "Territorio", "Estado", "Roles", ""].map(h => el("th", { textContent: h })))])
+        el("thead", {}, [el("tr", {}, ["Usuario", "Nombre", "Correo", "Territorio", "Puede ayudar en", "Estado", "Roles", ""].map(h => el("th", { textContent: h })))])
       ]);
       const tbody = el("tbody");
       usuarios.forEach(u => {
@@ -98,6 +100,7 @@ export async function montarUsuarios(cont, ctx) {
           el("td", {}, [u.nombre, u.cargo_titulo ? el("div", { className: "etiqueta-cargo", textContent: u.cargo_titulo }) : null]),
           el("td", { textContent: u.correo || "—" }),
           el("td", { textContent: [u.municipio, u.departamento].filter(Boolean).join(", ") || "—" }),
+          el("td", { textContent: nombreAreaApoyo(u.area_apoyo, u.area_apoyo_otro) || "—" }),
           el("td", {}, [el("span", { className: `chip ${u.estado === "activo" ? "chip-turquesa" : "chip-ambar"}`, textContent: u.estado })]),
           el("td", { textContent: (u.roles || []).map(r => r.rol + (r.departamento_id ? ` (${r.departamento_id})` : "")).join(", ") || "—" }),
           el("td", {}, [el("button", { className: "btn btn-secundario btn-sm", textContent: "Ver / editar", onclick: () => editarUsuario(u, ctx, cargar) })])
@@ -109,6 +112,7 @@ export async function montarUsuarios(cont, ctx) {
   };
   busqueda.addEventListener("input", () => { clearTimeout(t); t = setTimeout(cargar, 350); });
   estado.addEventListener("change", cargar);
+  area.addEventListener("change", cargar);
   cargar();
 }
 
@@ -122,6 +126,11 @@ function editarUsuario(u, ctx, recargar) {
   const depto = select([["", "—"], ...ctx.departamentos.map(d => [d.id, d.nombre])], u.departamento_id, { disabled: !ctx.permisos.es_admin_nacional });
   const insignia = select([["ninguna", "Sin insignia"], ["azul", "Azul · identidad verificada"], ["dorada", "Dorada · vocería oficial"], ["gris", "Gris · servidor público"]], u.insignia);
   const notas = textarea(u.notas_admin, { placeholder: "Notas internas (solo administradores)" });
+  const areaApoyo = select([["", "Sin indicar"], ...AREAS_APOYO], u.area_apoyo || "");
+  const areaOtro = input({ maxlength: "120", placeholder: "¿Cuál?" }, u.area_apoyo_otro);
+  const campoAreaOtro = campo("Otra área", areaOtro);
+  campoAreaOtro.style.display = areaApoyo.value === "otro" ? "" : "none";
+  areaApoyo.addEventListener("change", () => { campoAreaOtro.style.display = areaApoyo.value === "otro" ? "" : "none"; });
 
   // Roles actuales + formulario para agregar
   const listaRoles = el("div", { className: "admin-roles" });
@@ -164,7 +173,8 @@ function editarUsuario(u, ctx, recargar) {
       campo("Nombre completo", nombre), campo("Etiqueta visible junto a la insignia", etiqueta),
       campo("Ocupación", ocupacion), campo("Teléfono (privado)", telefono),
       campo("Estado de la cuenta", estado), campo("Departamento", depto),
-      campo("Insignia", insignia)
+      campo("Insignia", insignia),
+      campo("Puede ayudar en", areaApoyo), campoAreaOtro
     ]),
     campo("Biografía", bio),
     el("div", { className: "ajustes-dato" }, [el("span", { textContent: "Correo" }), el("strong", { textContent: u.correo || "—" })]),
@@ -188,6 +198,7 @@ function editarUsuario(u, ctx, recargar) {
             await api.actualizarUsuario(u.id, {
               nombre: nombre.value, cargo_titulo: etiqueta.value, bio: bio.value, ocupacion: ocupacion.value,
               telefono: telefono.value, estado: estado.value, notas_admin: notas.value,
+              area_apoyo: areaApoyo.value, area_apoyo_otro: areaOtro.value,
               ...(ctx.permisos.es_admin_nacional ? { departamento_id: depto.value || null } : {})
             });
             if (insignia.value !== u.insignia) await api.otorgarInsignia(u.id, insignia.value);

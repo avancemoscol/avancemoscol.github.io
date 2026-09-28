@@ -161,8 +161,8 @@ async function rpc(nombre, args = {}) {
   return data;
 }
 
-export const listarUsuarios = (busqueda, depto, estado) =>
-  rpc("admin_listar_usuarios", { p_busqueda: busqueda || null, p_depto: depto || null, p_estado: estado || null, p_limite: 100 });
+export const listarUsuarios = (busqueda, depto, estado, area) =>
+  rpc("admin_listar_usuarios", { p_busqueda: busqueda || null, p_depto: depto || null, p_estado: estado || null, p_limite: 100, p_area: area || null });
 export const actualizarUsuario = (id, datos) => rpc("admin_actualizar_usuario", { p_id: id, p_datos: datos });
 export const asignarRol = (userId, rol, deptoId, titulo, activo = true) =>
   rpc("admin_asignar_rol", { p_user_id: userId, p_rol: rol, p_departamento_id: deptoId || null, p_titulo: titulo || null, p_activo: activo });

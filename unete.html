@@ -120,6 +120,21 @@
           </select>
         </div>
 
+        <!-- Área en la que puede apoyar al movimiento -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="area-apoyo">¿En qué puedes ayudar al movimiento? *</label>
+          <select id="area-apoyo" name="areaApoyo" class="campo-select" required>
+            <option value="">Selecciona un área...</option>
+          </select>
+          <span class="campo-ayuda">Nos ayuda a saber en qué equipo puedes aportar más.</span>
+          <span class="campo-error" id="err-area-apoyo"></span>
+        </div>
+        <div class="campo" id="campo-area-otro" style="display: none;">
+          <label class="campo-etiqueta" for="area-apoyo-otro">¿En qué otra área? *</label>
+          <input type="text" id="area-apoyo-otro" name="areaApoyoOtro" class="campo-input" maxlength="120" placeholder="Ej. Traducción, salud, trabajo con jóvenes...">
+          <span class="campo-error" id="err-area-apoyo-otro"></span>
+        </div>
+
         <!-- Motivo -->
         <div class="campo">
           <label class="campo-etiqueta" for="motivo">¿Por qué deseas unirte a Avancemos? *</label>
@@ -214,6 +229,7 @@
     import { inicializarSelectorTerritorio } from "./js/ui/selector-territorio.js";
     import { supabase } from "./js/supabase.js";
     import { mostrarToast } from "./js/ui/toast.js";
+    import { AREAS_APOYO } from "./js/util/areas-apoyo.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     inicializarWidgetSoporte();
 
@@ -223,6 +239,25 @@
       selectMuni: document.getElementById("municipio"),
       campoLocalidad: document.getElementById("campo-localidad"),
       selectLocalidad: document.getElementById("localidad")
+    });
+
+    // Áreas en las que la persona puede apoyar; "Otro" muestra un campo de texto
+    const selectArea = document.getElementById("area-apoyo");
+    const campoAreaOtro = document.getElementById("campo-area-otro");
+    const inputAreaOtro = document.getElementById("area-apoyo-otro");
+    AREAS_APOYO.forEach(([valor, texto]) => {
+      const opt = document.createElement("option");
+      opt.value = valor;
+      opt.textContent = texto;
+      selectArea.appendChild(opt);
+    });
+    inputAreaOtro.addEventListener("input", () => { document.getElementById("err-area-apoyo-otro").textContent = ""; });
+    selectArea.addEventListener("change", () => {
+      const esOtro = selectArea.value === "otro";
+      campoAreaOtro.style.display = esOtro ? "" : "none";
+      inputAreaOtro.required = esOtro;
+      document.getElementById("err-area-apoyo").textContent = "";
+      if (esOtro) inputAreaOtro.focus();
     });
 
     // Verificación en vivo de disponibilidad de username
@@ -265,6 +300,18 @@
         return;
       }
 
+      if (!selectArea.value) {
+        document.getElementById("err-area-apoyo").textContent = "Elige en qué puedes ayudar.";
+        selectArea.focus();
+        return;
+      }
+      if (selectArea.value === "otro" && !inputAreaOtro.value.trim()) {
+        document.getElementById("err-area-apoyo-otro").textContent = "Cuéntanos en qué otra área puedes ayudar.";
+        inputAreaOtro.focus();
+        return;
+      }
+      document.getElementById("err-area-apoyo-otro").textContent = "";
+
       btn.disabled = true;
       btn.textContent = "Registrando tu solicitud...";
 
@@ -280,7 +327,9 @@
           rolSolicitado: form.rolSolicitado.value,
           motivo: form.motivo.value.trim(),
           telefono: form.telefono.value.trim() || null,
-          ocupacion: form.ocupacion.value.trim() || null
+          ocupacion: form.ocupacion.value.trim() || null,
+          areaApoyo: selectArea.value,
+          areaApoyoOtro: selectArea.value === "otro" ? inputAreaOtro.value.trim() : null
         });
 
         document.getElementById("registro-box").style.display = "none";
