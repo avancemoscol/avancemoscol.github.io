@@ -16,6 +16,7 @@ import {
 } from "../../servicios/perfiles.js";
 import { obtenerPublicacionesDePerfil, editarPublicacion, eliminarPublicacion } from "../../servicios/publicaciones.js";
 import { iniciarConversacion } from "../../servicios/mensajes.js";
+import { solicitarInsignia } from "../../servicios/verificacion.js";
 
 async function siguiendoA(miId, otroId) {
   const { data } = await supabase.from("seguidores").select("seguido_id")
@@ -270,6 +271,21 @@ export function montarAjustes(cont, miUsuario, { onSolicitarInsignia, onCerrarSe
     }
   };
 
+  const estadoInsignia = el("p", { className: "ajustes-ayuda", textContent: "Solicita tu insignia cuando quieras: azul (identidad verificada), gris (cargo público) o dorada (vocería oficial)." });
+  const tarjetaInsignia = el("div", { className: "tarjeta" }, [
+    el("h3", { textContent: "Verificación con insignia" }),
+    estadoInsignia,
+    el("button", { className: "btn btn-secundario btn-sm", textContent: "Solicitar insignia", onclick: () => abrirSolicitudInsignia(pintarEstadoInsignia) })
+  ]);
+  async function pintarEstadoInsignia() {
+    const { data } = await supabase.rpc("mi_solicitud_insignia");
+    if (!data) return;
+    const txt = { pendiente: "en revisión", aprobado: "aprobada", rechazado: "no aprobada" }[data.estado] || data.estado;
+    estadoInsignia.textContent = `Tu última solicitud (insignia ${data.insignia_solicitada}) está ${txt}.` +
+      (data.estado === "pendiente" ? " Te avisaremos por notificación." : " Puedes volver a solicitar cuando quieras.");
+  }
+  pintarEstadoInsignia();
+
   const dato = (etiqueta, valor) => el("div", { className: "ajustes-dato" }, [
     el("span", { textContent: etiqueta }), el("strong", { textContent: valor || "—" })
   ]);
@@ -287,14 +303,56 @@ export function montarAjustes(cont, miUsuario, { onSolicitarInsignia, onCerrarSe
       bio,
       el("div", { style: "display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;" }, [contador, btnGuardar])
     ]),
-    el("div", { className: "tarjeta" }, [
-      el("h3", { textContent: "Verificación con insignia" }),
-      el("p", { className: "ajustes-ayuda", textContent: "Solicita la insignia azul (identidad verificada) o gris (cargo público)." }),
-      el("button", { className: "btn btn-secundario btn-sm", textContent: "Solicitar insignia", onclick: () => onSolicitarInsignia && onSolicitarInsignia() })
-    ]),
+    tarjetaInsignia,
     el("div", { className: "tarjeta" }, [
       el("h3", { textContent: "Sesión" }),
       el("button", { className: "btn btn-peligro btn-sm", textContent: "Cerrar sesión", onclick: () => onCerrarSesion && onCerrarSesion() })
     ])
   ]));
+}
+
+/** Formulario de solicitud de insignia (sin límites de días) */
+export function abrirSolicitudInsignia(onEnviada) {
+  const tipo = el("select", { className: "campo-select" }, [
+    el("option", { value: "azul", textContent: "Azul · identidad verificada" }),
+    el("option", { value: "gris", textContent: "Gris · servidor público o cargo de elección" }),
+    el("option", { value: "dorada", textContent: "Dorada · vocería oficial del movimiento" })
+  ]);
+  const cargo = el("input", { className: "campo-input", maxlength: "120", placeholder: "Ej. Líder comunal de Kennedy, concejal de Tunja..." });
+  const motivo = el("textarea", { className: "campo-textarea", rows: 3, maxlength: "500", placeholder: "Cuéntanos por qué solicitas la insignia" });
+  const enlaces = el("input", { className: "campo-input", placeholder: "Enlaces que respalden tu solicitud (opcional, separados por coma)" });
+  const metodo = el("select", { className: "campo-select" }, [
+    el("option", { value: "videollamada", textContent: "Videollamada" }),
+    el("option", { value: "presencial", textContent: "Presencial" })
+  ]);
+  const campo = (t, c) => el("label", { className: "campo", style: "display: flex; flex-direction: column; gap: 0.25rem;" }, [el("span", { className: "campo-etiqueta", textContent: t }), c]);
+  abrirModal({
+    titulo: "Solicitar insignia",
+    contenidoNodo: el("div", { style: "display: flex; flex-direction: column; gap: 0.75rem;" }, [
+      campo("Tipo de insignia", tipo), campo("Cargo o actividad", cargo), campo("Motivo", motivo),
+      campo("Enlaces", enlaces), campo("Verificación preferida", metodo),
+      el("p", { className: "ajustes-ayuda", textContent: "El equipo de tu departamento revisará la solicitud. Las insignias gris y dorada las aprueba el administrador nacional." })
+    ]),
+    acciones: [
+      { texto: "Cancelar", tipo: "secundario" },
+      {
+        texto: "Enviar solicitud", tipo: "primario",
+        onClick: async (cerrar) => {
+          if (!cargo.value.trim() || !motivo.value.trim()) return mostrarToast("Completa el cargo y el motivo.", "alerta");
+          try {
+            await solicitarInsignia({
+              insignia: tipo.value, cargo: cargo.value.trim(), motivo: motivo.value.trim(),
+              enlaces: enlaces.value.split(",").map(x => x.trim()).filter(x => /^https?:\/\//.test(x)),
+              metodoPreferido: metodo.value
+            });
+            mostrarToast("Solicitud enviada. Te avisaremos cuando sea revisada.", "exito");
+            cerrar();
+            if (onEnviada) onEnviada();
+          } catch (e) {
+            mostrarToast(e.message || "No se pudo enviar la solicitud", "error");
+          }
+        }
+      }
+    ]
+  });
 }

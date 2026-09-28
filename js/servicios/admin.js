@@ -46,6 +46,12 @@ export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = 
     return (data || []).map(p => ({ ...p, autor: { nombre: p.autor_nombre, username: p.autor_username, insignia: p.autor_insignia } }));
   }
 
+  if (tab === "verificaciones") {
+    const { data, error } = await supabase.rpc("admin_verificaciones_pendientes", { p_depto: deptoId });
+    if (error) throw error;
+    return data || [];
+  }
+
   if (tab === "grupos") {
     let q = supabase
       .from("grupos_whatsapp")
@@ -179,3 +185,5 @@ export const resultadosAnuncio = (id) => rpc("resultados_anuncio", { p_anuncio_i
 
 export const guardarGrupo = (id, datos) => rpc("admin_guardar_grupo", { p_id: id || null, p_datos: datos });
 export const eliminarGrupo = (id) => rpc("admin_eliminar_grupo", { p_id: id });
+
+export const resolverVerificacion = (id, decision, notas) => rpc("resolver_verificacion", { p_id: id, p_decision: decision, p_notas: notas || null });

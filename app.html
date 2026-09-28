@@ -254,9 +254,8 @@
     import { cargarPermisos } from "./js/permisos.js";
     import { cerrarSesion } from "./js/auth.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
-    import { solicitarInsignia } from "./js/servicios/verificacion.js";
     import { supabase } from "./js/supabase.js";
-    import { montarPerfil, montarAjustes } from "./js/vistas/app/perfil.js";
+    import { montarPerfil, montarAjustes, abrirSolicitudInsignia } from "./js/vistas/app/perfil.js";
     import { montarDirectorioGrupos } from "./js/ui/grupos.js";
     import { mostrarAnunciosPendientes } from "./js/ui/anuncios.js";
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -672,21 +671,8 @@
       });
     }
 
-    window.solicitarInsigniaModal = async function() {
-      const cargo = prompt("Ingresa tu cargo o actividad comunitaria:");
-      const motivo = prompt("Motivo para solicitar la verificación:");
-      if (cargo && motivo) {
-        try {
-          await solicitarInsignia({
-            insignia: "azul",
-            cargo,
-            motivo
-          });
-          mostrarToast("Solicitud de verificación enviada a tu equipo departamental.", "exito");
-        } catch (e) {
-          mostrarToast(e.message, "error");
-        }
-      }
+    window.solicitarInsigniaModal = function() {
+      abrirSolicitudInsignia();
     };
 
     window.cerrarSesionApp = async function() {

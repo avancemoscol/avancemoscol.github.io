@@ -147,7 +147,8 @@
             <div class="pestanas" id="aprobaciones-pestanas">
               <button class="pestana activa" onclick="cambiarTabAprobacion('usuarios')">Usuarios</button>
               <button class="pestana" onclick="cambiarTabAprobacion('publicaciones')">Publicaciones</button>
-              <button class="pestana" onclick="cambiarTabAprobacion('grupos')">Grupos WhatsApp</button>
+              <button class="pestana" onclick="cambiarTabAprobacion('verificaciones')">Insignias</button>
+              <button class="pestana" onclick="cambiarTabAprobacion('grupos')">Grupos</button>
             </div>
           </div>
 
@@ -318,6 +319,7 @@
       revisarSolicitudUsuario,
       revisarPublicacion,
       resolverCasoSoporteAdmin,
+      resolverVerificacion,
       obtenerAuditoria
     } from "./js/servicios/admin.js";
     import { mostrarToast } from "./js/ui/toast.js";
@@ -467,6 +469,28 @@
           // Vista completa con imágenes, video y audio antes de aprobar
           cont.appendChild(gestion.tarjetaPublicacionAdmin(item, () => { cargarAprobaciones("publicaciones"); cargarMetricas(); }));
           return;
+        } else if (tab === "verificaciones") {
+          const nombres = { azul: "Azul · identidad verificada", gris: "Gris · servidor público", dorada: "Dorada · vocería oficial" };
+          const enlaces = (item.enlaces || []).filter(u => /^https?:\/\//.test(u))
+            .map(u => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a>`).join("<br>");
+          tarjeta.innerHTML = `
+            <div class="aprobacion-cabecera">
+              <div>
+                <strong>${esc(item.nombre)}</strong> (@${esc(item.username)})
+                <div style="font-size: 0.8rem; color: var(--texto-suave);">${esc(item.correo)} · ${esc(item.departamento || "")}</div>
+                <div style="font-size: 0.8rem; margin-top: 0.25rem;">Solicita: <span class="chip chip-turquesa">${esc(nombres[item.insignia_solicitada] || item.insignia_solicitada)}</span> · Actual: ${esc(item.insignia_actual)}</div>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
+            </div>
+            <p style="font-size: 0.85rem;"><strong>Cargo:</strong> ${esc(item.cargo)}</p>
+            <p style="font-size: 0.85rem;"><strong>Motivo:</strong> ${esc(item.motivo)}</p>
+            <p style="font-size: 0.85rem;"><strong>Verificación preferida:</strong> ${esc(item.metodo_preferido)}</p>
+            ${enlaces ? `<p style="font-size: 0.85rem;"><strong>Enlaces:</strong><br>${enlaces}</p>` : ""}
+            <div class="aprobacion-acciones">
+              <button class="btn btn-peligro btn-sm" onclick="resolverInsignia('${item.id}', 'rechazado')">Rechazar</button>
+              <button class="btn btn-primario btn-sm" onclick="resolverInsignia('${item.id}', 'aprobado')">Aprobar y otorgar insignia</button>
+            </div>
+          `;
         } else if (tab === "grupos") {
           tarjeta.innerHTML = `
             <div class="aprobacion-cabecera">
@@ -506,6 +530,18 @@
         mostrarToast(`Publicación ${decision}.`, "exito");
         cargarAprobaciones("publicaciones");
         cargarMetricas();
+      } catch (e) {
+        mostrarToast(e.message, "error");
+      }
+    };
+
+    window.resolverInsignia = async function(id, decision) {
+      const notas = decision === "rechazado" ? prompt("Motivo del rechazo (lo verá la persona):") : null;
+      if (decision === "rechazado" && notas === null) return;
+      try {
+        await resolverVerificacion(id, decision, notas);
+        mostrarToast(decision === "aprobado" ? "Insignia otorgada." : "Solicitud rechazada.", "exito");
+        cargarAprobaciones("verificaciones");
       } catch (e) {
         mostrarToast(e.message, "error");
       }
