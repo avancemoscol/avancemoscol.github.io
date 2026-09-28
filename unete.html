@@ -258,7 +258,7 @@
           username: form.username.value.trim().toLowerCase(),
           departamentoId: form.departamentoId.value,
           municipioId: form.municipioId.value,
-          localidadId: form.localidadId ? form.localidadId.value : null,
+          localidadId: (form.localidadId && form.localidadId.value) ? form.localidadId.value : null,
           rolSolicitado: form.rolSolicitado.value,
           motivo: form.motivo.value.trim(),
           telefono: form.telefono.value.trim() || null,

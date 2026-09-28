@@ -289,6 +289,9 @@
       // Cargar eventos en la barra lateral
       cargarEventosLateral();
 
+      // Comprobar y mostrar anuncios oficiales
+      comprobarAnuncios();
+
       // Iniciar enrutador
       const router = new Router({
         "/inicio": vistaInicio,
@@ -809,6 +812,51 @@
       } catch (e) {
         cont.innerHTML = "<p style='font-size: 0.8rem;'>No hay eventos cercanos.</p>";
       }
+    }
+
+    async function comprobarAnuncios() {
+      try {
+        const { data: anuncios } = await supabase
+          .from("anuncios")
+          .select("id, titulo, cuerpo, created_at")
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        if (anuncios && anuncios.length > 0) {
+          const a = anuncios[0];
+          const visto = sessionStorage.getItem(`anuncio_visto_${a.id}`);
+          if (!visto) {
+            mostrarModalAnuncio(a);
+          }
+        }
+      } catch (e) {
+        console.warn("Aviso de anuncios:", e);
+      }
+    }
+
+    function mostrarModalAnuncio(anuncio) {
+      const overlay = document.createElement("div");
+      overlay.className = "modal-overlay abierto";
+      overlay.innerHTML = `
+        <div class="modal-contenido" style="text-align: center; max-width: 520px; border-top: 5px solid var(--turquesa);">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📢</div>
+          <span class="chip chip-ambar" style="margin-bottom: 0.75rem;">Comunicado Oficial · Avancemos</span>
+          <h3 style="color: var(--azul-noche); margin: 0.5rem 0 1rem; font-size: var(--fs-lg);">${anuncio.titulo}</h3>
+          <div style="font-size: var(--fs-base); color: var(--texto); line-height: 1.6; text-align: left; background: var(--marfil); padding: 1.25rem; border-radius: var(--radio-md); border: 1px solid var(--borde); margin-bottom: 1.5rem;">
+            ${anuncio.cuerpo}
+          </div>
+          <button class="btn btn-primario btn-lg" style="width: 100%;" id="btn-cerrar-anuncio">
+            Entendido
+          </button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      document.getElementById("btn-cerrar-anuncio").onclick = () => {
+        sessionStorage.setItem(`anuncio_visto_${anuncio.id}`, "true");
+        overlay.classList.remove("abierto");
+        setTimeout(() => overlay.remove(), 220);
+      };
     }
 
     window.toggleTema = function() {

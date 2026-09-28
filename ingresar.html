@@ -33,6 +33,27 @@
         </p>
       </div>
 
+      <div style="margin-bottom: 1.5rem;">
+        <button type="button" class="btn btn-secundario" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; border-color: var(--borde);" id="btn-google-login">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.36 7.35 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.99 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continuar con Google</span>
+        </button>
+        <span style="display: block; font-size: 0.75rem; color: var(--texto-suave); text-align: center; margin-top: 0.5rem;">
+          Exclusivo para usuarios ya registrados en Avancemos
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <hr style="flex: 1; border: none; border-top: 1px solid var(--borde-suave);">
+        <span style="font-size: var(--fs-xs); color: var(--texto-suave);">o con tu correo</span>
+        <hr style="flex: 1; border: none; border-top: 1px solid var(--borde-suave);">
+      </div>
+
       <form id="form-ingreso">
         <div class="campo">
           <label class="campo-etiqueta" for="email">Correo electrónico</label>
@@ -59,11 +80,48 @@
   </main>
 
   <script type="module">
-    import { iniciarSesion } from "./js/auth.js";
+    import { iniciarSesion, iniciarSesionConGoogle, obtenerSesion, cerrarSesion } from "./js/auth.js";
     import { cargarPermisos } from "./js/permisos.js";
+    import { supabase } from "./js/supabase.js";
     import { mostrarToast } from "./js/ui/toast.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     inicializarWidgetSoporte();
+
+    // Comprobar retorno de OAuth o sesión existente
+    obtenerSesion().then(async (sesion) => {
+      if (sesion) {
+        // Verificar que el usuario tenga un perfil registrado
+        const { data: perfil } = await supabase
+          .from("perfiles")
+          .select("id, estado")
+          .eq("id", sesion.user.id)
+          .single();
+
+        if (!perfil) {
+          // Usuario de Google no registrado previamente -> cerrar sesión y avisar
+          await cerrarSesion();
+          alert("Esta cuenta de Google no está asociada a ningún perfil registrado en Avancemos.\n\nPara formar parte del movimiento, debes completar primero tu registro e inscripción territorial en la sección 'Únete'.");
+          window.location.href = "unete.html";
+          return;
+        }
+
+        const perms = await cargarPermisos(true);
+        if (perms.es_admin_nacional || (perms.departamentos_moderacion && perms.departamentos_moderacion.length > 0)) {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "app.html";
+        }
+      }
+    });
+
+    // Botón Google
+    document.getElementById("btn-google-login").addEventListener("click", async () => {
+      try {
+        await iniciarSesionConGoogle();
+      } catch (err) {
+        mostrarToast(err.message || "Error al conectar con Google", "error");
+      }
+    });
 
     const form = document.getElementById("form-ingreso");
     form.addEventListener("submit", async (e) => {

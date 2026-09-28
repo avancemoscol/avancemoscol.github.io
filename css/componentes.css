@@ -357,6 +357,14 @@
   transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(11, 36, 64, 0.25);
 }
+@media (max-width: 768px) {
+  .widget-soporte-boton {
+    bottom: 4.8rem; /* Queda cómodamente por encima de la barra móvil de 60px */
+    right: 1rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.8rem;
+  }
+}
 .widget-soporte-panel {
   position: fixed;
   bottom: 5.5rem;
@@ -367,6 +375,22 @@
   max-height: calc(100vh - 7rem);
   background-color: var(--superficie);
   border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-lg);
+  display: flex;
+  flex-direction: column;
+  z-index: 800;
+  overflow: hidden;
+  display: none;
+  animation: abrirWidget 200ms ease-out forwards;
+}
+@media (max-width: 768px) {
+  .widget-soporte-panel {
+    bottom: 8.5rem;
+    right: 1rem;
+    max-height: calc(100vh - 10rem);
+  }
+}
   border-radius: var(--radio-xl);
   box-shadow: var(--sombra-lg);
   display: flex;

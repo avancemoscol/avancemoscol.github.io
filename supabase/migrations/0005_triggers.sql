@@ -38,10 +38,14 @@ begin
     v_suffix := v_suffix + 1;
   end loop;
 
-  v_depto := v_meta->>'departamento_id';
-  v_muni := v_meta->>'municipio_id';
-  if (v_meta->>'localidad_id') is not null then
-    v_loc := (v_meta->>'localidad_id')::smallint;
+  v_depto := nullif(trim(v_meta->>'departamento_id'), '');
+  v_muni := nullif(trim(v_meta->>'municipio_id'), '');
+  if nullif(trim(v_meta->>'localidad_id'), '') is not null then
+    begin
+      v_loc := (v_meta->>'localidad_id')::smallint;
+    exception when others then
+      v_loc := null;
+    end;
   end if;
 
   if (v_meta->>'rol_solicitado') in ('simpatizante', 'voluntario', 'lider') then
@@ -49,8 +53,8 @@ begin
   end if;
 
   v_motivo := v_meta->>'motivo';
-  v_telefono := v_meta->>'telefono';
-  v_ocupacion := v_meta->>'ocupacion';
+  v_telefono := nullif(trim(v_meta->>'telefono'), '');
+  v_ocupacion := nullif(trim(v_meta->>'ocupacion'), '');
 
   -- Crear perfil
   insert into public.perfiles (

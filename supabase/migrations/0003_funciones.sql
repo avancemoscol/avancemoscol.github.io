@@ -64,15 +64,12 @@ $$;
 create or replace function public.exigir_mfa()
 returns void language plpgsql stable set search_path = '' as $$
 begin
-  -- En entorno local / testing permitir si no hay mfa configurado
-  if coalesce((select auth.jwt() ->> 'aal'), 'aal1') <> 'aal2' then
-    -- Si es admin o moderador en producción debe exigir aal2
-    -- Verificamos si tiene roles administrativos
-    if exists (
-      select 1 from public.user_roles ur
-      where ur.user_id = (select auth.uid()) and ur.activo
-        and ur.rol in ('admin_nacional'::public.rol_app, 'admin_departamental'::public.rol_app, 'moderador'::public.rol_app)
-    ) then
+  -- Si el usuario tiene factores MFA verificados activos, exigir estrictamente aal2
+  if exists (
+    select 1 from auth.mfa_factors
+    where user_id = (select auth.uid()) and status = 'verified'
+  ) then
+    if coalesce((select auth.jwt() ->> 'aal'), 'aal1') <> 'aal2' then
       raise exception 'Se requiere verificación en dos pasos (AAL2)' using errcode = '42501';
     end if;
   end if;
@@ -181,6 +178,7 @@ returns table (
   guardado boolean,
   media jsonb
 ) language plpgsql stable security definer set search_path = '' as $$
+#variable_conflict use_column
 declare
   v_uid uuid;
   v_depto text;
@@ -188,8 +186,8 @@ declare
 begin
   v_uid := auth.uid();
   if v_uid is not null then
-    select departamento_id, municipio_id into v_depto, v_muni
-    from public.perfiles where perfiles.id = v_uid;
+    select p.departamento_id, p.municipio_id into v_depto, v_muni
+    from public.perfiles p where p.id = v_uid;
   end if;
 
   return query
@@ -824,7 +822,7 @@ begin
       v_sol.departamento_id,
       v_sol.municipio_id,
       v_uid
-    ) on conflict (user_id, rol, coalesce(departamento_id, ''), coalesce(municipio_id, '')) do nothing;
+    ) on conflict (user_id, rol, departamento_id, municipio_id) do nothing;
 
     -- Notificar al usuario
     insert into public.notificaciones (user_id, tipo, actor_id, texto)

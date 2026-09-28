@@ -30,6 +30,17 @@ export async function iniciarSesion(email, password, captchaToken = null) {
   return data;
 }
 
+export async function iniciarSesionConGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/ingresar.html?oauth=google`
+    }
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function registrarse({
   email,
   password,

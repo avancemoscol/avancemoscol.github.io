@@ -45,7 +45,7 @@ export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = 
         created_at,
         departamento_id,
         municipio_id,
-        perfil:perfiles (
+        perfil:perfiles!solicitudes_user_id_fkey (
           nombre,
           username,
           avatar_path,
@@ -71,7 +71,7 @@ export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = 
         visibilidad,
         created_at,
         departamento_moderacion,
-        autor:perfiles (
+        autor:perfiles!publicaciones_autor_id_fkey (
           nombre,
           username,
           avatar_path,
@@ -98,7 +98,7 @@ export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = 
         alcance,
         url,
         created_at,
-        creador:perfiles (nombre, username)
+        creador:perfiles!grupos_whatsapp_creado_por_fkey (nombre, username)
       `)
       .eq("estado", "pendiente");
     if (deptoId) q = q.eq("departamento_moderacion", deptoId);
@@ -177,7 +177,7 @@ export async function obtenerAuditoria(deptoId = null, limite = 50) {
       antes,
       despues,
       created_at,
-      actor:perfiles (nombre, username)
+      actor:perfiles!auditoria_actor_id_fkey (nombre, username)
     `);
 
   if (deptoId) q = q.eq("departamento_id", deptoId);

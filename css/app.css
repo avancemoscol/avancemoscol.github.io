@@ -373,3 +373,64 @@
   .app-feed-columna { border-right: none; margin-bottom: 60px; }
   .app-barra-movil { display: flex; }
 }
+
+/* Soporte y Contraste Mejorado en Modo Oscuro */
+[data-tema="oscuro"] body {
+  background-color: var(--marfil);
+  color: var(--texto);
+}
+[data-tema="oscuro"] .app-feed-header {
+  background-color: rgba(18, 32, 47, 0.9);
+  border-bottom-color: var(--borde);
+}
+[data-tema="oscuro"] .pub-nombre {
+  color: #F8FAFC;
+}
+[data-tema="oscuro"] .pub-texto {
+  color: #E2E8F0;
+}
+[data-tema="oscuro"] .tendencia-tag {
+  color: #F1F5F9;
+}
+[data-tema="oscuro"] .caja-lateral-titulo {
+  color: #F8FAFC;
+}
+[data-tema="oscuro"] .app-nav-enlace {
+  color: #CBD5E1;
+}
+[data-tema="oscuro"] .app-nav-enlace:hover {
+  background-color: rgba(46, 196, 182, 0.12);
+  color: var(--turquesa);
+}
+[data-tema="oscuro"] .app-nav-enlace.activo {
+  color: var(--turquesa);
+  background-color: rgba(46, 196, 182, 0.18);
+}
+[data-tema="oscuro"] .app-buscador-input {
+  background-color: var(--superficie);
+  color: #F1F5F9;
+  border-color: var(--borde);
+}
+[data-tema="oscuro"] .app-redactor-textarea {
+  color: #F1F5F9;
+}
+[data-tema="oscuro"] .logo-text-primary {
+  fill: #FFFFFF !important;
+}
+[data-tema="oscuro"] .logo-text-accent {
+  fill: #2EC4B6 !important;
+}
+[data-tema="oscuro"] .pestana {
+  color: #94A3B8;
+}
+[data-tema="oscuro"] .pestana:hover {
+  color: #FFFFFF;
+}
+[data-tema="oscuro"] .pestana.activa {
+  color: var(--turquesa);
+  border-bottom-color: var(--turquesa);
+}
+[data-tema="oscuro"] .app-barra-movil {
+  background-color: var(--superficie);
+  border-top-color: var(--borde);
+}
