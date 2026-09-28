@@ -24,7 +24,7 @@
     </div>
   </header>
 
-  <main class="contenedor" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 680px;">
+  <main class="contenedor" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 680px;">
     <div id="publicacion-contenedor">
       <div class="esqueleto" style="height: 240px; border-radius: var(--radio-xl);"></div>
     </div>
@@ -39,6 +39,7 @@
   <script type="module">
     import { obtenerPublicacionPublica } from "./js/servicios/publicaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
+    import { montarHiloComentarios } from "./js/ui/comentarios.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     inicializarWidgetSoporte();
 
@@ -60,7 +61,22 @@
         }
 
         cont.innerHTML = "";
-        cont.appendChild(renderizarTarjetaPublicacion(pub));
+        const tarjeta = renderizarTarjetaPublicacion(pub, { mostrarEnlaceComentarios: false, onClic: () => {}, onComentar: () => hilo.querySelector("textarea")?.focus() });
+        tarjeta.style.border = "1px solid var(--borde)";
+        tarjeta.style.borderRadius = "var(--radio-xl)";
+        cont.appendChild(tarjeta);
+
+        const seccion = document.createElement("section");
+        seccion.className = "tarjeta";
+        seccion.style.marginTop = "1rem";
+        const titulo = document.createElement("h2");
+        titulo.style.fontSize = "var(--fs-lg)";
+        titulo.style.marginBottom = "1rem";
+        titulo.textContent = "Comentarios";
+        const hilo = document.createElement("div");
+        seccion.append(titulo, hilo);
+        cont.appendChild(seccion);
+        montarHiloComentarios(pub, hilo);
       } catch (err) {
         cont.innerHTML = `<div class='tarjeta'><p style='color: var(--error);'>${err.message}</p></div>`;
       }

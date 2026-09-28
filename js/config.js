@@ -20,6 +20,10 @@ export const CONFIG = {
   NIT_DOCUMENTO: "901.884.230-1",
   DIRECCION_CONTACTO: "Carrera 7 # 71-21, Torre B, Bogotá D. C., Colombia",
 
+  // CARTO Basemaps (teselas raster del mapa; la llave elimina la marca de agua)
+  CARTO_API_KEY: "cb1_2nsz_1_2e810fa90ac9971bc0c7f6b9",
+  CARTO_ESTILO: "light_nolabels",
+
   // Cloudflare Turnstile (Site Key de prueba o producción)
   TURNSTILE_SITE_KEY: "0x4AAAAAAAEkG6kC8_3fX2xL",
 

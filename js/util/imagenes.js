@@ -5,47 +5,47 @@
  */
 
 export async function comprimirImagenWebP(archivo, maxDim = 1600, calidad = 0.82) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
+  // createImageBitmap decodifica sin cargar la imagen en base64 (menos memoria en celulares)
+  let fuente;
+  let liberar = () => {};
+  try {
+    fuente = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+    liberar = () => fuente.close && fuente.close();
+  } catch (_) {
+    const url = URL.createObjectURL(archivo);
+    fuente = await new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => {
-        let ancho = img.width;
-        let alto = img.height;
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Formato de imagen no soportado por el navegador"));
+      img.src = url;
+    });
+    liberar = () => URL.revokeObjectURL(url);
+  }
 
-        if (ancho > maxDim || alto > maxDim) {
-          if (ancho > alto) {
-            alto = Math.round((alto * maxDim) / ancho);
-            ancho = maxDim;
-          } else {
-            ancho = Math.round((ancho * maxDim) / alto);
-            alto = maxDim;
-          }
-        }
+  let ancho = fuente.width;
+  let alto = fuente.height;
+  if (ancho > maxDim || alto > maxDim) {
+    const escala = maxDim / Math.max(ancho, alto);
+    ancho = Math.round(ancho * escala);
+    alto = Math.round(alto * escala);
+  }
 
-        const canvas = document.createElement("canvas");
-        canvas.width = ancho;
-        canvas.height = alto;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, ancho, alto);
+  const canvas = document.createElement("canvas");
+  canvas.width = ancho;
+  canvas.height = alto;
+  canvas.getContext("2d").drawImage(fuente, 0, 0, ancho, alto);
+  liberar();
 
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) return reject(new Error("Error al comprimir imagen"));
-            const nombreWebp = archivo.name.replace(/\.[^.]+$/, "") + ".webp";
-            const archivoWebp = new File([blob], nombreWebp, { type: "image/webp" });
-            resolve({ archivo: archivoWebp, ancho, alto });
-          },
-          "image/webp",
-          calidad
-        );
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(archivo);
-  });
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/webp", calidad));
+  // Safari antiguo no genera WebP: devuelve PNG; en ese caso usar JPEG
+  const final = blob && blob.type === "image/webp"
+    ? blob
+    : await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", calidad));
+  if (!final) throw new Error("Error al comprimir imagen");
+
+  const extension = final.type === "image/webp" ? "webp" : "jpg";
+  const nombre = (archivo.name || "imagen").replace(/\.[^.]+$/, "") + "." + extension;
+  return { archivo: new File([final], nombre, { type: final.type }), ancho, alto };
 }
 
 export async function capturarPosterVideo(archivoVideo) {

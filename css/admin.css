@@ -116,7 +116,7 @@
 }
 .admin-metricas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: var(--espacio-4);
   margin-bottom: var(--espacio-6);
 }
@@ -238,6 +238,50 @@
 
 @media (max-width: 900px) {
   .admin-sidebar { width: 72px; }
-  .admin-sidebar span, .admin-sidebar .admin-badge-rol { display: none; }
+  /* Solo se ocultan los textos: el primer span es el ícono */
+  .admin-menu-item a span:not(:first-child), .admin-sidebar .admin-badge-rol { display: none; }
+  .admin-menu-item a { justify-content: center; font-size: 1.2rem; }
   .estudio-ia-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .admin-layout { flex-direction: column; }
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 300;
+    flex-direction: row;
+    align-items: center;
+  }
+  .admin-sidebar-header { padding: 0.6rem 0.75rem; border-bottom: none; flex-shrink: 0; }
+  .admin-sidebar-header img { height: 20px !important; }
+  .admin-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.4rem 0.5rem;
+    gap: 0.25rem;
+    scrollbar-width: none;
+  }
+  .admin-menu::-webkit-scrollbar { display: none; }
+  .admin-menu-item { flex-shrink: 0; margin-top: 0 !important; border-top: none !important; padding-top: 0 !important; }
+  .admin-menu-item a { padding: 0.5rem 0.65rem; font-size: 1.15rem; position: relative; }
+  .admin-menu-item a .admin-contador-alerta {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: -2px;
+    font-size: 0.6rem;
+    padding: 0 0.3rem;
+  }
+  .admin-topbar { padding: 0.6rem 0.9rem; flex-wrap: wrap; position: static; }
+  .admin-seccion-cabecera h2 { font-size: var(--fs-xl); }
+  .admin-seccion-cabecera .pestanas { width: 100%; }
+  .admin-cuerpo { padding: 1rem 0.9rem; }
+  .admin-territorio-selector { flex-wrap: wrap; width: 100%; }
+  .admin-territorio-selector > span { font-size: var(--fs-xs); }
+  .admin-territorio-selector select { flex: 1; min-width: 0; font-size: 16px; }
+  .admin-principal table { display: block; overflow-x: auto; white-space: nowrap; }
+  .aprobacion-acciones { flex-wrap: wrap; }
+  .aprobacion-acciones .btn { flex: 1; }
 }

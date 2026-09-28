@@ -1,8 +1,6 @@
-Coloca aquí el video institucional:
-  - video.mp4  (H.264 + AAC; compatible con todos los navegadores)  <- obligatorio
-  - video.webm (VP9/AV1 + Opus; más liviano, opcional)
-  - video-poster.webp (imagen de portada; ya incluida)
+Video institucional de index.html
+  - video.mp4          H.264 + AAC, 720p, faststart (optimizado desde centro_colombia_video.mp4)
+  - video-poster.webp  Portada (fotograma del segundo 3)
 
-Conversión recomendada con ffmpeg:
-  ffmpeg -i original.mov -c:v libx264 -crf 23 -preset slow -c:a aac -b:a 128k -movflags +faststart video.mp4
-  ffmpeg -i original.mov -c:v libvpx-vp9 -crf 32 -b:v 0 -c:a libopus video.webm
+Para reemplazarlo, conviértelo así y sobrescribe video.mp4:
+  ffmpeg -i original.mp4 -c:v libx264 -crf 24 -preset slow -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart video.mp4

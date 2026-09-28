@@ -1,11 +1,9 @@
-// Prueba E2E: registro de 2 usuarios, aprobación por admin, publicar, seguir, DM, me gusta y comentarios.
-// Uso: python3 -m http.server 3000 & ; cd tests && npm i playwright-core && ADMP='<clave admin>' node e2e.mjs
 import { chromium } from 'playwright-core';
 const BASE='http://localhost:3000/';
 const ts=Date.now().toString().slice(-6);
 const users=[{n:'Prueba Ana '+ts,u:'e2e_ana_'+ts,e:`e2e.ana.${ts}@avancemos.co`},{n:'Prueba Beto '+ts,u:'e2e_beto_'+ts,e:`e2e.beto.${ts}@avancemos.co`}];
 const PASS='PruebaSegura#2026';
-const b=await chromium.launch({executablePath:'/snap/bin/chromium',args:['--no-sandbox']});
+const b=await chromium.launch({executablePath:process.env.CHROMIUM || '/snap/bin/chromium',args:['--no-sandbox']});
 const log=(...a)=>console.log(...a);
 async function ctx(name){const c=await b.newContext();const p=await c.newPage();
  p.on('pageerror',e=>log(`  [${name}] PAGEERROR`,e.message.slice(0,200)));
@@ -69,7 +67,9 @@ if(await B.locator('#btn-mensaje-perfil').count()){await B.click('#btn-mensaje-p
 await B.goto(BASE+'app.html#/inicio');await B.waitForTimeout(4000);
 const p2=B.locator('.tarjeta-pub',{hasText:texto}).first();
 if(await p2.count()){await p2.getByText('❤️').first().click();await B.waitForTimeout(1500);log('tras like:',(await p2.innerText()).replace(/\s+/g,' ').slice(-80));
- await p2.getByText('💬').first().click();await B.waitForTimeout(2000);log('modal comentarios:',(await B.locator('.modal-overlay').last().innerText().catch(()=>'-')).replace(/\s+/g,' ').slice(0,150));}
+ await p2.getByText('💬').first().click();await B.waitForTimeout(2000);
+ await B.fill('.comentario-input','Comentario E2E escritorio');await B.click('.comentario-form button');await B.waitForTimeout(2000);
+ log('hilo comentarios:',(await B.locator('.comentarios-lista').innerText().catch(()=>'-')).replace(/\s+/g,' ').slice(0,150));}
 
 for(const v of ['explorar','notificaciones','mensajes','grupos','eventos','ajustes','guardados']){await A.goto(BASE+'app.html#/'+v);await A.waitForTimeout(2000);log('Ana vista',v,':',(await A.textContent('#vista-contenido')).replace(/\s+/g,' ').slice(0,110));}
 await A.screenshot({path:'ana.png'});await B.screenshot({path:'beto.png',fullPage:false});

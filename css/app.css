@@ -5,6 +5,7 @@
 .app-layout {
   display: flex;
   justify-content: center;
+  width: 100%;
   min-height: 100vh;
   margin: 0 auto;
   max-width: 1280px;
@@ -87,6 +88,7 @@
 /* Columna Central: Feed Principal */
 .app-feed-columna {
   width: 100%;
+  min-width: 0;
   max-width: var(--ancho-feed);
   border-right: 1px solid var(--borde);
   min-height: 100vh;
@@ -324,7 +326,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   background-color: var(--superficie);
   border-top: 1px solid var(--borde);
   z-index: 500;
@@ -332,12 +335,52 @@
   align-items: center;
 }
 .barra-movil-item {
+  position: relative;
   color: var(--texto-suave);
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
   padding: 0.5rem;
+  font-size: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none !important;
+  border-radius: var(--radio-pleno);
 }
+.barra-movil-item.activo { background-color: rgba(11, 122, 110, 0.1); }
+.barra-movil-publicar {
+  color: #FFFFFF;
+  background-color: var(--turquesa);
+  width: 48px;
+  height: 48px;
+  box-shadow: var(--sombra-md, 0 4px 12px rgba(11, 36, 64, 0.2));
+}
+.barra-movil-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  margin: 0;
+  font-size: 0.65rem;
+  padding: 0 0.35rem;
+}
+.app-menu-movil-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: var(--texto);
+  min-width: 40px;
+  min-height: 40px;
+}
+.app-menu-fondo { display: none; }
+@media (max-width: 767px) { .app-menu-fondo { display: block; } }
 .barra-movil-item.activo {
   color: var(--turquesa);
 }
@@ -369,9 +412,54 @@
   }
 }
 @media (max-width: 767px) {
-  .app-nav-lateral { display: none; }
-  .app-feed-columna { border-right: none; margin-bottom: 60px; }
+  /* Menú lateral como cajón deslizable */
+  .app-nav-lateral {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    height: 100dvh;
+    width: min(82vw, 300px);
+    padding: 1rem;
+    align-items: stretch;
+    background-color: var(--superficie);
+    z-index: 1200;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+    box-shadow: var(--sombra-lg);
+  }
+  .menu-movil-abierto .app-nav-lateral { transform: none; }
+  .app-nav-lateral .app-nav-enlace span,
+  .app-nav-lateral .app-usuario-menu .usuario-texto,
+  .app-nav-lateral .app-boton-publicar span { display: inline; }
+  .app-nav-lateral .app-usuario-menu .usuario-texto { display: block; }
+  .app-nav-lateral .app-boton-publicar { width: 100%; height: auto; border-radius: var(--radio-pleno); padding: 0.75rem; }
+  .app-menu-fondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 22, 34, 0.55);
+    z-index: 1150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .menu-movil-abierto .app-menu-fondo { opacity: 1; pointer-events: auto; }
+  .menu-movil-abierto { overflow: hidden; }
+  .app-menu-movil-btn { display: inline-flex; }
+
+  .app-feed-columna { border-right: none; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
   .app-barra-movil { display: flex; }
+  .app-redactor { padding: 1rem 0.75rem; }
+  .app-redactor-textarea { font-size: 16px; } /* evita el zoom automático de iOS */
+  .app-redactor-opciones .campo-select { font-size: 0.8rem; flex: 1 1 30%; min-width: 0; }
+  .tarjeta-pub { padding: 0.85rem 0.9rem; }
+  .pub-acciones { max-width: none; }
+  .pub-accion-btn { padding: 0.5rem 0.65rem; font-size: var(--fs-sm); }
+  #input-chat, .comentario-input { font-size: 16px; }
+  .widget-soporte-boton { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 
 /* Soporte y Contraste Mejorado en Modo Oscuro */
@@ -433,4 +521,34 @@
 [data-tema="oscuro"] .app-barra-movil {
   background-color: var(--superficie);
   border-top-color: var(--borde);
+}
+
+
+/* Enlace "Ver comentarios" bajo cada publicación */
+.pub-ver-comentarios {
+  background: none;
+  border: none;
+  padding: 0.35rem 0;
+  margin-top: 0.25rem;
+  color: var(--texto-suave);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.pub-ver-comentarios:hover { color: var(--turquesa); text-decoration: underline; }
+.pub-media-no-disponible {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  font-size: var(--fs-sm);
+  color: var(--texto-suave);
+  background: var(--marfil);
+}
+
+/* Vista previa de adjuntos en el redactor */
+.redactor-adjunto { position: relative; width: 72px; height: 72px; }
+.redactor-adjunto img, .redactor-adjunto video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--borde); }
+.redactor-adjunto-quitar {
+  position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; border-radius: 50%;
+  border: none; background: var(--azul-noche); color: #fff; font-size: 0.7rem; cursor: pointer;
 }

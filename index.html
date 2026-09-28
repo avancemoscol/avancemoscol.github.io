@@ -40,7 +40,7 @@
       <div class="sitio-acciones">
         <a href="ingresar.html" class="btn btn-fantasma" id="btn-ingresar">Ingresar</a>
         <a href="unete.html" class="btn btn-primario" id="btn-unete">Únete</a>
-        <button class="menu-hamburguesa" aria-label="Abrir menú" onclick="toggleMenuMovil()">☰</button>
+        <button class="menu-hamburguesa" aria-label="Abrir menú">☰</button>
       </div>
     </div>
   </header>
@@ -94,7 +94,7 @@
           <span class="chip chip-turquesa">Soluciones desde el territorio</span>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 1.5rem;">
           <div class="tarjeta">
             <h3 style="font-size: var(--fs-xl); margin-bottom: 0.75rem;">Misión</h3>
             <p style="color: var(--texto-suave);">
@@ -156,7 +156,6 @@
         </div>
         <div class="video-marco" id="video-marco">
           <video id="video-institucional" controls playsinline preload="metadata" poster="assets/video/video-poster.webp">
-            <source src="assets/video/video.webm" type="video/webm">
             <source src="assets/video/video.mp4" type="video/mp4">
             Tu navegador no soporta video HTML5.
           </video>
@@ -259,6 +258,7 @@
           <div class="esqueleto" style="height: 240px;"></div>
           <div class="esqueleto" style="height: 240px;"></div>
         </div>
+        <p class="nota-ilustraciones">Retratos: ilustraciones artísticas generadas con IA (Vertex AI). No son fotografías ni implican respaldo de las personas mencionadas.</p>
         <div style="text-align: center; margin-top: 2rem;">
           <a href="referentes.html" class="btn btn-secundario">Ver referentes de Colombia y el Mundo</a>
         </div>
@@ -342,7 +342,9 @@
     import { obtenerFeedPublico } from "./js/servicios/publicaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import "./js/ui/menu-sitio.js";
     import { obtenerSesion } from "./js/auth.js";
+    import { CONFIG } from "./js/config.js";
 
     // Inicializar soporte inteligente
     inicializarWidgetSoporte();
@@ -360,13 +362,15 @@
     });
 
     // Cargar métricas en vivo
+    // El mapa se dibuja aunque las estadísticas no respondan
     obtenerEstadisticasPublicas().then(stats => {
-      if (!stats) return;
-      document.getElementById("metrica-miembros").textContent = stats.miembros_activos || "120+";
-      document.getElementById("metrica-departamentos").textContent = stats.departamentos_con_presencia || "33";
-      document.getElementById("metrica-municipios").textContent = stats.municipios_con_presencia || "110+";
-      inicializarMapa(stats.departamentos);
-    });
+      if (stats) {
+        document.getElementById("metrica-miembros").textContent = stats.miembros_activos ?? "—";
+        document.getElementById("metrica-departamentos").textContent = stats.departamentos_con_presencia ?? "—";
+        document.getElementById("metrica-municipios").textContent = stats.municipios_con_presencia ?? "—";
+      }
+      inicializarMapa(stats?.departamentos || null);
+    }).catch(() => inicializarMapa(null));
 
     // Cargar propuestas
     obtenerPropuestas().then(props => {
@@ -397,7 +401,9 @@
         const tarjeta = document.createElement("div");
         tarjeta.className = "tarjeta tarjeta-hover tarjeta-referente";
         tarjeta.innerHTML = `
-          <div class="referente-monograma">${esc(r.nombre.charAt(0))}</div>
+          ${r.imagen_path
+            ? `<figure class="referente-retrato"><img src="${esc(r.imagen_path)}" alt="Ilustración de ${esc(r.nombre)}" loading="lazy" width="120" height="120"></figure>`
+            : `<div class="referente-monograma">${esc(r.nombre.charAt(0))}</div>`}
           <h4>${esc(r.nombre)}</h4>
           <span style="font-size: var(--fs-xs); color: var(--turquesa); font-weight: 600;">${esc(r.cargos)}</span>
           <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem; line-height: 1.4;">${esc(r.leccion)}</p>
@@ -425,16 +431,22 @@
       const mapaEl = document.getElementById("mapa-colombia");
       if (!mapaEl) return;
 
+      const esMovil = window.matchMedia("(max-width: 768px)").matches;
       const map = L.map("mapa-colombia", {
         center: [4.5709, -74.2973],
-        zoom: 5.5,
+        zoom: esMovil ? 4.6 : 5.5,
+        zoomSnap: 0.1,
         minZoom: 4,
         maxZoom: 9,
-        scrollWheelZoom: false
+        scrollWheelZoom: false,
+        // En celular un dedo desplaza la página; el mapa se mueve con dos dedos
+        dragging: !L.Browser.mobile,
+        tap: false
       });
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
-        attribution: "© OpenStreetMap contributors, © CARTO"
+      L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/${CONFIG.CARTO_ESTILO}/{z}/{x}/{y}{r}.png?key=${CONFIG.CARTO_API_KEY}`, {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+        detectRetina: true
       }).addTo(map);
 
       try {
@@ -460,10 +472,12 @@
             const info = datosDeptos ? datosDeptos[dptoId] : null;
             const rotulo = info ? info.rotulo : "menos de 5 miembros";
 
-            layer.bindTooltip(`<strong>${nombre}</strong><br>Presencia: ${rotulo}`, {
-              sticky: true,
-              className: "mapa-tooltip"
-            });
+            const htmlInfo = `<strong>${esc(nombre)}</strong><br>Presencia: ${esc(rotulo)}`;
+            if (esMovil) {
+              layer.bindPopup(htmlInfo, { className: "mapa-tooltip", closeButton: false });
+            } else {
+              layer.bindTooltip(htmlInfo, { sticky: true, className: "mapa-tooltip" });
+            }
 
             layer.on("mouseover", () => {
               layer.setStyle({ weight: 3, color: "#0B2440", fillOpacity: 0.9 });
@@ -471,9 +485,9 @@
             layer.on("mouseout", () => {
               layer.setStyle({ weight: 1.5, color: "#FFFFFF", fillOpacity: 0.7 });
             });
-            layer.on("click", () => {
-              window.location.href = `app.html#/d/${dptoId}`;
-            });
+            if (!esMovil) {
+              layer.on("click", () => layer.openTooltip());
+            }
           }
         }).addTo(map);
       } catch (e) {
@@ -523,9 +537,6 @@
       }));
     })();
 
-    window.toggleMenuMovil = function() {
-      document.getElementById("sitio-menu").classList.toggle("abierto");
-    };
   </script>
 </body>
 </html>

@@ -18,3 +18,7 @@ venv/
 .DS_Store
 *.log
 Thumbs.db
+
+# Video original sin optimizar (la versión publicada está en assets/video/video.mp4)
+centro_colombia_video.mp4
+supabase/.temp/

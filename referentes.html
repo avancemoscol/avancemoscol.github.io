@@ -18,7 +18,7 @@
         <img src="assets/logo.svg" alt="Avancemos Logo">
       </a>
       <nav aria-label="Navegación principal">
-        <ul class="sitio-menu">
+        <ul class="sitio-menu" id="sitio-menu">
           <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
           <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
           <li><a href="referentes.html" class="sitio-menu-enlace activo">Referentes</a></li>
@@ -29,6 +29,7 @@
       <div class="sitio-acciones">
         <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
         <a href="unete.html" class="btn btn-primario">Únete</a>
+        <button class="menu-hamburguesa" aria-label="Abrir menú">☰</button>
       </div>
     </div>
   </header>
@@ -48,11 +49,12 @@
       </div>
     </div>
 
-    <div class="referentes-grilla" id="referentes-lista" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+    <div class="referentes-grilla" id="referentes-lista" style="grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));">
       <div class="esqueleto" style="height: 300px;"></div>
       <div class="esqueleto" style="height: 300px;"></div>
       <div class="esqueleto" style="height: 300px;"></div>
     </div>
+    <p class="nota-ilustraciones">Retratos: ilustraciones artísticas generadas con IA (Vertex AI). No son fotografías ni implican respaldo de las personas mencionadas.</p>
   </main>
 
   <footer class="sitio-footer">
@@ -65,7 +67,14 @@
   <script type="module">
     import { obtenerReferentes } from "./js/servicios/cms.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import "./js/ui/menu-sitio.js";
     inicializarWidgetSoporte();
+
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const urlSegura = (u) => /^https?:\/\//.test(u || "") ? esc(u) : "#";
+    const retrato = (r) => r.imagen_path
+      ? `<figure class="referente-retrato"><img src="${esc(r.imagen_path)}" alt="Ilustración de ${esc(r.nombre)}" loading="lazy" width="120" height="120"></figure>`
+      : `<div class="referente-monograma">${esc(r.nombre.charAt(0))}</div>`;
 
     let referentesTodos = [];
 
@@ -86,23 +95,23 @@
         const tarjeta = document.createElement("div");
         tarjeta.className = "tarjeta tarjeta-hover";
         tarjeta.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-            <div class="referente-monograma">${r.nombre.charAt(0)}</div>
+          <div class="referente-cabecera">
+            ${retrato(r)}
             <div>
-              <h3 style="font-size: var(--fs-lg);">${r.nombre}</h3>
+              <h3 style="font-size: var(--fs-lg);">${esc(r.nombre)}</h3>
               <span class="chip chip-${r.ambito === 'colombia' ? 'turquesa' : 'ambar'}" style="font-size: 0.7rem;">
-                ${r.pais} · ${r.orientacion}
+                ${esc(r.pais)} · ${esc(r.orientacion)}
               </span>
             </div>
           </div>
-          <p style="font-size: var(--fs-xs); color: var(--texto-suave); font-weight: 600;">${r.cargos}</p>
+          <p style="font-size: var(--fs-xs); color: var(--texto-suave); font-weight: 600;">${esc(r.cargos)}</p>
           <div style="margin: 0.75rem 0; font-size: var(--fs-sm); line-height: 1.5;">
-            <strong>Lección clave:</strong> ${r.leccion}
+            <strong>Lección clave:</strong> ${esc(r.leccion)}
           </div>
-          ${r.contexto ? `<p style="font-size: var(--fs-xs); color: var(--texto-suave); font-style: italic;">Contexto: ${r.contexto}</p>` : ''}
+          ${r.contexto ? `<p style="font-size: var(--fs-xs); color: var(--texto-suave); font-style: italic;">Contexto: ${esc(r.contexto)}</p>` : ''}
           ${r.fuentes && r.fuentes.length ? `
             <div style="margin-top: 1rem; border-top: 1px solid var(--borde-suave); padding-top: 0.5rem;">
-              <a href="${r.fuentes[0]}" target="_blank" rel="noopener noreferrer" style="font-size: var(--fs-xs);">Fuente verificada ↗</a>
+              <a href="${urlSegura(r.fuentes[0])}" target="_blank" rel="noopener noreferrer" style="font-size: var(--fs-xs);">Fuente verificada ↗</a>
             </div>
           ` : ''}
         `;

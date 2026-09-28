@@ -43,22 +43,29 @@ export async function crearPublicacion({
   const pubId = crypto.randomUUID();
   const mediaSubida = [];
 
-  // Si hay archivos multimedia, subirlos al bucket privado media-pendiente
+  // Si hay archivos multimedia, subirlos al bucket privado media-pendiente.
+  // La política de Storage exige la ruta {departamento|nacional}/{user_id}/...
   if (archivosMedia && archivosMedia.length > 0) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("No autenticado");
 
+    let carpetaTerritorio = "nacional";
+    if (alcance !== "nacional") {
+      const { data: perfil } = await supabase.from("perfiles").select("departamento_id").eq("id", user.id).single();
+      carpetaTerritorio = perfil?.departamento_id || "nacional";
+    }
+
     for (let i = 0; i < archivosMedia.length; i++) {
       const item = archivosMedia[i];
       const archivo = item.archivo;
-      const extension = archivo.name.split(".").pop();
-      const rutaArchivo = `${user.id}/${pubId}/${i}_${crypto.randomUUID()}.${extension}`;
+      const extension = (archivo.name.split(".").pop() || "bin").toLowerCase();
+      const rutaArchivo = `${carpetaTerritorio}/${user.id}/${pubId}_${i}_${crypto.randomUUID().slice(0, 8)}.${extension}`;
 
       const { data: uploadData, error: uploadErr } = await supabase.storage
         .from(CONFIG.STORAGE_BUCKETS.MEDIA_PENDIENTE)
-        .upload(rutaArchivo, archivo);
+        .upload(rutaArchivo, archivo, { contentType: archivo.type || undefined });
 
-      if (uploadErr) throw uploadErr;
+      if (uploadErr) throw new Error(`No se pudo subir el archivo ${i + 1}: ${uploadErr.message}`);
 
       mediaSubida.push({
         path: uploadData.path,
@@ -186,4 +193,18 @@ export async function agregarComentario(publicacionId, contenido, padreId = null
 
   if (error) throw error;
   return data;
+}
+
+// URL visible para un archivo de publicación: pública si el bucket es público,
+// firmada (1 hora) si está en un bucket privado como media-pendiente.
+const BUCKETS_PUBLICOS = ["media-publica", "avatares", "portadas", "ia-media", "sitio"];
+export async function obtenerUrlMedia(m) {
+  if (!m?.path) return null;
+  if (m.path.startsWith("http")) return m.path;
+  if (BUCKETS_PUBLICOS.includes(m.bucket)) {
+    return supabase.storage.from(m.bucket).getPublicUrl(m.path).data.publicUrl;
+  }
+  const { data, error } = await supabase.storage.from(m.bucket).createSignedUrl(m.path, 3600);
+  if (error) return null;
+  return data.signedUrl;
 }

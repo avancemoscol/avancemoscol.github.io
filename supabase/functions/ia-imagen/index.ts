@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { tokenGoogle, urlModelo } from "../_shared/vertex.ts";
-import { obtenerClienteAdmin } from "../_shared/auth.ts";
+import { obtenerClienteAdmin, exigirModerador } from "../_shared/auth.ts";
 
 const ESTILO_MARCA = "warm natural light, subtle teal and amber tones, editorial documentary photography, dignified and optimistic, realistic, no text, no logos";
 
@@ -9,6 +9,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  const denegado = await exigirModerador(req, corsHeaders);
+  if (denegado) return denegado;
 
   try {
     const { accion, descripcion, formato = "1:1", estilo = "editorial" } = await req.json();

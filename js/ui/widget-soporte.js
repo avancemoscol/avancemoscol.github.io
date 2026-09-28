@@ -77,7 +77,12 @@ export function inicializarWidgetSoporte() {
   }
 
   function toggleWidget() {
-    panel.classList.toggle("activo");
+    const abierto = panel.classList.toggle("activo");
+    document.body.classList.toggle("widget-abierto-movil", abierto);
+    if (abierto) {
+      const campo = panel.querySelector("input, textarea");
+      if (campo && window.matchMedia("(min-width: 769px)").matches) campo.focus();
+    }
   }
 }
 
@@ -132,8 +137,8 @@ async function renderizarVista(vista, contenedor) {
           const resp = await resolverDudaConIA(txt, usuario);
           pensando.remove();
           listaMensajes.appendChild(el("div", {
-            style: "align-self: flex-start; background: var(--superficie); border: 1px solid var(--borde); padding: 0.65rem 0.85rem; border-radius: 12px 12px 12px 2px; font-size: 0.85rem; max-width: 90%; line-height: 1.4;"
-          }, [resp]));
+            style: "align-self: flex-start; background: var(--superficie); border: 1px solid var(--borde); padding: 0.65rem 0.85rem; border-radius: 12px 12px 12px 2px; font-size: 0.85rem; max-width: 90%; line-height: 1.45; white-space: pre-wrap;"
+          }, formatearRespuesta(resp)));
           listaMensajes.scrollTop = listaMensajes.scrollHeight;
         } catch (e) {
           pensando.remove();
@@ -185,7 +190,7 @@ async function renderizarVista(vista, contenedor) {
                 ${res.numero_radicado}
               </div>
               <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--texto-suave);">
-                Guarda este código para hacerle seguimiento en la pestaña "Consultar Caso". Te hemos enviado confirmación a tu correo.
+                Guarda este código para hacerle seguimiento en la pestaña "Consultar Caso". Te responderemos al correo que registraste.
               </p>
             </div>
           `;
@@ -308,4 +313,14 @@ async function renderizarVista(vista, contenedor) {
 
     contenedor.appendChild(formConsulta);
   }
+}
+
+// Convierte **negritas** del asistente en <strong> usando nodos DOM (sin innerHTML)
+function formatearRespuesta(texto) {
+  const limpio = String(texto || "").replace(/^\s*[*-]\s+/gm, "• ").replace(/\n{3,}/g, "\n\n").trim();
+  return limpio.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map(parte =>
+    parte.startsWith("**") && parte.endsWith("**")
+      ? el("strong", { textContent: parte.slice(2, -2) })
+      : document.createTextNode(parte.replace(/\*/g, ""))
+  );
 }

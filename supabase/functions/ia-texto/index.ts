@@ -1,11 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { tokenGoogle, urlModelo } from "../_shared/vertex.ts";
+import { exigirModerador } from "../_shared/auth.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  const denegado = await exigirModerador(req, corsHeaders);
+  if (denegado) return denegado;
 
   try {
     const { accion, texto } = await req.json();

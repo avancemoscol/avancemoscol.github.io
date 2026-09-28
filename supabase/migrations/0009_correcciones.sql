@@ -10,8 +10,8 @@ returns boolean language sql stable security definer set search_path = '' as $$
     where conversacion_id = p_conversacion_id and user_id = (select auth.uid())
   );
 $$;
-revoke all on function public.es_participante(uuid) from public, anon;
-grant execute on function public.es_participante(uuid) to authenticated;
+revoke all on function public.es_participante(uuid) from public;
+grant execute on function public.es_participante(uuid) to anon, authenticated;
 
 drop policy if exists "participante_ver_participantes" on public.conversacion_participantes;
 create policy "participante_ver_participantes" on public.conversacion_participantes for select using (

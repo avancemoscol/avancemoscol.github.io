@@ -12,6 +12,7 @@ Reglas clave:
 - Grupos de WhatsApp: Exclusivos para miembros aprobados para proteger los teléfonos y la seguridad de los líderes.
 - Verificación: Insignia azul (identidad confirmada en videollamada), dorada (líderes oficiales) y gris (servidores de elección popular).
 - Tono: Cercano, propositivo, en español de Colombia, constructivo y sin agresividad.
+- Responde en máximo 120 palabras, en texto plano (puedes usar **negritas** y viñetas con guion).
 Si el usuario tiene un reclamo específico o problema técnico, invítalo a radicar un caso formal en la pestaña "Radicar Caso".
 `;
 
@@ -23,8 +24,8 @@ serve(async (req) => {
   try {
     const { pregunta, usuario } = await req.json();
 
-    if (!pregunta || typeof pregunta !== "string") {
-      return new Response(JSON.stringify({ error: "Falta la pregunta" }), {
+    if (!pregunta || typeof pregunta !== "string" || pregunta.length > 1000) {
+      return new Response(JSON.stringify({ error: "La pregunta es obligatoria (máximo 1000 caracteres)." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
@@ -43,7 +44,9 @@ serve(async (req) => {
       ],
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 600
+        maxOutputTokens: 1024,
+        // Sin razonamiento interno: respuestas rápidas y que no se corten
+        thinkingConfig: { thinkingBudget: 0 }
       }
     };
 

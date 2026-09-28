@@ -18,7 +18,7 @@
         <img src="assets/logo.svg" alt="Avancemos Logo">
       </a>
       <nav aria-label="Navegación principal">
-        <ul class="sitio-menu">
+        <ul class="sitio-menu" id="sitio-menu">
           <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
           <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
           <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
@@ -29,6 +29,7 @@
       <div class="sitio-acciones">
         <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
         <a href="unete.html" class="btn btn-primario">Únete</a>
+        <button class="menu-hamburguesa" aria-label="Abrir menú">☰</button>
       </div>
     </div>
   </header>
@@ -59,6 +60,7 @@
     import { obtenerPropuestas } from "./js/servicios/cms.js";
     import { renderizarMarkdownSeguro } from "./js/util/texto-seguro.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import "./js/ui/menu-sitio.js";
     inicializarWidgetSoporte();
 
     async function cargar() {

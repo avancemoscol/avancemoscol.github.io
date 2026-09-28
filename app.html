@@ -13,7 +13,7 @@
 <body>
   <div class="app-layout">
     <!-- COLUMNA 1: Navegación Lateral Izquierda (260px) -->
-    <aside class="app-nav-lateral">
+    <aside class="app-nav-lateral" id="app-nav-lateral">
       <div>
         <div class="app-nav-header">
           <a href="#/inicio" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
@@ -94,9 +94,12 @@
     <main class="app-feed-columna" id="app-feed-columna">
       <!-- Encabezado del Feed con Pestañas -->
       <header class="app-feed-header" id="feed-header">
-        <div style="padding: 0.85rem 1.25rem 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="font-size: var(--fs-lg);" id="feed-titulo-vista">Inicio</h2>
-          <button class="btn btn-fantasma btn-sm" onclick="toggleTema()" title="Cambiar tema">🌓</button>
+        <div style="padding: 0.85rem 1.25rem 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+          <button class="app-menu-movil-btn" id="btn-menu-movil" onclick="abrirMenuMovil()" aria-label="Abrir menú" aria-controls="app-nav-lateral" aria-expanded="false">
+            <span id="menu-movil-avatar-slot">☰</span>
+          </button>
+          <h2 style="font-size: var(--fs-lg); flex: 1;" id="feed-titulo-vista">Inicio</h2>
+          <button class="btn btn-fantasma btn-sm" onclick="toggleTema()" title="Cambiar tema" aria-label="Cambiar tema">🌓</button>
         </div>
         <div class="pestanas" id="feed-pestanas" style="padding: 0 1rem;">
           <button class="pestana activa" onclick="cambiarFeedTab('nacional')">Nacional</button>
@@ -215,13 +218,14 @@
   </div>
 
   <!-- Barra Inferior Móvil (Menos de 768px) -->
-  <nav class="app-barra-movil">
-    <a href="#/inicio" class="barra-movil-item activo">🏠</a>
-    <a href="#/explorar" class="barra-movil-item">🧭</a>
-    <a href="javascript:abrirComposer()" class="barra-movil-item" style="color: var(--turquesa); font-size: 1.4rem;">➕</a>
-    <a href="#/notificaciones" class="barra-movil-item">🔔</a>
-    <a href="#/mensajes" class="barra-movil-item">✉️</a>
+  <nav class="app-barra-movil" aria-label="Navegación móvil">
+    <a href="#/inicio" class="barra-movil-item activo" data-ruta="/inicio" aria-label="Inicio">🏠</a>
+    <a href="#/explorar" class="barra-movil-item" data-ruta="/explorar" aria-label="Explorar">🧭</a>
+    <button type="button" class="barra-movil-item barra-movil-publicar" onclick="abrirComposer()" aria-label="Publicar">➕</button>
+    <a href="#/notificaciones" class="barra-movil-item" data-ruta="/notificaciones" aria-label="Notificaciones">🔔<span class="app-nav-badge barra-movil-badge" id="badge-notificaciones-movil" style="display: none;">0</span></a>
+    <a href="#/mensajes" class="barra-movil-item" data-ruta="/mensajes" aria-label="Mensajes">✉️</a>
   </nav>
+  <div class="app-menu-fondo" id="app-menu-fondo" onclick="cerrarMenuMovil()"></div>
 
   <!-- Script Principal de la SPA -->
   <script type="module">
@@ -233,6 +237,7 @@
     import { obtenerConversaciones, iniciarConversacion, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
     import { obtenerNotificaciones, marcarNotificacionesLeidas, suscribirNotificaciones } from "./js/servicios/notificaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
+    import { abrirComentarios } from "./js/ui/comentarios.js";
     import { renderizarAvatar } from "./js/ui/avatar.js";
     import { comprimirImagenWebP } from "./js/util/imagenes.js";
     import { mostrarToast } from "./js/ui/toast.js";
@@ -266,6 +271,10 @@
         slotNav.innerHTML = "";
         slotNav.appendChild(renderizarAvatar(miUsuario, "sm"));
 
+        const slotMenuMovil = document.getElementById("menu-movil-avatar-slot");
+        slotMenuMovil.innerHTML = "";
+        slotMenuMovil.appendChild(renderizarAvatar(miUsuario, "sm"));
+
         const slotRedactor = document.getElementById("redactor-avatar-slot");
         if (slotRedactor) {
           slotRedactor.innerHTML = "";
@@ -276,6 +285,8 @@
         if (permisos.es_admin_nacional || (permisos.departamentos_moderacion && permisos.departamentos_moderacion.length > 0)) {
           document.getElementById("item-panel-admin").style.display = "block";
         }
+
+        actualizarBadgeNotificaciones();
 
         // Suscribir notificaciones realtime
         suscribirNotificaciones(miUsuario.id, (notif) => {
@@ -314,6 +325,10 @@
     }
 
     function onCambioRuta(patron) {
+      cerrarMenuMovil();
+      document.querySelectorAll(".barra-movil-item[data-ruta]").forEach(item => {
+        item.classList.toggle("activo", item.getAttribute("data-ruta") === patron);
+      });
       document.querySelectorAll(".app-nav-enlace").forEach(enlace => {
         if (enlace.getAttribute("data-ruta") === patron) {
           enlace.classList.add("activo");
@@ -354,9 +369,7 @@
         }
 
         pubs.forEach(p => {
-          cont.appendChild(renderizarTarjetaPublicacion(p, {
-            onComentar: (pub) => abrirModalComentarios(pub)
-          }));
+          cont.appendChild(renderizarTarjetaPublicacion(p));
         });
       } catch (err) {
         cont.innerHTML = `<div style="padding: 2rem; color: var(--error);">${err.message}</div>`;
@@ -428,7 +441,20 @@
         cont.appendChild(item);
       });
 
-      marcarNotificacionesLeidas();
+      marcarNotificacionesLeidas().then(actualizarBadgeNotificaciones);
+    }
+
+    async function actualizarBadgeNotificaciones() {
+      if (!miUsuario) return;
+      const { count } = await supabase.from("notificaciones")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", miUsuario.id).eq("leida", false);
+      ["badge-notificaciones", "badge-notificaciones-movil"].forEach(id => {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.textContent = count > 99 ? "99+" : String(count || 0);
+        b.style.display = count > 0 ? "inline-block" : "none";
+      });
     }
 
     async function vistaMensajes() {
@@ -770,12 +796,40 @@
     // -------------------------------------------------------------------------
 
     window.abrirComposer = function() {
-      const textarea = document.getElementById("redactor-texto");
-      if (textarea) {
-        textarea.focus();
+      cerrarMenuMovil();
+      if (!miUsuario) {
+        mostrarToast("Ingresa con tu cuenta para publicar.", "alerta");
+        setTimeout(() => window.location.href = "ingresar.html", 900);
+        return;
+      }
+      if (miUsuario.estado && miUsuario.estado !== "activo") {
+        mostrarToast("Tu cuenta aún está en revisión. Podrás publicar cuando el equipo la apruebe.", "alerta", 5000);
+        return;
+      }
+      const enfocar = () => {
+        const textarea = document.getElementById("redactor-texto");
+        document.getElementById("seccion-redactor").style.display = "flex";
         window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => textarea.focus({ preventScroll: true }), 250);
+      };
+      if (!location.hash.startsWith("#/inicio") && location.hash !== "" && location.hash !== "#/") {
+        location.hash = "#/inicio";
+        setTimeout(enfocar, 350);
+      } else {
+        enfocar();
       }
     };
+
+    // Menú lateral deslizable en celular
+    window.abrirMenuMovil = function() {
+      document.body.classList.add("menu-movil-abierto");
+      document.getElementById("btn-menu-movil").setAttribute("aria-expanded", "true");
+    };
+    window.cerrarMenuMovil = function() {
+      document.body.classList.remove("menu-movil-abierto");
+      document.getElementById("btn-menu-movil")?.setAttribute("aria-expanded", "false");
+    };
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarMenuMovil(); });
 
     const redactorInput = document.getElementById("redactor-texto");
     const contador = document.getElementById("contador-caracteres");
@@ -784,27 +838,80 @@
       contador.textContent = restan;
     });
 
-    // Subida de archivos con compresión WebP
+    // Adjuntos: imágenes (comprimidas a WebP en el navegador) y videos MP4/MOV
+    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime"];
     const fileInput = document.getElementById("redactor-input-archivo");
-    fileInput.addEventListener("change", async () => {
-      const files = Array.from(fileInput.files);
+    fileInput.setAttribute("accept", "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime");
+
+    function pintarAdjuntos() {
       const previewCont = document.getElementById("redactor-preview-media");
       previewCont.innerHTML = "";
-      archivosAdjuntos = [];
+      archivosAdjuntos.forEach((adj, i) => {
+        const caja = document.createElement("div");
+        caja.className = "redactor-adjunto";
+        const media = document.createElement(adj.tipo === "video" ? "video" : "img");
+        media.src = adj.vistaPrevia;
+        if (adj.tipo === "video") { media.muted = true; media.playsInline = true; }
+        media.alt = "Vista previa del adjunto";
+        const quitar = document.createElement("button");
+        quitar.type = "button";
+        quitar.className = "redactor-adjunto-quitar";
+        quitar.setAttribute("aria-label", "Quitar adjunto");
+        quitar.textContent = "✕";
+        quitar.onclick = () => {
+          URL.revokeObjectURL(adj.vistaPrevia);
+          archivosAdjuntos.splice(i, 1);
+          pintarAdjuntos();
+        };
+        caja.append(media, quitar);
+        previewCont.appendChild(caja);
+      });
+    }
 
-      for (const f of files.slice(0, 4)) {
-        if (f.type.startsWith("image/")) {
-          const comp = await comprimirImagenWebP(f);
-          archivosAdjuntos.push({ archivo: comp.archivo, tipo: "imagen", ancho: comp.ancho, alto: comp.alto });
-          const img = document.createElement("img");
-          img.src = URL.createObjectURL(comp.archivo);
-          img.style.width = "64px";
-          img.style.height = "64px";
-          img.style.objectFit = "cover";
-          img.style.borderRadius = "8px";
-          previewCont.appendChild(img);
+    fileInput.addEventListener("change", async () => {
+      const archivos = Array.from(fileInput.files || []);
+      fileInput.value = "";
+      const btnPost = document.getElementById("btn-enviar-post");
+      btnPost.disabled = true;
+
+      for (const f of archivos) {
+        if (archivosAdjuntos.length >= 4) {
+          mostrarToast("Máximo 4 archivos por publicación.", "alerta");
+          break;
+        }
+        const esVideo = f.type.startsWith("video/");
+        const limiteMb = esVideo ? 50 : 10;
+        if (!f.type.startsWith("image/") && !esVideo) {
+          mostrarToast(`"${f.name}" no es una imagen ni un video.`, "alerta");
+          continue;
+        }
+        if (f.size > limiteMb * 1024 * 1024) {
+          mostrarToast(`"${f.name}" supera el límite de ${limiteMb} MB.`, "alerta");
+          continue;
+        }
+        try {
+          if (esVideo) {
+            if (!TIPOS_PERMITIDOS.includes(f.type)) throw new Error("Solo se admiten videos MP4 o MOV.");
+            archivosAdjuntos.push({ archivo: f, tipo: "video", vistaPrevia: URL.createObjectURL(f) });
+          } else if (f.type === "image/gif") {
+            archivosAdjuntos.push({ archivo: f, tipo: "imagen", vistaPrevia: URL.createObjectURL(f) });
+          } else {
+            let comp;
+            try {
+              comp = await comprimirImagenWebP(f);
+            } catch (errComp) {
+              // Si no se puede comprimir, subir el original cuando su formato es aceptado
+              if (!TIPOS_PERMITIDOS.includes(f.type)) throw new Error("Formato no soportado. Usa JPG, PNG o WebP.");
+              comp = { archivo: f, ancho: null, alto: null };
+            }
+            archivosAdjuntos.push({ archivo: comp.archivo, tipo: "imagen", ancho: comp.ancho, alto: comp.alto, vistaPrevia: URL.createObjectURL(comp.archivo) });
+          }
+        } catch (err) {
+          mostrarToast(`No se pudo adjuntar "${f.name}": ${err.message}`, "error");
         }
       }
+      pintarAdjuntos();
+      btnPost.disabled = false;
     });
 
     window.enviarPublicacion = async function() {
@@ -828,8 +935,10 @@
         });
 
         redactorInput.value = "";
+        archivosAdjuntos.forEach(a => URL.revokeObjectURL(a.vistaPrevia));
         archivosAdjuntos = [];
-        document.getElementById("redactor-preview-media").innerHTML = "";
+        pintarAdjuntos();
+        contador.textContent = "3000";
         btn.disabled = false;
         btn.textContent = "Publicar";
         mostrarToast("Publicación enviada. Ha quedado en revisión por el equipo departamental.", "exito", 5000);
@@ -842,17 +951,8 @@
     };
 
     // Modal de comentarios
-    window.abrirModalComentarios = async function(pub) {
-      const c = prompt(`Comentar en la publicación de @${pub.autor_username}:`);
-      if (c && c.trim()) {
-        try {
-          await agregarComentario(pub.id, c.trim());
-          mostrarToast("Comentario agregado exitosamente", "exito");
-          cargarFeed(feedTipoActual);
-        } catch (e) {
-          mostrarToast(e.message, "error");
-        }
-      }
+    window.abrirModalComentarios = function(pub) {
+      abrirComentarios(pub);
     };
 
     async function cargarEventosLateral() {
@@ -883,7 +983,8 @@
 
         if (anuncios && anuncios.length > 0) {
           const a = anuncios[0];
-          const visto = sessionStorage.getItem(`anuncio_visto_${a.id}`);
+          let visto = null;
+          try { visto = localStorage.getItem(`anuncio_visto_${a.id}`); } catch (_) {}
           if (!visto) {
             mostrarModalAnuncio(a);
           }
@@ -911,11 +1012,13 @@
       `;
       document.body.appendChild(overlay);
 
-      document.getElementById("btn-cerrar-anuncio").onclick = () => {
-        sessionStorage.setItem(`anuncio_visto_${anuncio.id}`, "true");
+      const cerrarAnuncio = () => {
+        try { localStorage.setItem(`anuncio_visto_${anuncio.id}`, "true"); } catch (_) {}
         overlay.classList.remove("abierto");
         setTimeout(() => overlay.remove(), 220);
       };
+      document.getElementById("btn-cerrar-anuncio").onclick = cerrarAnuncio;
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) cerrarAnuncio(); });
     }
 
     window.toggleTema = function() {

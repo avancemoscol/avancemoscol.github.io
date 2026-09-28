@@ -12,3 +12,7 @@ Valores de ejemplo utilizados que deben ser confirmados o reemplazados por el cl
    - Se configuró por defecto `https://avancemos.co`. Si el dominio definitivo cambia, actualizar `CONFIG.DOMINIO` en `js/config.js` y las URL de redirección en Supabase Auth.
 5. **Repositorio de GitHub:**
    - El código local está preparado y versionado con Git. Se requiere la URL del repositorio remoto o token de GitHub para vincular y subir (`git push`).
+6. **Aprobación automática de media en otro bucket (opcional):**
+   - La Edge Function `publicar-media` (mover archivos a `media-publica`) y `moderar-ia` no están desplegadas: requieren configurar Database Webhooks en Supabase. La plataforma funciona sin ellas gracias a la migración 0010.
+7. **Rotar credenciales:**
+   - `credenciales.txt` contiene en texto plano el token de GitHub, la `service_role` y el token de administración de Supabase. Se recomienda rotarlos y guardarlos en un gestor de secretos.

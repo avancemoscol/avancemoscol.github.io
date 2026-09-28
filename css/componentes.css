@@ -358,12 +358,17 @@
   box-shadow: 0 14px 30px rgba(11, 36, 64, 0.25);
 }
 @media (max-width: 768px) {
+  /* En celular el botón es un círculo compacto para no tapar el contenido */
   .widget-soporte-boton {
-    bottom: 4.8rem; /* Queda cómodamente por encima de la barra móvil de 60px */
+    bottom: calc(1rem + env(safe-area-inset-bottom));
     right: 1rem;
-    padding: 0.55rem 0.95rem;
-    font-size: 0.8rem;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    justify-content: center;
+    font-size: 1.35rem;
   }
+  .widget-soporte-boton span:last-child { display: none; }
 }
 .widget-soporte-panel {
   position: fixed;
@@ -384,25 +389,29 @@
   display: none;
   animation: abrirWidget 200ms ease-out forwards;
 }
-@media (max-width: 768px) {
-  .widget-soporte-panel {
-    bottom: 8.5rem;
-    right: 1rem;
-    max-height: calc(100vh - 10rem);
-  }
-}
-  border-radius: var(--radio-xl);
-  box-shadow: var(--sombra-lg);
-  display: flex;
-  flex-direction: column;
-  z-index: 800;
-  overflow: hidden;
-  display: none;
-  animation: abrirWidget 200ms ease-out forwards;
-}
 .widget-soporte-panel.activo {
   display: flex;
 }
+@media (max-width: 768px) {
+  /* En celular el panel ocupa la pantalla como una hoja inferior */
+  .widget-soporte-panel {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 88vh;
+    height: 88dvh;
+    max-height: none;
+    border-radius: var(--radio-xl) var(--radio-xl) 0 0;
+    z-index: 1100;
+  }
+  .widget-soporte-cuerpo { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+  .widget-soporte-cuerpo .campo-input,
+  .widget-soporte-cuerpo .campo-select,
+  .widget-soporte-cuerpo .campo-textarea { font-size: 16px; } /* evita el zoom automático de iOS */
+}
+body.widget-abierto-movil .widget-soporte-boton { display: none; }
 @keyframes abrirWidget {
   from { opacity: 0; transform: translateY(15px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -429,4 +438,50 @@
   display: flex;
   gap: 0.5rem;
   background-color: var(--superficie);
+}
+
+
+/* Hilo de comentarios */
+.sin-scroll { overflow: hidden; }
+.modal-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--borde-suave);
+}
+.comentario-original {
+  background: var(--marfil);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: var(--fs-sm);
+}
+.comentario-original p { margin-top: 0.25rem; color: var(--texto-suave); white-space: pre-wrap; word-break: break-word; }
+.hilo-comentarios { display: flex; flex-direction: column; gap: 0.75rem; }
+.comentarios-lista { display: flex; flex-direction: column; gap: 0.9rem; max-height: 50vh; overflow-y: auto; padding-right: 0.25rem; }
+.comentarios-estado { color: var(--texto-suave); font-size: var(--fs-sm); text-align: center; padding: 1rem 0; }
+.comentario-item { display: flex; gap: 0.65rem; align-items: flex-start; }
+.comentario-cuerpo { flex: 1; min-width: 0; background: var(--marfil); border-radius: var(--radio-md); padding: 0.55rem 0.8rem; }
+.comentario-cabecera { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; font-size: var(--fs-sm); }
+.comentario-texto { font-size: var(--fs-sm); line-height: 1.45; margin-top: 0.2rem; white-space: pre-wrap; word-break: break-word; }
+.comentario-form { display: flex; gap: 0.5rem; align-items: flex-end; border-top: 1px solid var(--borde-suave); padding-top: 0.75rem; }
+.comentario-form .comentario-input { flex: 1; min-height: 44px; resize: vertical; }
+.comentarios-login { font-size: var(--fs-sm); color: var(--texto-suave); text-align: center; padding: 0.5rem 0; }
+
+@media (max-width: 767px) {
+  /* Los modales se abren como hoja inferior en celular */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal-contenido {
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: var(--radio-xl) var(--radio-xl) 0 0;
+    padding: 1.1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  }
+  .comentarios-lista { max-height: 55vh; max-height: 55dvh; }
+  .toast-contenedor { left: 1rem; right: 1rem; bottom: calc(80px + env(safe-area-inset-bottom)); }
 }
