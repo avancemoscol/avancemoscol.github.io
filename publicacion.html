@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicación · Avancemos</title>
+  <meta name="description" content="Lee esta publicación en la plataforma oficial del movimiento Avancemos.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <div class="sitio-acciones">
+        <a href="app.html" class="btn btn-primario btn-sm">Abrir en la Red</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 680px;">
+    <div id="publicacion-contenedor">
+      <div class="esqueleto" style="height: 240px; border-radius: var(--radio-xl);"></div>
+    </div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { obtenerPublicacionPublica } from "./js/servicios/publicaciones.js";
+    import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    inicializarWidgetSoporte();
+
+    const params = new URLSearchParams(window.location.search);
+    const pubId = params.get("id");
+
+    async function cargar() {
+      const cont = document.getElementById("publicacion-contenedor");
+      if (!pubId) {
+        cont.innerHTML = "<div class='tarjeta'><p>No se especificó ninguna publicación.</p></div>";
+        return;
+      }
+
+      try {
+        const pub = await obtenerPublicacionPublica(pubId);
+        if (!pub) {
+          cont.innerHTML = "<div class='tarjeta'><p>Esta publicación no existe o no tiene visibilidad pública.</p></div>";
+          return;
+        }
+
+        cont.innerHTML = "";
+        cont.appendChild(renderizarTarjetaPublicacion(pub));
+      } catch (err) {
+        cont.innerHTML = `<div class='tarjeta'><p style='color: var(--error);'>${err.message}</p></div>`;
+      }
+    }
+
+    cargar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propuestas y Ejes de Gobierno · Avancemos Colombia</title>
+  <meta name="description" content="Nuestros 8 ejes programáticos para transformar a Colombia con evidencia, justicia social y rigor técnico.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="sitio-menu">
+          <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
+          <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
+          <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
+          <li><a href="propuestas.html" class="sitio-menu-enlace activo">Propuestas</a></li>
+          <li><a href="eventos.html" class="sitio-menu-enlace">Eventos</a></li>
+        </ul>
+      </nav>
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
+        <a href="unete.html" class="btn btn-primario">Únete</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 4rem; padding-bottom: 5rem; max-width: 900px;">
+    <div style="margin-bottom: 3rem; text-align: center;">
+      <span class="chip chip-turquesa" style="margin-bottom: 1rem;">Programa de Acción</span>
+      <h1>Ejes Programáticos</h1>
+      <p style="font-size: var(--fs-md); color: var(--texto-suave); margin-top: 0.5rem;">
+        Propuestas construidas desde los territorios para resolver los problemas reales de Colombia con evidencia técnica y sostenibilidad.
+      </p>
+    </div>
+
+    <div id="propuestas-contenedor" style="display: flex; flex-direction: column; gap: 2rem;">
+      <div class="esqueleto" style="height: 200px;"></div>
+      <div class="esqueleto" style="height: 200px;"></div>
+    </div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+      <div><a href="privacidad.html" style="color: #A0AEC0;">Privacidad</a> · <a href="terminos.html" style="color: #A0AEC0;">Términos</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { obtenerPropuestas } from "./js/servicios/cms.js";
+    import { renderizarMarkdownSeguro } from "./js/util/texto-seguro.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    inicializarWidgetSoporte();
+
+    async function cargar() {
+      const cont = document.getElementById("propuestas-contenedor");
+      const props = await obtenerPropuestas();
+      cont.innerHTML = "";
+
+      if (!props.length) {
+        cont.innerHTML = "<p>No hay propuestas disponibles.</p>";
+        return;
+      }
+
+      for (const p of props) {
+        const tarjeta = document.createElement("article");
+        tarjeta.className = "tarjeta";
+        tarjeta.id = p.eje;
+
+        const detalleHtml = await renderizarMarkdownSeguro(p.detalle_md);
+
+        tarjeta.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+            <span class="chip chip-turquesa" style="text-transform: uppercase;">Eje ${p.orden}</span>
+          </div>
+          <h2 style="font-size: var(--fs-2xl); margin-bottom: 0.75rem; color: var(--azul-noche);">${p.titulo}</h2>
+          <p style="font-size: var(--fs-md); color: var(--texto-suave); font-weight: 500; margin-bottom: 1.5rem;">
+            ${p.resumen}
+          </p>
+          <div style="line-height: 1.7; border-top: 1px solid var(--borde-suave); padding-top: 1.25rem;">
+            ${detalleHtml}
+          </div>
+        `;
+        cont.appendChild(tarjeta);
+      }
+    }
+
+    cargar();
+  </script>
+</body>
+</html>

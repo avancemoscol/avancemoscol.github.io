@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Únete a Avancemos · Registro Ciudadano</title>
+  <meta name="description" content="Inscríbete como simpatizante, voluntario o líder en Avancemos. Construye soluciones desde tu territorio.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <div class="sitio-acciones">
+        <span style="font-size: var(--fs-sm); color: var(--texto-suave);">¿Ya tienes cuenta?</span>
+        <a href="ingresar.html" class="btn btn-secundario btn-sm">Ingresar</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 640px;">
+    <!-- Contenedor del Formulario de Registro -->
+    <div id="registro-box" class="tarjeta">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="chip chip-turquesa" style="margin-bottom: 0.75rem;">Participación Territorial</span>
+        <h2>Únete a Avancemos</h2>
+        <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem;">
+          Inscripción 100% gratuita. Los moderadores de tu departamento revisarán tu solicitud para darte la bienvenida.
+        </p>
+      </div>
+
+      <form id="form-unete" novalidate>
+        <!-- Nombre Completo -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="nombre">Nombre completo *</label>
+          <input type="text" id="nombre" name="nombre" class="campo-input" required placeholder="Tu nombre y apellidos">
+          <span class="campo-error" id="err-nombre"></span>
+        </div>
+
+        <!-- Nombre de Usuario con Verificación en Vivo -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="username">Nombre de usuario (@usuario) *</label>
+          <input type="text" id="username" name="username" class="campo-input" required placeholder="ej. carlos_mora">
+          <span class="campo-ayuda" id="ayuda-username">Solo letras minúsculas, números y guiones bajos (3 a 30 caracteres).</span>
+          <span class="campo-error" id="err-username"></span>
+        </div>
+
+        <!-- Correo Electrónico -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="email">Correo electrónico *</label>
+          <input type="email" id="email" name="email" class="campo-input" required placeholder="correo@ejemplo.com">
+          <span class="campo-error" id="err-email"></span>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="password">Contraseña (mínimo 10 caracteres) *</label>
+          <input type="password" id="password" name="password" class="campo-input" required minlength="10" placeholder="••••••••••••">
+          <span class="campo-error" id="err-password"></span>
+        </div>
+
+        <!-- Selectores Territoriales DIVIPOLA -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="campo">
+            <label class="campo-etiqueta" for="departamento">Departamento *</label>
+            <select id="departamento" name="departamentoId" class="campo-select" required>
+              <option value="">Cargando...</option>
+            </select>
+            <span class="campo-error" id="err-departamento"></span>
+          </div>
+
+          <div class="campo">
+            <label class="campo-etiqueta" for="municipio">Municipio *</label>
+            <select id="municipio" name="municipioId" class="campo-select" required disabled>
+              <option value="">Selecciona departamento primero</option>
+            </select>
+            <span class="campo-error" id="err-municipio"></span>
+          </div>
+        </div>
+
+        <!-- Localidad si es Bogotá -->
+        <div class="campo" id="campo-localidad" style="display: none;">
+          <label class="campo-etiqueta" for="localidad">Localidad de Bogotá *</label>
+          <select id="localidad" name="localidadId" class="campo-select">
+            <option value="">Selecciona localidad...</option>
+          </select>
+        </div>
+
+        <!-- Rol Solicitado -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="rol">Rol con el que deseas participar *</label>
+          <select id="rol" name="rolSolicitado" class="campo-select" required>
+            <option value="simpatizante">Simpatizante (Voz y voto en foros, apoyo ciudadano)</option>
+            <option value="voluntario">Voluntario (Publicar iniciativas, apoyar actividades)</option>
+            <option value="lider">Líder Regional (Coordinación comunitaria en mi municipio)</option>
+          </select>
+        </div>
+
+        <!-- Motivo -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="motivo">¿Por qué deseas unirte a Avancemos? *</label>
+          <textarea id="motivo" name="motivo" class="campo-textarea" rows="3" maxlength="500" required placeholder="Cuéntanos brevemente tus motivaciones..."></textarea>
+          <span class="campo-ayuda">Máximo 500 caracteres.</span>
+          <span class="campo-error" id="err-motivo"></span>
+        </div>
+
+        <!-- Teléfono Opcional -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="telefono">Teléfono celular (opcional y estrictamente privado)</label>
+          <input type="tel" id="telefono" name="telefono" class="campo-input" placeholder="3001234567">
+          <span class="campo-ayuda">Solo visible para los coordinadores de tu departamento. Nunca será público.</span>
+        </div>
+
+        <!-- Ocupación -->
+        <div class="campo">
+          <label class="campo-etiqueta" for="ocupacion">Ocupación o profesión (opcional)</label>
+          <input type="text" id="ocupacion" name="ocupacion" class="campo-input" placeholder="Ej. Docente, Ingeniero, Emprendedor...">
+        </div>
+
+        <!-- Casillas Legales Obligatorias (Ley 1581 y Protección de Datos) -->
+        <div style="margin: 1.5rem 0; border-top: 1px solid var(--borde-suave); padding-top: 1.25rem;">
+          <label class="campo-check">
+            <input type="checkbox" id="check-mayor" required>
+            <span>Soy mayor de 18 años. *</span>
+          </label>
+
+          <label class="campo-check">
+            <input type="checkbox" id="check-terminos" required>
+            <span>Acepto las <a href="normas.html" target="_blank">Normas de Convivencia</a> y los <a href="terminos.html" target="_blank">Términos de Uso</a>. *</span>
+          </label>
+
+          <label class="campo-check">
+            <input type="checkbox" id="check-datos-sensibles" required>
+            <span>
+              Autorizo de manera previa, expresa e informada a <strong>Movimiento Político Avancemos Colombia</strong> para tratar mis datos personales, incluidos datos sensibles como mi afinidad política, con el fin de gestionar mi participación en Avancemos, conforme a la <a href="privacidad.html" target="_blank">Política de Tratamiento de Datos</a>. Sé que no estoy obligado(a) a autorizar datos sensibles y que puedo revocar esta autorización en cualquier momento. *
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primario btn-lg" style="width: 100%;" id="btn-enviar">
+          Completar Registro
+        </button>
+      </form>
+    </div>
+
+    <!-- Pantalla de Estado "En Revisión" tras registrarse -->
+    <div id="revision-box" class="tarjeta" style="display: none; text-align: center; padding: 3rem 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+      <h2 style="color: var(--azul-noche); margin-bottom: 0.5rem;">¡Solicitud en Revisión!</h2>
+      <p style="color: var(--texto-suave); font-size: var(--fs-md); margin-bottom: 2rem;">
+        Hemos recibido tus datos con éxito. Tu cuenta está siendo revisada por los moderadores de tu departamento.
+      </p>
+
+      <!-- Línea de tiempo -->
+      <div style="max-width: 440px; margin: 0 auto 2.5rem; text-align: left; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--exito); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700;">✓</span>
+          <div><strong>Registrado:</strong> Datos enviados correctamente.</div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--ambar); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</span>
+          <div><strong>Correo confirmado:</strong> Revisa tu bandeja de entrada si es necesario.</div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--marfil); border: 2px solid var(--borde); color: var(--texto); display: flex; align-items: center; justify-content: center; font-weight: 700;">3</span>
+          <div><strong>En revisión territorial:</strong> Moderadores locales validan tu perfil.</div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--marfil); border: 2px solid var(--borde); color: var(--texto-suave); display: flex; align-items: center; justify-content: center; font-weight: 700;">4</span>
+          <div><strong>Aprobado:</strong> Acceso completo a grupos de WhatsApp y publicaciones.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1rem;">
+        <a href="index.html" class="btn btn-secundario">Volver al Inicio</a>
+        <a href="app.html" class="btn btn-primario">Explorar Contenido Público</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+      <div><a href="privacidad.html" style="color: #A0AEC0;">Privacidad</a> · <a href="terminos.html" style="color: #A0AEC0;">Términos</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { registrarse } from "./js/auth.js";
+    import { inicializarSelectorTerritorio } from "./js/ui/selector-territorio.js";
+    import { supabase } from "./js/supabase.js";
+    import { mostrarToast } from "./js/ui/toast.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    inicializarWidgetSoporte();
+
+    // Inicializar selectores DIVIPOLA
+    inicializarSelectorTerritorio({
+      selectDepto: document.getElementById("departamento"),
+      selectMuni: document.getElementById("municipio"),
+      campoLocalidad: document.getElementById("campo-localidad"),
+      selectLocalidad: document.getElementById("localidad")
+    });
+
+    // Verificación en vivo de disponibilidad de username
+    const inputUser = document.getElementById("username");
+    const ayudaUser = document.getElementById("ayuda-username");
+    let timerUser = null;
+
+    inputUser.addEventListener("input", () => {
+      clearTimeout(timerUser);
+      const val = inputUser.value.trim().toLowerCase();
+      if (val.length < 3) {
+        ayudaUser.textContent = "Mínimo 3 caracteres.";
+        ayudaUser.style.color = "var(--texto-suave)";
+        return;
+      }
+
+      timerUser = setTimeout(async () => {
+        ayudaUser.textContent = "Verificando disponibilidad...";
+        const { data: disponible } = await supabase.rpc("usuario_disponible", { p_username: val });
+        if (disponible) {
+          ayudaUser.textContent = `✓ @${val} está disponible`;
+          ayudaUser.style.color = "var(--exito)";
+        } else {
+          ayudaUser.textContent = `✕ @${val} no está disponible o es reservado`;
+          ayudaUser.style.color = "var(--error)";
+        }
+      }, 350);
+    });
+
+    // Enviar formulario
+    const form = document.getElementById("form-unete");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-enviar");
+
+      if (!document.getElementById("check-mayor").checked ||
+          !document.getElementById("check-terminos").checked ||
+          !document.getElementById("check-datos-sensibles").checked) {
+        mostrarToast("Debes aceptar todas las casillas legales obligatorias.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Registrando tu solicitud...";
+
+      try {
+        await registrarse({
+          email: form.email.value.trim(),
+          password: form.password.value,
+          nombre: form.nombre.value.trim(),
+          username: form.username.value.trim().toLowerCase(),
+          departamentoId: form.departamentoId.value,
+          municipioId: form.municipioId.value,
+          localidadId: form.localidadId ? form.localidadId.value : null,
+          rolSolicitado: form.rolSolicitado.value,
+          motivo: form.motivo.value.trim(),
+          telefono: form.telefono.value.trim() || null,
+          ocupacion: form.ocupacion.value.trim() || null
+        });
+
+        document.getElementById("registro-box").style.display = "none";
+        document.getElementById("revision-box").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Completar Registro";
+        mostrarToast(err.message || "Error al registrarse", "error");
+      }
+    });
+  </script>
+</body>
+</html>

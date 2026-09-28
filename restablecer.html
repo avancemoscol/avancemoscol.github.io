@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restablecer Contraseña · Avancemos</title>
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo"><img src="assets/logo.svg" alt="Avancemos Logo"></a>
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-secundario btn-sm">Volver a Ingresar</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 4rem; padding-bottom: 5rem; max-width: 440px;">
+    <div class="tarjeta">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h2>Recuperar Contraseña</h2>
+        <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem;">
+          Te enviaremos un enlace seguro para crear una nueva contraseña.
+        </p>
+      </div>
+
+      <form id="form-reset">
+        <div class="campo">
+          <label class="campo-etiqueta" for="email">Correo electrónico de tu cuenta</label>
+          <input type="email" id="email" class="campo-input" required placeholder="tu@correo.com">
+        </div>
+
+        <button type="submit" class="btn btn-primario btn-lg" style="width: 100%; margin-top: 1rem;" id="btn-reset">
+          Enviar enlace
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import { restablecerContrasena } from "./js/auth.js";
+    import { mostrarToast } from "./js/ui/toast.js";
+
+    const form = document.getElementById("form-reset");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-reset");
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+
+      try {
+        await restablecerContrasena(form.email.value.trim());
+        mostrarToast("Enlace de recuperación enviado. Revisa tu correo.", "exito", 6000);
+        form.innerHTML = `<p style="text-align: center; color: var(--turquesa);">✓ Hemos enviado las instrucciones a tu correo.</p>`;
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Enviar enlace";
+        mostrarToast(err.message, "error");
+      }
+    });
+  </script>
+</body>
+</html>

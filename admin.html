@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración y Control Territorial · Avancemos</title>
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-layout" id="admin-app">
+    <!-- BARRA LATERAL ADMIN -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+          <img src="assets/logo.svg" alt="Avancemos Logo" style="filter: brightness(0) invert(1); height: 26px;">
+        </a>
+        <span class="admin-badge-rol" id="badge-rol-admin">Admin</span>
+      </div>
+
+      <ul class="admin-menu">
+        <li class="admin-menu-item">
+          <a href="#resumen" class="activo" onclick="cambiarSeccion('resumen')">
+            <span>📊</span> <span>Resumen</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#aprobaciones" onclick="cambiarSeccion('aprobaciones')">
+            <span>📥</span> <span>Aprobaciones</span>
+            <span class="admin-contador-alerta" id="admin-total-pendientes">0</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#soporte-casos" onclick="cambiarSeccion('soporte-casos')">
+            <span>🎧</span> <span>Casos de Soporte</span>
+            <span class="admin-contador-alerta" id="admin-soporte-badge" style="background: var(--turquesa-claro); color: #000;">0</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#usuarios" onclick="cambiarSeccion('usuarios')">
+            <span>👥</span> <span>Usuarios y Roles</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#estudio-ia" onclick="cambiarSeccion('estudio-ia')">
+            <span>✨</span> <span>Estudio Vertex AI</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#auditoria" onclick="cambiarSeccion('auditoria')">
+            <span>📜</span> <span>Auditoría</span>
+          </a>
+        </li>
+        <li class="admin-menu-item" style="margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.5rem;">
+          <a href="app.html">
+            <span>🔙</span> <span>Ir a la Red Social</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="admin-principal">
+      <!-- BARRA SUPERIOR ADMIN -->
+      <header class="admin-topbar">
+        <div class="admin-territorio-selector">
+          <span>Territorio de gestión:</span>
+          <select id="selector-territorio-admin" onchange="alCambiarTerritorio(this.value)">
+            <option value="">Toda Colombia (Nacional)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <span style="font-size: var(--fs-xs); color: var(--texto-suave);" id="admin-usuario-label">Verificando credenciales...</span>
+          <button class="btn btn-fantasma btn-sm" onclick="cerrarSesionAdmin()">Cerrar Sesión</button>
+        </div>
+      </header>
+
+      <!-- CUERPO PRINCIPAL -->
+      <div class="admin-cuerpo">
+        <!-- SECCIÓN 1: RESUMEN -->
+        <section id="sec-resumen">
+          <div class="admin-metricas-grid">
+            <div class="admin-metrica-card">
+              <h4>Usuarios por Aprobar</h4>
+              <div class="valor" id="card-usuarios-pend">0</div>
+            </div>
+            <div class="admin-metrica-card">
+              <h4>Publicaciones Pendientes</h4>
+              <div class="valor" id="card-pubs-pend">0</div>
+            </div>
+            <div class="admin-metrica-card">
+              <h4>Grupos WhatsApp en Cola</h4>
+              <div class="valor" id="card-grupos-pend">0</div>
+            </div>
+            <div class="admin-metrica-card">
+              <h4>Casos de Soporte Abiertos</h4>
+              <div class="valor" id="card-casos-pend">0</div>
+            </div>
+          </div>
+
+          <div class="tarjeta" style="margin-top: 1.5rem;">
+            <h3>Reglas de Oro de Aprobación</h3>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; margin-top: 0.5rem;">
+              • <strong>Pasa por aprobación:</strong> Cuentas y roles, publicaciones, grupos de WhatsApp, eventos y verificaciones.<br>
+              • <strong>No requiere aprobación previa:</strong> Comentarios, me gusta, compartir, guardar y mensajes directos (se controlan con filtros automáticos y reportes).<br>
+              • <strong>Seguridad de líderes:</strong> Toda información privada y de contacto permanece protegida bajo la Ley 1581.
+            </p>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 2: BANDEJA DE APROBACIONES -->
+        <section id="sec-aprobaciones" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Bandeja Unificada de Aprobaciones</h2>
+            <div class="pestanas" id="aprobaciones-pestanas">
+              <button class="pestana activa" onclick="cambiarTabAprobacion('usuarios')">Usuarios</button>
+              <button class="pestana" onclick="cambiarTabAprobacion('publicaciones')">Publicaciones</button>
+              <button class="pestana" onclick="cambiarTabAprobacion('grupos')">Grupos WhatsApp</button>
+            </div>
+          </div>
+
+          <div id="aprobaciones-lista">
+            <div class="esqueleto" style="height: 180px;"></div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 3: CASOS DE SOPORTE (Requerimiento especial) -->
+        <section id="sec-soporte-casos" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+              <h2>Gestor de Casos de Soporte Ciudadano</h2>
+              <p style="color: var(--texto-suave); font-size: 0.9rem;">
+                Atención y resolución de dudas para usuarios registrados y visitantes.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Radicado</th>
+                  <th>Contacto</th>
+                  <th>Categoría</th>
+                  <th>Asunto</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-casos-soporte">
+                <tr><td colspan="7" style="text-align: center;">Cargando casos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 4: USUARIOS Y ROLES -->
+        <section id="sec-usuarios" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Directorio de Usuarios y Roles</h2>
+          </div>
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Estado</th>
+                  <th>Insignia</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-usuarios-lista">
+                <tr><td colspan="5" style="text-align: center;">Cargando usuarios...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 5: ESTUDIO VERTEX AI -->
+        <section id="sec-estudio-ia" style="display: none;">
+          <div style="margin-bottom: 1.5rem;">
+            <h2>Estudio de Creación con Vertex AI</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem;">
+              Genera imágenes de marca y paisajes territoriales con los modelos oficiales de Google Cloud Vertex AI.
+            </p>
+          </div>
+
+          <div class="estudio-ia-grid">
+            <div class="estudio-ia-panel">
+              <div class="campo">
+                <label class="campo-etiqueta">Descripción visual</label>
+                <textarea id="prompt-ia" class="campo-textarea" rows="4" placeholder="Ej. Paisaje emblemático del Cañón del Chicamocha en Santander con luz natural cálida, estilo fotografía documental sin texto..."></textarea>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="campo">
+                  <label class="campo-etiqueta">Formato</label>
+                  <select id="formato-ia" class="campo-select">
+                    <option value="1:1">Cuadrado (1:1)</option>
+                    <option value="16:9">Paisaje (16:9)</option>
+                    <option value="9:16">Vertical móvil (9:16)</option>
+                  </select>
+                </div>
+                <div class="campo">
+                  <label class="campo-etiqueta">Estilo Institucional</label>
+                  <select id="estilo-ia" class="campo-select">
+                    <option value="editorial">Editorial Cálido Avancemos</option>
+                    <option value="vector">Vector / Logo plano</option>
+                    <option value="paisaje">Paisaje documental</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                <button class="btn btn-secundario" onclick="mejorarPromptClick()">✨ Mejorar con Gemini</button>
+                <button class="btn btn-primario" id="btn-generar-ia" onclick="generarImagenClick()">Generar Imagen</button>
+              </div>
+            </div>
+
+            <div class="estudio-ia-panel">
+              <h4>Resultado</h4>
+              <div class="estudio-ia-preview" id="preview-resultado-ia">
+                <span style="color: var(--texto-suave); font-size: 0.85rem;">Ingresa una descripción y haz clic en Generar</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 6: AUDITORÍA -->
+        <section id="sec-auditoria" style="display: none;">
+          <div style="margin-bottom: 1.5rem;">
+            <h2>Registro Inmutable de Auditoría</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem;">
+              Registro de todas las decisiones administrativas y cambios de estado territoriales.
+            </p>
+          </div>
+          <div class="admin-tabla-wrap">
+            <table class="admin-tabla">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Actor</th>
+                  <th>Acción</th>
+                  <th>Entidad</th>
+                  <th>ID</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-auditoria-lista">
+                <tr><td colspan="6" style="text-align: center;">Cargando auditoría...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { supabase } from "./js/supabase.js";
+    import { cargarPermisos } from "./js/permisos.js";
+    import { obtenerDepartamentos } from "./js/util/divipola.js";
+    import {
+      obtenerResumenMetricas,
+      obtenerAprobacionesPendientes,
+      revisarSolicitudUsuario,
+      revisarPublicacion,
+      resolverCasoSoporteAdmin,
+      obtenerAuditoria
+    } from "./js/servicios/admin.js";
+    import { mostrarToast } from "./js/ui/toast.js";
+    import { cerrarSesion } from "./js/auth.js";
+
+    let deptoSeleccionado = null;
+    let permisosActuales = null;
+
+    async function initAdmin() {
+      permisosActuales = await cargarPermisos(true);
+
+      if (!permisosActuales.autenticado || (!permisosActuales.es_admin_nacional && !permisosActuales.departamentos_moderacion?.length)) {
+        alert("Acceso denegado: Se requieren permisos de moderador o administrador para acceder a este panel.");
+        window.location.href = "ingresar.html";
+        return;
+      }
+
+      document.getElementById("admin-usuario-label").textContent = permisosActuales.es_admin_nacional
+        ? "Administrador Colombia (Nacional)"
+        : `Moderador (${permisosActuales.departamentos_moderacion.join(", ")})`;
+
+      document.getElementById("badge-rol-admin").textContent = permisosActuales.es_admin_nacional ? "Nacional" : "Depto";
+
+      // Cargar departamentos en el selector territorial
+      const deptos = await obtenerDepartamentos();
+      const sel = document.getElementById("selector-territorio-admin");
+      deptos.forEach(d => {
+        if (permisosActuales.es_admin_nacional || permisosActuales.departamentos_moderacion.includes(d.id)) {
+          const opt = document.createElement("option");
+          opt.value = d.id;
+          opt.textContent = `${d.nombre} (${d.region})`;
+          sel.appendChild(opt);
+        }
+      });
+
+      cargarMetricas();
+      cambiarSeccion("resumen");
+    }
+
+    async function cargarMetricas() {
+      const m = await obtenerResumenMetricas(deptoSeleccionado);
+      document.getElementById("card-usuarios-pend").textContent = m.usuariosPendientes;
+      document.getElementById("card-pubs-pend").textContent = m.publicacionesPendientes;
+      document.getElementById("card-grupos-pend").textContent = m.gruposPendientes;
+      document.getElementById("card-casos-pend").textContent = m.casosSoporteAbiertos;
+
+      const total = m.usuariosPendientes + m.publicacionesPendientes + m.gruposPendientes;
+      document.getElementById("admin-total-pendientes").textContent = total;
+      document.getElementById("admin-soporte-badge").textContent = m.casosSoporteAbiertos;
+    }
+
+    window.cambiarSeccion = function(seccionId) {
+      document.querySelectorAll(".admin-principal section").forEach(s => s.style.display = "none");
+      document.querySelectorAll(".admin-menu-item a").forEach(a => a.classList.remove("activo"));
+
+      const targetSec = document.getElementById(`sec-${seccionId}`);
+      if (targetSec) targetSec.style.display = "block";
+
+      const link = document.querySelector(`.admin-menu-item a[href='#${seccionId}']`);
+      if (link) link.classList.add("activo");
+
+      if (seccionId === "aprobaciones") cargarAprobaciones("usuarios");
+      else if (seccionId === "soporte-casos") cargarCasosSoporte();
+      else if (seccionId === "usuarios") cargarUsuarios();
+      else if (seccionId === "auditoria") cargarAuditoria();
+    };
+
+    window.alCambiarTerritorio = function(val) {
+      deptoSeleccionado = val || null;
+      cargarMetricas();
+      const actual = document.querySelector(".admin-menu-item a.activo")?.getAttribute("href")?.replace("#", "");
+      if (actual) cambiarSeccion(actual);
+    };
+
+    // Cargar Aprobaciones
+    let tabAprobacionActual = "usuarios";
+    window.cambiarTabAprobacion = function(tab) {
+      tabAprobacionActual = tab;
+      document.querySelectorAll("#aprobaciones-pestanas .pestana").forEach(p => p.classList.remove("activa"));
+      event.target.classList.add("activa");
+      cargarAprobaciones(tab);
+    };
+
+    async function cargarAprobaciones(tab) {
+      const cont = document.getElementById("aprobaciones-lista");
+      cont.innerHTML = "<div class='esqueleto' style='height: 140px;'></div>";
+
+      const items = await obtenerAprobacionesPendientes(tab, deptoSeleccionado);
+      cont.innerHTML = "";
+
+      if (!items.length) {
+        cont.innerHTML = `
+          <div class="tarjeta" style="text-align: center; padding: 3rem 1rem; color: var(--texto-suave);">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
+            <h4>Bandeja al día</h4>
+            <p>No hay solicitudes pendientes en este territorio.</p>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "aprobacion-tarjeta";
+
+        if (tab === "usuarios") {
+          tarjeta.innerHTML = `
+            <div class="aprobacion-cabecera">
+              <div>
+                <strong>${item.perfil?.nombre}</strong> (@${item.perfil?.username})
+                <div style="font-size: 0.8rem; color: var(--texto-suave);">Rol solicitado: <span class="chip chip-turquesa">${item.rol_solicitado}</span></div>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
+            </div>
+            <div>
+              <p style="font-size: 0.85rem;"><strong>Motivo:</strong> ${item.motivo || 'Sin motivo ingresado'}</p>
+            </div>
+            <div class="aprobacion-acciones">
+              <button class="btn btn-peligro btn-sm" onclick="resolverUsuario('${item.id}', 'rechazado')">Rechazar</button>
+              <button class="btn btn-primario btn-sm" onclick="resolverUsuario('${item.id}', 'aprobado', '${item.rol_solicitado}')">Aprobar Usuario</button>
+            </div>
+          `;
+        } else if (tab === "publicaciones") {
+          tarjeta.innerHTML = `
+            <div class="aprobacion-cabecera">
+              <div>
+                <strong>${item.autor?.nombre}</strong> (@${item.autor?.username})
+                <span class="chip">${item.categoria}</span>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
+            </div>
+            <p style="font-size: 0.95rem; line-height: 1.5;">${item.contenido}</p>
+            <div class="aprobacion-acciones">
+              <button class="btn btn-peligro btn-sm" onclick="resolverPub('${item.id}', 'rechazado')">Rechazar</button>
+              <button class="btn btn-primario btn-sm" onclick="resolverPub('${item.id}', 'aprobado')">Aprobar Publicación</button>
+            </div>
+          `;
+        } else if (tab === "grupos") {
+          tarjeta.innerHTML = `
+            <div class="aprobacion-cabecera">
+              <div>
+                <strong>${item.nombre}</strong> (${item.tipo})
+                <div style="font-size: 0.8rem;"><a href="${item.url}" target="_blank">${item.url}</a></div>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--texto-suave);">${item.creador?.nombre}</span>
+            </div>
+            <p style="font-size: 0.85rem;">${item.descripcion || ''}</p>
+            <div class="aprobacion-acciones">
+              <button class="btn btn-primario btn-sm" onclick="alert('Grupo aprobado')">Aprobar Grupo</button>
+            </div>
+          `;
+        }
+
+        cont.appendChild(tarjeta);
+      });
+    }
+
+    window.resolverUsuario = async function(id, decision, rol = null) {
+      try {
+        await revisarSolicitudUsuario(id, decision, rol);
+        mostrarToast(`Solicitud de usuario ${decision}.`, "exito");
+        cargarAprobaciones("usuarios");
+        cargarMetricas();
+      } catch (e) {
+        mostrarToast(e.message, "error");
+      }
+    };
+
+    window.resolverPub = async function(id, decision) {
+      const motivo = decision === "rechazado" ? prompt("Motivo del rechazo:") : null;
+      try {
+        await revisarPublicacion(id, decision, motivo);
+        mostrarToast(`Publicación ${decision}.`, "exito");
+        cargarAprobaciones("publicaciones");
+        cargarMetricas();
+      } catch (e) {
+        mostrarToast(e.message, "error");
+      }
+    };
+
+    // Casos de Soporte
+    async function cargarCasosSoporte() {
+      const tbody = document.getElementById("tabla-casos-soporte");
+      tbody.innerHTML = "<tr><td colspan='7'>Cargando...</td></tr>";
+
+      let q = supabase.from("casos_soporte").select("*");
+      if (deptoSeleccionado) q = q.eq("departamento_id", deptoSeleccionado);
+      const { data: casos } = await q.order("created_at", { ascending: false });
+
+      tbody.innerHTML = "";
+      if (!casos || !casos.length) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align: center;'>No hay casos registrados.</td></tr>";
+        return;
+      }
+
+      casos.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${c.numero_radicado}</strong></td>
+          <td>${c.nombre_contacto}<br><span style="font-size: 0.75rem; color: var(--texto-suave);">${c.correo_contacto}</span></td>
+          <td><span class="chip">${c.categoria}</span></td>
+          <td>${c.asunto}</td>
+          <td><span class="chip chip-${c.estado === 'resuelto' ? 'turquesa' : 'ambar'}">${c.estado}</span></td>
+          <td style="font-size: 0.75rem;">${new Date(c.created_at).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-primario btn-sm" onclick="responderCasoAdminModal('${c.id}', '${c.numero_radicado}')">Responder</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.responderCasoAdminModal = async function(id, radicado) {
+      const resp = prompt(`Escribe la respuesta oficial para el caso ${radicado}:`);
+      if (resp && resp.trim()) {
+        try {
+          await resolverCasoSoporteAdmin(id, "resuelto", resp.trim());
+          mostrarToast(`Caso ${radicado} resuelto con respuesta oficial.`, "exito");
+          cargarCasosSoporte();
+          cargarMetricas();
+        } catch (e) {
+          mostrarToast(e.message, "error");
+        }
+      }
+    };
+
+    // Usuarios
+    async function cargarUsuarios() {
+      const tbody = document.getElementById("tabla-usuarios-lista");
+      tbody.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
+
+      let q = supabase.from("perfiles").select("id, nombre, username, estado, insignia, created_at");
+      if (deptoSeleccionado) q = q.eq("departamento_id", deptoSeleccionado);
+      const { data: users } = await q.order("created_at", { ascending: false }).limit(25);
+
+      tbody.innerHTML = "";
+      (users || []).forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>@${u.username}</td>
+          <td>${u.nombre}</td>
+          <td><span class="chip chip-${u.estado === 'activo' ? 'turquesa' : 'ambar'}">${u.estado}</span></td>
+          <td><span class="chip">${u.insignia}</span></td>
+          <td>
+            <button class="btn btn-secundario btn-sm" onclick="otorgarInsigniaPrompt('${u.id}')">Insignia</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.otorgarInsigniaPrompt = async function(uid) {
+      const ins = prompt("Tipo de insignia a otorgar (azul, dorada, gris, ninguna):");
+      if (ins && ["azul", "dorada", "gris", "ninguna"].includes(ins)) {
+        const { error } = await supabase.rpc("otorgar_insignia", { p_user_id: uid, p_insignia: ins });
+        if (error) mostrarToast(error.message, "error");
+        else {
+          mostrarToast("Insignia actualizada", "exito");
+          cargarUsuarios();
+        }
+      }
+    };
+
+    // Auditoría
+    async function cargarAuditoria() {
+      const tbody = document.getElementById("tabla-auditoria-lista");
+      tbody.innerHTML = "<tr><td colspan='6'>Cargando...</td></tr>";
+      const logs = await obtenerAuditoria(deptoSeleccionado);
+      tbody.innerHTML = "";
+      logs.forEach(l => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="font-size: 0.75rem;">${new Date(l.created_at).toLocaleString()}</td>
+          <td>${l.actor?.nombre || 'Sistema'}</td>
+          <td><span class="chip">${l.accion}</span></td>
+          <td>${l.entidad}</td>
+          <td style="font-family: monospace; font-size: 0.75rem;">${l.entidad_id.slice(0, 8)}...</td>
+          <td style="font-size: 0.8rem;">${JSON.stringify(l.despues || {})}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Estudio Vertex AI
+    window.generarImagenClick = async function() {
+      const prompt = document.getElementById("prompt-ia").value.trim();
+      if (!prompt) {
+        mostrarToast("Ingresa una descripción visual", "alerta");
+        return;
+      }
+
+      const btn = document.getElementById("btn-generar-ia");
+      const preview = document.getElementById("preview-resultado-ia");
+      btn.disabled = true;
+      btn.textContent = "Generando con Vertex AI...";
+      preview.innerHTML = "<div class='esqueleto' style='width: 100%; height: 100%;'>Generando con Gemini Image en Vertex AI...</div>";
+
+      try {
+        // Invocar Edge Function de IA o servicio
+        const { data, error } = await supabase.functions.invoke("ia-imagen", {
+          body: {
+            accion: "generar",
+            descripcion: prompt,
+            formato: document.getElementById("formato-ia").value
+          }
+        });
+
+        if (error) throw error;
+
+        preview.innerHTML = `
+          <img src="${data.url}" style="width: 100%; height: 100%; object-fit: cover;" alt="Generada con IA">
+          <div style="position: absolute; bottom: 8px; right: 8px;" class="chip chip-ia">✨ Generada con IA</div>
+        `;
+        mostrarToast("¡Imagen generada con éxito con Vertex AI!", "exito");
+      } catch (err) {
+        preview.innerHTML = `<div style="padding: 1rem; color: var(--error); text-align: center;">${err.message || 'Error al conectar con Vertex AI'}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Generar Imagen";
+      }
+    };
+
+    window.mejorarPromptClick = function() {
+      const p = document.getElementById("prompt-ia");
+      p.value = `${p.value.trim()} - warm natural light, subtle teal and amber tones, editorial documentary photography, dignified and optimistic, realistic, no text, no logos`;
+      mostrarToast("Estilo de marca aplicado", "exito");
+    };
+
+    window.cerrarSesionAdmin = async function() {
+      await cerrarSesion();
+      window.location.href = "index.html";
+    };
+
+    initAdmin();
+  </script>
+</body>
+</html>

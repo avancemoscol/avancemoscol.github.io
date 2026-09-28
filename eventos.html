@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos y Encuentros Ciudadanos · Avancemos</title>
+  <meta name="description" content="Conoce las reuniones, foros y actividades de voluntariado de Avancemos en todo el país.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="sitio-menu">
+          <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
+          <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
+          <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
+          <li><a href="propuestas.html" class="sitio-menu-enlace">Propuestas</a></li>
+          <li><a href="eventos.html" class="sitio-menu-enlace activo">Eventos</a></li>
+        </ul>
+      </nav>
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
+        <a href="unete.html" class="btn btn-primario">Únete</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 4rem; padding-bottom: 5rem;">
+    <div style="margin-bottom: 3rem; text-align: center; max-width: 700px; margin-left: auto; margin-right: auto;">
+      <span class="chip chip-turquesa" style="margin-bottom: 1rem;">Participación Activa</span>
+      <h1>Próximos Eventos y Foros</h1>
+      <p style="font-size: var(--fs-md); color: var(--texto-suave); margin-top: 0.5rem;">
+        Espacios presenciales y virtuales de deliberación, formación política y acción social en tu región.
+      </p>
+    </div>
+
+    <div id="eventos-lista" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+      <div class="esqueleto" style="height: 260px;"></div>
+      <div class="esqueleto" style="height: 260px;"></div>
+    </div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+      <div><a href="privacidad.html" style="color: #A0AEC0;">Privacidad</a> · <a href="terminos.html" style="color: #A0AEC0;">Términos</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { obtenerEventos } from "./js/servicios/eventos.js";
+    import { formatearFecha } from "./js/util/fechas.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    inicializarWidgetSoporte();
+
+    async function cargar() {
+      const cont = document.getElementById("eventos-lista");
+      const evts = await obtenerEventos(true);
+      cont.innerHTML = "";
+
+      if (!evts.length) {
+        cont.innerHTML = `
+          <div class="tarjeta" style="grid-column: 1/-1; text-align: center; padding: 3rem 1rem;">
+            <h3>No hay eventos programados en este momento</h3>
+            <p style="color: var(--texto-suave); margin-top: 0.5rem;">Pronto anunciaremos nuevos foros y encuentros en las regiones.</p>
+          </div>
+        `;
+        return;
+      }
+
+      evts.forEach(e => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta tarjeta-hover";
+        tarjeta.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+            <span class="chip chip-turquesa" style="text-transform: uppercase;">${e.modalidad}</span>
+            <span style="font-size: var(--fs-xs); color: var(--texto-suave); font-weight: 600;">
+              ${formatearFecha(e.inicio, true)}
+            </span>
+          </div>
+          <h3>${e.titulo}</h3>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.75rem 0;">${e.descripcion}</p>
+          ${e.lugar ? `<p style="font-size: var(--fs-xs); font-weight: 600;">📍 ${e.lugar}</p>` : ''}
+          <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: var(--fs-xs); color: var(--texto-suave);">${e.asistentes_n || 0} personas asistirán</span>
+            <a href="unete.html" class="btn btn-primario btn-sm">Inscribirme</a>
+          </div>
+        `;
+        cont.appendChild(tarjeta);
+      });
+    }
+
+    cargar();
+  </script>
+</body>
+</html>

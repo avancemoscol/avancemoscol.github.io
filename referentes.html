@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referentes de Centro · Colombia y el Mundo · Avancemos</title>
+  <meta name="description" content="Líderes de moderación, acuerdos y políticas basadas en evidencia en Colombia y en el mundo.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="sitio-menu">
+          <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
+          <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
+          <li><a href="referentes.html" class="sitio-menu-enlace activo">Referentes</a></li>
+          <li><a href="propuestas.html" class="sitio-menu-enlace">Propuestas</a></li>
+          <li><a href="eventos.html" class="sitio-menu-enlace">Eventos</a></li>
+        </ul>
+      </nav>
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
+        <a href="unete.html" class="btn btn-primario">Únete</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 4rem; padding-bottom: 5rem;">
+    <div style="margin-bottom: 2.5rem; text-align: center; max-width: 760px; margin-left: auto; margin-right: auto;">
+      <span class="chip chip-turquesa" style="margin-bottom: 1rem;">Experiencias y Aprendizajes</span>
+      <h1>Referentes de Centro</h1>
+      <p style="font-size: var(--fs-md); color: var(--texto-suave); margin-top: 0.5rem;">
+        Estas personas se presentan como referentes históricos de moderación, consenso y gobiernos de centro. No están afiliadas a Avancemos ni lo respaldan.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-primario btn-sm" id="btn-filtro-todos" onclick="filtrar('todos')">Todos</button>
+        <button class="btn btn-secundario btn-sm" id="btn-filtro-colombia" onclick="filtrar('colombia')">Colombia</button>
+        <button class="btn btn-secundario btn-sm" id="btn-filtro-mundo" onclick="filtrar('mundo')">Mundo</button>
+      </div>
+    </div>
+
+    <div class="referentes-grilla" id="referentes-lista" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+      <div class="esqueleto" style="height: 300px;"></div>
+      <div class="esqueleto" style="height: 300px;"></div>
+      <div class="esqueleto" style="height: 300px;"></div>
+    </div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+      <div><a href="privacidad.html" style="color: #A0AEC0;">Privacidad</a> · <a href="terminos.html" style="color: #A0AEC0;">Términos</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { obtenerReferentes } from "./js/servicios/cms.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    inicializarWidgetSoporte();
+
+    let referentesTodos = [];
+
+    async function cargar() {
+      referentesTodos = await obtenerReferentes();
+      renderizar(referentesTodos);
+    }
+
+    function renderizar(lista) {
+      const cont = document.getElementById("referentes-lista");
+      cont.innerHTML = "";
+      if (!lista.length) {
+        cont.innerHTML = "<p>No hay referentes disponibles.</p>";
+        return;
+      }
+
+      lista.forEach(r => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta tarjeta-hover";
+        tarjeta.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <div class="referente-monograma">${r.nombre.charAt(0)}</div>
+            <div>
+              <h3 style="font-size: var(--fs-lg);">${r.nombre}</h3>
+              <span class="chip chip-${r.ambito === 'colombia' ? 'turquesa' : 'ambar'}" style="font-size: 0.7rem;">
+                ${r.pais} · ${r.orientacion}
+              </span>
+            </div>
+          </div>
+          <p style="font-size: var(--fs-xs); color: var(--texto-suave); font-weight: 600;">${r.cargos}</p>
+          <div style="margin: 0.75rem 0; font-size: var(--fs-sm); line-height: 1.5;">
+            <strong>Lección clave:</strong> ${r.leccion}
+          </div>
+          ${r.contexto ? `<p style="font-size: var(--fs-xs); color: var(--texto-suave); font-style: italic;">Contexto: ${r.contexto}</p>` : ''}
+          ${r.fuentes && r.fuentes.length ? `
+            <div style="margin-top: 1rem; border-top: 1px solid var(--borde-suave); padding-top: 0.5rem;">
+              <a href="${r.fuentes[0]}" target="_blank" rel="noopener noreferrer" style="font-size: var(--fs-xs);">Fuente verificada ↗</a>
+            </div>
+          ` : ''}
+        `;
+        cont.appendChild(tarjeta);
+      });
+    }
+
+    window.filtrar = function(tipo) {
+      document.querySelectorAll("[id^='btn-filtro-']").forEach(b => {
+        b.className = "btn btn-secundario btn-sm";
+      });
+      document.getElementById(`btn-filtro-${tipo}`).className = "btn btn-primario btn-sm";
+
+      if (tipo === "todos") renderizar(referentesTodos);
+      else renderizar(referentesTodos.filter(r => r.ambito === tipo));
+    };
+
+    cargar();
+  </script>
+</body>
+</html>

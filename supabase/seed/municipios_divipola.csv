@@ -1,0 +1,1105 @@
+id,departamento_id,nombre,slug,es_capital
+91001,91,Leticia,leticia,True
+91002,91,Puerto Nariño,puerto-narino,False
+05001,05,Abejorral,abejorral,True
+05002,05,Abriaquí,abriaqui,False
+05003,05,Alejandría,alejandria,False
+05004,05,Amagá,amaga,False
+05005,05,Amalfi,amalfi,False
+05006,05,Andes,andes,False
+05007,05,Angelópolis,angelopolis,False
+05008,05,Angostura,angostura,False
+05009,05,Anorí,anori,False
+05010,05,Anzá,anza,False
+05011,05,Apartadó,apartado,False
+05012,05,Arboletes,arboletes,False
+05013,05,Argelia,argelia,False
+05014,05,Armenia,armenia,False
+05015,05,Barbosa,barbosa,False
+05016,05,Bello,bello,False
+05017,05,Belmira,belmira,False
+05018,05,Betania,betania,False
+05019,05,Betulia,betulia,False
+05020,05,Briceño,briceno,False
+05021,05,Buriticá,buritica,False
+05022,05,Cáceres,caceres,False
+05023,05,Caicedo,caicedo,False
+05024,05,Caldas,caldas,False
+05025,05,Campamento,campamento,False
+05026,05,Cañasgordas,canasgordas,False
+05027,05,Caracolí,caracoli,False
+05028,05,Caramanta,caramanta,False
+05029,05,Carepa,carepa,False
+05030,05,Carolina del Príncipe,carolina-del-principe,False
+05031,05,Caucasia,caucasia,False
+05032,05,Chigorodó,chigorodo,False
+05033,05,Cisneros,cisneros,False
+05034,05,Ciudad Bolívar,ciudad-bolivar,False
+05035,05,Cocorná,cocorna,False
+05036,05,Concepción,concepcion,False
+05037,05,Concordia,concordia,False
+05038,05,Copacabana,copacabana,False
+05039,05,Dabeiba,dabeiba,False
+05040,05,Donmatías,donmatias,False
+05041,05,Ebéjico,ebejico,False
+05042,05,El Bagre,el-bagre,False
+05043,05,El Carmen de Viboral,el-carmen-de-viboral,False
+05044,05,El Peñol,el-penol,False
+05045,05,El Retiro,el-retiro,False
+05046,05,El Santuario,el-santuario,False
+05047,05,Entrerríos,entrerrios,False
+05048,05,Envigado,envigado,False
+05049,05,Fredonia,fredonia,False
+05050,05,Frontino,frontino,False
+05051,05,Giraldo,giraldo,False
+05052,05,Girardota,girardota,False
+05053,05,Gómez Plata,gomez-plata,False
+05054,05,Granada,granada,False
+05055,05,Guadalupe,guadalupe,False
+05056,05,Guarne,guarne,False
+05057,05,Guatapé,guatape,False
+05058,05,Heliconia,heliconia,False
+05059,05,Hispania,hispania,False
+05060,05,Itagüí,itagüi,False
+05061,05,Ituango,ituango,False
+05062,05,Jardín,jardin,False
+05063,05,Jericó,jerico,False
+05064,05,La Ceja,la-ceja,False
+05065,05,La Estrella,la-estrella,False
+05066,05,La Pintada,la-pintada,False
+05067,05,La Unión,la-union,False
+05068,05,Liborina,liborina,False
+05069,05,Maceo,maceo,False
+05070,05,Marinilla,marinilla,False
+05071,05,Medellín,medellin,False
+05072,05,Montebello,montebello,False
+05073,05,Murindó,murindo,False
+05074,05,Mutatá,mutata,False
+05075,05,Nariño,narino,False
+05076,05,Nechí,nechi,False
+05077,05,Necoclí,necocli,False
+05078,05,Olaya,olaya,False
+05079,05,Peque,peque,False
+05080,05,Pueblorrico,pueblorrico,False
+05081,05,Puerto Berrío,puerto-berrio,False
+05082,05,Puerto Nare,puerto-nare,False
+05083,05,Puerto Triunfo,puerto-triunfo,False
+05084,05,Remedios,remedios,False
+05085,05,Rionegro,rionegro,False
+05086,05,Sabanalarga,sabanalarga,False
+05087,05,Sabaneta,sabaneta,False
+05088,05,Salgar,salgar,False
+05089,05,San Andrés de Cuerquia,san-andres-de-cuerquia,False
+05090,05,San Carlos,san-carlos,False
+05091,05,San Francisco,san-francisco,False
+05092,05,San Jerónimo,san-jeronimo,False
+05093,05,San José de la Montaña,san-jose-de-la-montana,False
+05094,05,San Juan de Urabá,san-juan-de-uraba,False
+05095,05,San Luis,san-luis,False
+05096,05,San Pedro de Urabá,san-pedro-de-uraba,False
+05097,05,San Pedro de los Milagros,san-pedro-de-los-milagros,False
+05098,05,San Rafael,san-rafael,False
+05099,05,San Roque,san-roque,False
+05100,05,San Vicente,san-vicente,False
+05101,05,Santa Bárbara,santa-barbara,False
+05102,05,Santa Fe de Antioquia,santa-fe-de-antioquia,False
+05103,05,Santa Rosa de Osos,santa-rosa-de-osos,False
+05104,05,Santo Domingo,santo-domingo,False
+05105,05,Segovia,segovia,False
+05106,05,Sonsón,sonson,False
+05107,05,Sopetrán,sopetran,False
+05108,05,Támesis,tamesis,False
+05109,05,Tarazá,taraza,False
+05110,05,Tarso,tarso,False
+05111,05,Titiribí,titiribi,False
+05112,05,Toledo,toledo,False
+05113,05,Turbo,turbo,False
+05114,05,Uramita,uramita,False
+05115,05,Urrao,urrao,False
+05116,05,Valdivia,valdivia,False
+05117,05,Valparaíso,valparaiso,False
+05118,05,Vegachí,vegachi,False
+05119,05,Venecia,venecia,False
+05120,05,Vigía del Fuerte,vigia-del-fuerte,False
+05121,05,Yalí,yali,False
+05122,05,Yarumal,yarumal,False
+05123,05,Yolombó,yolombo,False
+05124,05,Yondó,yondo,False
+05125,05,Zaragoza,zaragoza,False
+81001,81,Arauca,arauca,True
+81002,81,Arauquita,arauquita,False
+81003,81,Cravo Norte,cravo-norte,False
+81004,81,Fortul,fortul,False
+81005,81,Puerto Rondón,puerto-rondon,False
+81006,81,Saravena,saravena,False
+81007,81,Tame,tame,False
+08001,08,Baranoa,baranoa,True
+08002,08,Barranquilla,barranquilla,False
+08003,08,Campo de la Cruz,campo-de-la-cruz,False
+08004,08,Candelaria,candelaria,False
+08005,08,Galapa,galapa,False
+08006,08,Juan de Acosta,juan-de-acosta,False
+08007,08,Luruaco,luruaco,False
+08008,08,Malambo,malambo,False
+08009,08,Manatí,manati,False
+08010,08,Palmar de Varela,palmar-de-varela,False
+08011,08,Piojó,piojo,False
+08012,08,Polonuevo,polonuevo,False
+08013,08,Ponedera,ponedera,False
+08014,08,Puerto Colombia,puerto-colombia,False
+08015,08,Repelón,repelon,False
+08016,08,Sabanagrande,sabanagrande,False
+08017,08,Sabanalarga,sabanalarga,False
+08018,08,Santa Lucía,santa-lucia,False
+08019,08,Santo Tomás,santo-tomas,False
+08020,08,Soledad,soledad,False
+08021,08,Suán,suan,False
+08022,08,Tubará,tubara,False
+08023,08,Usiacurí,usiacuri,False
+13001,13,Achí,achi,True
+13002,13,Altos del Rosario,altos-del-rosario,False
+13003,13,Arenal,arenal,False
+13004,13,Arjona,arjona,False
+13005,13,Arroyohondo,arroyohondo,False
+13006,13,Barranco de Loba,barranco-de-loba,False
+13007,13,Brazuelo de Papayal,brazuelo-de-papayal,False
+13008,13,Calamar,calamar,False
+13009,13,Cantagallo,cantagallo,False
+13010,13,Cartagena de Indias,cartagena-de-indias,False
+13011,13,Cicuco,cicuco,False
+13012,13,Clemencia,clemencia,False
+13013,13,Córdoba,cordoba,False
+13014,13,El Carmen de Bolívar,el-carmen-de-bolivar,False
+13015,13,El Guamo,el-guamo,False
+13016,13,El Peñón,el-penon,False
+13017,13,Hatillo de Loba,hatillo-de-loba,False
+13018,13,Magangué,magangue,False
+13019,13,Mahates,mahates,False
+13020,13,Margarita,margarita,False
+13021,13,María la Baja,maria-la-baja,False
+13022,13,Mompós,mompos,False
+13023,13,Montecristo,montecristo,False
+13024,13,Morales,morales,False
+13025,13,Norosí,norosi,False
+13026,13,Pinillos,pinillos,False
+13027,13,Regidor,regidor,False
+13028,13,Río Viejo,rio-viejo,False
+13029,13,San Cristóbal,san-cristobal,False
+13030,13,San Estanislao,san-estanislao,False
+13031,13,San Fernando,san-fernando,False
+13032,13,San Jacinto del Cauca,san-jacinto-del-cauca,False
+13033,13,San Jacinto,san-jacinto,False
+13034,13,San Juan Nepomuceno,san-juan-nepomuceno,False
+13035,13,San Martín de Loba,san-martin-de-loba,False
+13036,13,San Pablo,san-pablo,False
+13037,13,Santa Catalina,santa-catalina,False
+13038,13,Santa Rosa,santa-rosa,False
+13039,13,Santa Rosa del Sur,santa-rosa-del-sur,False
+13040,13,Simití,simiti,False
+13041,13,Soplaviento,soplaviento,False
+13042,13,Talaigua Nuevo,talaigua-nuevo,False
+13043,13,Tiquisio,tiquisio,False
+13044,13,Turbaco,turbaco,False
+13045,13,Turbaná,turbana,False
+13046,13,Villanueva,villanueva,False
+13047,13,Zambrano,zambrano,False
+15001,15,Almeida,almeida,True
+15002,15,Aquitania,aquitania,False
+15003,15,Arcabuco,arcabuco,False
+15004,15,Belén,belen,False
+15005,15,Berbeo,berbeo,False
+15006,15,Betéitiva,beteitiva,False
+15007,15,Boavita,boavita,False
+15008,15,Boyacá,boyaca,False
+15009,15,Briceño,briceno,False
+15010,15,Buenavista,buenavista,False
+15011,15,Busbanzá,busbanza,False
+15012,15,Caldas,caldas,False
+15013,15,Campohermoso,campohermoso,False
+15014,15,Cerinza,cerinza,False
+15015,15,Chinavita,chinavita,False
+15016,15,Chiquinquirá,chiquinquira,False
+15017,15,Chíquiza,chiquiza,False
+15018,15,Chiscas,chiscas,False
+15019,15,Chita,chita,False
+15020,15,Chitaraque,chitaraque,False
+15021,15,Chivatá,chivata,False
+15022,15,Chivor,chivor,False
+15023,15,Ciénega,cienega,False
+15024,15,Cómbita,combita,False
+15025,15,Coper,coper,False
+15026,15,Corrales,corrales,False
+15027,15,Covarachía,covarachia,False
+15028,15,Cubará,cubara,False
+15029,15,Cucaita,cucaita,False
+15030,15,Cuítiva,cuitiva,False
+15031,15,Duitama,duitama,False
+15032,15,El Cocuy,el-cocuy,False
+15033,15,El Espino,el-espino,False
+15034,15,Firavitoba,firavitoba,False
+15035,15,Floresta,floresta,False
+15036,15,Gachantivá,gachantiva,False
+15037,15,Gámeza,gameza,False
+15038,15,Garagoa,garagoa,False
+15039,15,Guacamayas,guacamayas,False
+15040,15,Guateque,guateque,False
+15041,15,Guayatá,guayata,False
+15042,15,Güicán,güican,False
+15043,15,Iza,iza,False
+15044,15,Jenesano,jenesano,False
+15045,15,Jericó,jerico,False
+15046,15,La Capilla,la-capilla,False
+15047,15,La Uvita,la-uvita,False
+15048,15,La Victoria,la-victoria,False
+15049,15,Labranzagrande,labranzagrande,False
+15050,15,Macanal,macanal,False
+15051,15,Maripí,maripi,False
+15052,15,Miraflores,miraflores,False
+15053,15,Mongua,mongua,False
+15054,15,Monguí,mongui,False
+15055,15,Moniquirá,moniquira,False
+15056,15,Motavita,motavita,False
+15057,15,Muzo,muzo,False
+15058,15,Nobsa,nobsa,False
+15059,15,Nuevo Colón,nuevo-colon,False
+15060,15,Oicatá,oicata,False
+15061,15,Otanche,otanche,False
+15062,15,Pachavita,pachavita,False
+15063,15,Páez,paez,False
+15064,15,Paipa,paipa,False
+15065,15,Pajarito,pajarito,False
+15066,15,Panqueba,panqueba,False
+15067,15,Pauna,pauna,False
+15068,15,Paya,paya,False
+15069,15,Paz del Río,paz-del-rio,False
+15070,15,Pesca,pesca,False
+15071,15,Pisba,pisba,False
+15072,15,Puerto Boyacá,puerto-boyaca,False
+15073,15,Quípama,quipama,False
+15074,15,Ramiriquí,ramiriqui,False
+15075,15,Ráquira,raquira,False
+15076,15,Rondón,rondon,False
+15077,15,Saboyá,saboya,False
+15078,15,Sáchica,sachica,False
+15079,15,Samacá,samaca,False
+15080,15,San Eduardo,san-eduardo,False
+15081,15,San José de Pare,san-jose-de-pare,False
+15082,15,San Luis de Gaceno,san-luis-de-gaceno,False
+15083,15,San Mateo,san-mateo,False
+15084,15,San Miguel de Sema,san-miguel-de-sema,False
+15085,15,San Pablo de Borbur,san-pablo-de-borbur,False
+15086,15,Santa María,santa-maria,False
+15087,15,Santa Rosa de Viterbo,santa-rosa-de-viterbo,False
+15088,15,Santa Sofía,santa-sofia,False
+15089,15,Santana,santana,False
+15090,15,Sativanorte,sativanorte,False
+15091,15,Sativasur,sativasur,False
+15092,15,Siachoque,siachoque,False
+15093,15,Soatá,soata,False
+15094,15,Socha,socha,False
+15095,15,Socotá,socota,False
+15096,15,Sogamoso,sogamoso,False
+15097,15,Somondoco,somondoco,False
+15098,15,Sora,sora,False
+15099,15,Soracá,soraca,False
+15100,15,Sotaquirá,sotaquira,False
+15101,15,Susacón,susacon,False
+15102,15,Sutamarchán,sutamarchan,False
+15103,15,Sutatenza,sutatenza,False
+15104,15,Tasco,tasco,False
+15105,15,Tenza,tenza,False
+15106,15,Tibaná,tibana,False
+15107,15,Tibasosa,tibasosa,False
+15108,15,Tinjacá,tinjaca,False
+15109,15,Tipacoque,tipacoque,False
+15110,15,Toca,toca,False
+15111,15,Togüí,togüi,False
+15112,15,Tópaga,topaga,False
+15113,15,Tota,tota,False
+15114,15,Tunja,tunja,False
+15115,15,Tununguá,tunungua,False
+15116,15,Turmequé,turmeque,False
+15117,15,Tuta,tuta,False
+15118,15,Tutazá,tutaza,False
+15119,15,Úmbita,umbita,False
+15120,15,Ventaquemada,ventaquemada,False
+15121,15,Villa de Leyva,villa-de-leyva,False
+15122,15,Viracachá,viracacha,False
+15123,15,Zetaquira,zetaquira,False
+17001,17,Aguadas,aguadas,True
+17002,17,Anserma,anserma,False
+17003,17,Aranzazu,aranzazu,False
+17004,17,Belalcázar,belalcazar,False
+17005,17,Chinchiná,chinchina,False
+17006,17,Filadelfia,filadelfia,False
+17007,17,La Dorada,la-dorada,False
+17008,17,La Merced,la-merced,False
+17009,17,Manizales,manizales,False
+17010,17,Manzanares,manzanares,False
+17011,17,Marmato,marmato,False
+17012,17,Marquetalia,marquetalia,False
+17013,17,Marulanda,marulanda,False
+17014,17,Neira,neira,False
+17015,17,Norcasia,norcasia,False
+17016,17,Pácora,pacora,False
+17017,17,Palestina,palestina,False
+17018,17,Pensilvania,pensilvania,False
+17019,17,Riosucio,riosucio,False
+17020,17,Risaralda,risaralda,False
+17021,17,Salamina,salamina,False
+17022,17,Samaná,samana,False
+17023,17,San José,san-jose,False
+17024,17,Supía,supia,False
+17025,17,Victoria,victoria,False
+17026,17,Villamaría,villamaria,False
+17027,17,Viterbo,viterbo,False
+18001,18,Albania,albania,True
+18002,18,Belén de los Andaquíes,belen-de-los-andaquies,False
+18003,18,Cartagena del Chairá,cartagena-del-chaira,False
+18004,18,Curillo,curillo,False
+18005,18,El Doncello,el-doncello,False
+18006,18,El Paujil,el-paujil,False
+18007,18,Florencia,florencia,False
+18008,18,La Montañita,la-montanita,False
+18009,18,Milán,milan,False
+18010,18,Morelia,morelia,False
+18011,18,Puerto Rico,puerto-rico,False
+18012,18,San José del Fragua,san-jose-del-fragua,False
+18013,18,San Vicente del Caguán,san-vicente-del-caguan,False
+18014,18,Solano,solano,False
+18015,18,Solita,solita,False
+18016,18,Valparaíso,valparaiso,False
+85001,85,Aguazul,aguazul,True
+85002,85,Chámeza,chameza,False
+85003,85,Hato Corozal,hato-corozal,False
+85004,85,La Salina,la-salina,False
+85005,85,Maní,mani,False
+85006,85,Monterrey,monterrey,False
+85007,85,Nunchía,nunchia,False
+85008,85,Orocué,orocue,False
+85009,85,Paz de Ariporo,paz-de-ariporo,False
+85010,85,Pore,pore,False
+85011,85,Recetor,recetor,False
+85012,85,Sabanalarga,sabanalarga,False
+85013,85,Sácama,sacama,False
+85014,85,San Luis de Palenque,san-luis-de-palenque,False
+85015,85,Támara,tamara,False
+85016,85,Tauramena,tauramena,False
+85017,85,Trinidad,trinidad,False
+85018,85,Villanueva,villanueva,False
+85019,85,Yopal,yopal,False
+19001,19,Almaguer,almaguer,True
+19002,19,Argelia,argelia,False
+19003,19,Balboa,balboa,False
+19004,19,Bolívar,bolivar,False
+19005,19,Buenos Aires,buenos-aires,False
+19006,19,Cajibío,cajibio,False
+19007,19,Caldono,caldono,False
+19008,19,Caloto,caloto,False
+19009,19,Corinto,corinto,False
+19010,19,El Tambo,el-tambo,False
+19011,19,Florencia,florencia,False
+19012,19,Guachené,guachene,False
+19013,19,Guapí,guapi,False
+19014,19,Inzá,inza,False
+19015,19,Jambaló,jambalo,False
+19016,19,La Sierra,la-sierra,False
+19017,19,La Vega,la-vega,False
+19018,19,López de Micay,lopez-de-micay,False
+19019,19,Mercaderes,mercaderes,False
+19020,19,Miranda,miranda,False
+19021,19,Morales,morales,False
+19022,19,Padilla,padilla,False
+19023,19,Páez,paez,False
+19024,19,Patía,patia,False
+19025,19,Piamonte,piamonte,False
+19026,19,Piendamó,piendamo,False
+19027,19,Popayán,popayan,False
+19028,19,Puerto Tejada,puerto-tejada,False
+19029,19,Puracé,purace,False
+19030,19,Rosas,rosas,False
+19031,19,San Sebastián,san-sebastian,False
+19032,19,Santa Rosa,santa-rosa,False
+19033,19,Santander de Quilichao,santander-de-quilichao,False
+19034,19,Silvia,silvia,False
+19035,19,Sotará,sotara,False
+19036,19,Suárez,suarez,False
+19037,19,Sucre,sucre,False
+19038,19,Timbío,timbio,False
+19039,19,Timbiquí,timbiqui,False
+19040,19,Toribío,toribio,False
+19041,19,Totoró,totoro,False
+19042,19,Villa Rica,villa-rica,False
+20001,20,Aguachica,aguachica,True
+20002,20,Agustín Codazzi,agustin-codazzi,False
+20003,20,Astrea,astrea,False
+20004,20,Becerril,becerril,False
+20005,20,Bosconia,bosconia,False
+20006,20,Chimichagua,chimichagua,False
+20007,20,Chiriguaná,chiriguana,False
+20008,20,Curumaní,curumani,False
+20009,20,El Copey,el-copey,False
+20010,20,El Paso,el-paso,False
+20011,20,Gamarra,gamarra,False
+20012,20,González,gonzalez,False
+20013,20,La Gloria (Cesar),la-gloria-(cesar),False
+20014,20,La Jagua de Ibirico,la-jagua-de-ibirico,False
+20015,20,La Paz,la-paz,False
+20016,20,Manaure Balcón del Cesar,manaure-balcon-del-cesar,False
+20017,20,Pailitas,pailitas,False
+20018,20,Pelaya,pelaya,False
+20019,20,Pueblo Bello,pueblo-bello,False
+20020,20,Río de Oro,rio-de-oro,False
+20021,20,San Alberto,san-alberto,False
+20022,20,San Diego,san-diego,False
+20023,20,San Martín,san-martin,False
+20024,20,Tamalameque,tamalameque,False
+20025,20,Valledupar,valledupar,False
+27001,27,Acandí,acandi,True
+27002,27,Alto Baudó,alto-baudo,False
+27003,27,Bagadó,bagado,False
+27004,27,Bahía Solano,bahia-solano,False
+27005,27,Bajo Baudó,bajo-baudo,False
+27006,27,Bojayá,bojaya,False
+27007,27,Cantón de San Pablo,canton-de-san-pablo,False
+27008,27,Cértegui,certegui,False
+27009,27,Condoto,condoto,False
+27010,27,El Atrato,el-atrato,False
+27011,27,El Carmen de Atrato,el-carmen-de-atrato,False
+27012,27,El Carmen del Darién,el-carmen-del-darien,False
+27013,27,Istmina,istmina,False
+27014,27,Juradó,jurado,False
+27015,27,Litoral de San Juan,litoral-de-san-juan,False
+27016,27,Lloró,lloro,False
+27017,27,Medio Atrato,medio-atrato,False
+27018,27,Medio Baudó,medio-baudo,False
+27019,27,Medio San Juan,medio-san-juan,False
+27020,27,Nóvita,novita,False
+27021,27,Nuquí,nuqui,False
+27022,27,Quibdó,quibdo,False
+27023,27,Río Iró,rio-iro,False
+27024,27,Río Quito,rio-quito,False
+27025,27,Riosucio,riosucio,False
+27026,27,San José del Palmar,san-jose-del-palmar,False
+27027,27,Sipí,sipi,False
+27028,27,Tadó,tado,False
+27029,27,Unión Panamericana,union-panamericana,False
+27030,27,Unguía,unguia,False
+25001,25,Agua de Dios,agua-de-dios,True
+25002,25,Albán,alban,False
+25003,25,Anapoima,anapoima,False
+25004,25,Anolaima,anolaima,False
+25005,25,Apulo,apulo,False
+25006,25,Arbeláez,arbelaez,False
+25007,25,Beltrán,beltran,False
+25008,25,Bituima,bituima,False
+25009,25,Bogotá,bogota,False
+25010,25,Bojacá,bojaca,False
+25011,25,Cabrera,cabrera,False
+25012,25,Cachipay,cachipay,False
+25013,25,Cajicá,cajica,False
+25014,25,Caparrapí,caparrapi,False
+25015,25,Cáqueza,caqueza,False
+25016,25,Carmen de Carupa,carmen-de-carupa,False
+25017,25,Chaguaní,chaguani,False
+25018,25,Chía,chia,False
+25019,25,Chipaque,chipaque,False
+25020,25,Choachí,choachi,False
+25021,25,Chocontá,choconta,False
+25022,25,Cogua,cogua,False
+25023,25,Cota,cota,False
+25024,25,Cucunubá,cucunuba,False
+25025,25,El Colegio,el-colegio,False
+25026,25,El Peñón,el-penon,False
+25027,25,El Rosal,el-rosal,False
+25028,25,Facatativá,facatativa,False
+25029,25,Fómeque,fomeque,False
+25030,25,Fosca,fosca,False
+25031,25,Funza,funza,False
+25032,25,Fúquene,fuquene,False
+25033,25,Fusagasugá,fusagasuga,False
+25034,25,Gachalá,gachala,False
+25035,25,Gachancipá,gachancipa,False
+25036,25,Gachetá,gacheta,False
+25037,25,Gama,gama,False
+25038,25,Girardot,girardot,False
+25039,25,Granada,granada,False
+25040,25,Guachetá,guacheta,False
+25041,25,Guaduas,guaduas,False
+25042,25,Guasca,guasca,False
+25043,25,Guataquí,guataqui,False
+25044,25,Guatavita,guatavita,False
+25045,25,Guayabal de Síquima,guayabal-de-siquima,False
+25046,25,Guayabetal,guayabetal,False
+25047,25,Gutiérrez,gutierrez,False
+25048,25,Jerusalén,jerusalen,False
+25049,25,Junín,junin,False
+25050,25,La Calera,la-calera,False
+25051,25,La Mesa,la-mesa,False
+25052,25,La Palma,la-palma,False
+25053,25,La Peña,la-pena,False
+25054,25,La Vega,la-vega,False
+25055,25,Lenguazaque,lenguazaque,False
+25056,25,Machetá,macheta,False
+25057,25,Madrid,madrid,False
+25058,25,Manta,manta,False
+25059,25,Medina,medina,False
+25060,25,Mosquera,mosquera,False
+25061,25,Nariño,narino,False
+25062,25,Nemocón,nemocon,False
+25063,25,Nilo,nilo,False
+25064,25,Nimaima,nimaima,False
+25065,25,Nocaima,nocaima,False
+25066,25,Pacho,pacho,False
+25067,25,Paime,paime,False
+25068,25,Pandi,pandi,False
+25069,25,Paratebueno,paratebueno,False
+25070,25,Pasca,pasca,False
+25071,25,Puerto Salgar,puerto-salgar,False
+25072,25,Pulí,puli,False
+25073,25,Quebradanegra,quebradanegra,False
+25074,25,Quetame,quetame,False
+25075,25,Quipile,quipile,False
+25076,25,Ricaurte,ricaurte,False
+25077,25,San Antonio del Tequendama,san-antonio-del-tequendama,False
+25078,25,San Bernardo,san-bernardo,False
+25079,25,San Cayetano,san-cayetano,False
+25080,25,San Francisco,san-francisco,False
+25081,25,San Juan de Rioseco,san-juan-de-rioseco,False
+25082,25,Sasaima,sasaima,False
+25083,25,Sesquilé,sesquile,False
+25084,25,Sibaté,sibate,False
+25085,25,Silvania,silvania,False
+25086,25,Simijaca,simijaca,False
+25087,25,Soacha,soacha,False
+25088,25,Sopó,sopo,False
+25089,25,Subachoque,subachoque,False
+25090,25,Suesca,suesca,False
+25091,25,Supatá,supata,False
+25092,25,Susa,susa,False
+25093,25,Sutatausa,sutatausa,False
+25094,25,Tabio,tabio,False
+25095,25,Tausa,tausa,False
+25096,25,Tena,tena,False
+25097,25,Tenjo,tenjo,False
+25098,25,Tibacuy,tibacuy,False
+25099,25,Tibirita,tibirita,False
+25100,25,Tocaima,tocaima,False
+25101,25,Tocancipá,tocancipa,False
+25102,25,Topaipí,topaipi,False
+25103,25,Ubalá,ubala,False
+25104,25,Ubaque,ubaque,False
+25105,25,Ubaté,ubate,False
+25106,25,Une,une,False
+25107,25,Útica,utica,False
+25108,25,Venecia,venecia,False
+25109,25,Vergara,vergara,False
+25110,25,Vianí,viani,False
+25111,25,Villagómez,villagomez,False
+25112,25,Villapinzón,villapinzon,False
+25113,25,Villeta,villeta,False
+25114,25,Viotá,viota,False
+25115,25,Yacopí,yacopi,False
+25116,25,Zipacón,zipacon,False
+25117,25,Zipaquirá,zipaquira,False
+23001,23,Ayapel,ayapel,True
+23002,23,Buenavista,buenavista,False
+23003,23,Canalete,canalete,False
+23004,23,Cereté,cerete,False
+23005,23,Chimá,chima,False
+23006,23,Chinú,chinu,False
+23007,23,Ciénaga de Oro,cienaga-de-oro,False
+23008,23,Cotorra,cotorra,False
+23009,23,La Apartada,la-apartada,False
+23010,23,Lorica,lorica,False
+23011,23,Los Córdobas,los-cordobas,False
+23012,23,Momil,momil,False
+23013,23,Montelíbano,montelibano,False
+23014,23,Montería,monteria,False
+23015,23,Moñitos,monitos,False
+23016,23,Planeta Rica,planeta-rica,False
+23017,23,Pueblo Nuevo,pueblo-nuevo,False
+23018,23,Puerto Escondido,puerto-escondido,False
+23019,23,Puerto Libertador,puerto-libertador,False
+23020,23,Purísima,purisima,False
+23021,23,Sahagún,sahagun,False
+23022,23,San Andrés de Sotavento,san-andres-de-sotavento,False
+23023,23,San Antero,san-antero,False
+23024,23,San Bernardo del Viento,san-bernardo-del-viento,False
+23025,23,San Carlos,san-carlos,False
+23026,23,San José de Uré,san-jose-de-ure,False
+23027,23,San Pelayo,san-pelayo,False
+23028,23,Tierralta,tierralta,False
+23029,23,Tuchín,tuchin,False
+23030,23,Valencia,valencia,False
+94001,94,Inírida,inirida,True
+95001,95,Calamar,calamar,True
+95002,95,El Retorno,el-retorno,False
+95003,95,Miraflores,miraflores,False
+95004,95,San José del Guaviare,san-jose-del-guaviare,False
+41001,41,Acevedo,acevedo,True
+41002,41,Agrado,agrado,False
+41003,41,Aipe,aipe,False
+41004,41,Algeciras,algeciras,False
+41005,41,Altamira,altamira,False
+41006,41,Baraya,baraya,False
+41007,41,Campoalegre,campoalegre,False
+41008,41,Colombia,colombia,False
+41009,41,El Pital,el-pital,False
+41010,41,Elías,elias,False
+41011,41,Garzón,garzon,False
+41012,41,Gigante,gigante,False
+41013,41,Guadalupe,guadalupe,False
+41014,41,Hobo,hobo,False
+41015,41,Íquira,iquira,False
+41016,41,Isnos,isnos,False
+41017,41,La Argentina,la-argentina,False
+41018,41,La Plata,la-plata,False
+41019,41,Nátaga,nataga,False
+41020,41,Neiva,neiva,False
+41021,41,Oporapa,oporapa,False
+41022,41,Paicol,paicol,False
+41023,41,Palermo,palermo,False
+41024,41,Palestina,palestina,False
+41025,41,Pitalito,pitalito,False
+41026,41,Rivera,rivera,False
+41027,41,Saladoblanco,saladoblanco,False
+41028,41,San Agustín,san-agustin,False
+41029,41,Santa María,santa-maria,False
+41030,41,Suaza,suaza,False
+41031,41,Tarqui,tarqui,False
+41032,41,Tello,tello,False
+41033,41,Teruel,teruel,False
+41034,41,Tesalia,tesalia,False
+41035,41,Timaná,timana,False
+41036,41,Villavieja,villavieja,False
+41037,41,Yaguará,yaguara,False
+44001,44,Albania,albania,True
+44002,44,Barrancas,barrancas,False
+44003,44,Dibulla,dibulla,False
+44004,44,Distracción,distraccion,False
+44005,44,El Molino,el-molino,False
+44006,44,Fonseca,fonseca,False
+44007,44,Hatonuevo,hatonuevo,False
+44008,44,La Jagua del Pilar,la-jagua-del-pilar,False
+44009,44,Maicao,maicao,False
+44010,44,Manaure,manaure,False
+44011,44,Riohacha,riohacha,False
+44012,44,San Juan del Cesar,san-juan-del-cesar,False
+44013,44,Uribia,uribia,False
+44014,44,Urumita,urumita,False
+44015,44,Villanueva,villanueva,False
+47001,47,Algarrobo,algarrobo,True
+47002,47,Aracataca,aracataca,False
+47003,47,Ariguaní,ariguani,False
+47004,47,Cerro de San Antonio,cerro-de-san-antonio,False
+47005,47,Chibolo,chibolo,False
+47006,47,Chibolo,chibolo,False
+47007,47,Ciénaga,cienaga,False
+47008,47,Concordia,concordia,False
+47009,47,El Banco,el-banco,False
+47010,47,El Piñón,el-pinon,False
+47011,47,El Retén,el-reten,False
+47012,47,Fundación,fundacion,False
+47013,47,Guamal,guamal,False
+47014,47,Nueva Granada,nueva-granada,False
+47015,47,Pedraza,pedraza,False
+47016,47,Pijiño del Carmen,pijino-del-carmen,False
+47017,47,Pivijay,pivijay,False
+47018,47,Plato,plato,False
+47019,47,Pueblo Viejo,pueblo-viejo,False
+47020,47,Remolino,remolino,False
+47021,47,Sabanas de San Ángel,sabanas-de-san-angel,False
+47022,47,Salamina,salamina,False
+47023,47,San Sebastián de Buenavista,san-sebastian-de-buenavista,False
+47024,47,San Zenón,san-zenon,False
+47025,47,Santa Ana,santa-ana,False
+47026,47,Santa Bárbara de Pinto,santa-barbara-de-pinto,False
+47027,47,Santa Marta,santa-marta,False
+47028,47,Sitionuevo,sitionuevo,False
+47029,47,Tenerife,tenerife,False
+47030,47,Zapayán,zapayan,False
+47031,47,Zona Bananera,zona-bananera,False
+50001,50,Acacías,acacias,True
+50002,50,Barranca de Upía,barranca-de-upia,False
+50003,50,Cabuyaro,cabuyaro,False
+50004,50,Castilla la Nueva,castilla-la-nueva,False
+50005,50,Cubarral,cubarral,False
+50006,50,Cumaral,cumaral,False
+50007,50,El Calvario,el-calvario,False
+50008,50,El Castillo,el-castillo,False
+50009,50,El Dorado,el-dorado,False
+50010,50,Fuente de Oro,fuente-de-oro,False
+50011,50,Granada,granada,False
+50012,50,Guamal,guamal,False
+50013,50,La Macarena,la-macarena,False
+50014,50,La Uribe,la-uribe,False
+50015,50,Lejanías,lejanias,False
+50016,50,Mapiripán,mapiripan,False
+50017,50,Mesetas,mesetas,False
+50018,50,Puerto Concordia,puerto-concordia,False
+50019,50,Puerto Gaitán,puerto-gaitan,False
+50020,50,Puerto Lleras,puerto-lleras,False
+50021,50,Puerto López,puerto-lopez,False
+50022,50,Puerto Rico,puerto-rico,False
+50023,50,Restrepo,restrepo,False
+50024,50,San Carlos de Guaroa,san-carlos-de-guaroa,False
+50025,50,San Juan de Arama,san-juan-de-arama,False
+50026,50,San Juanito,san-juanito,False
+50027,50,San Martín,san-martin,False
+50028,50,Villavicencio,villavicencio,False
+50029,50,Vista Hermosa,vista-hermosa,False
+52001,52,Aldana,aldana,True
+52002,52,Ancuyá,ancuya,False
+52003,52,Arboleda,arboleda,False
+52004,52,Barbacoas,barbacoas,False
+52005,52,Belén,belen,False
+52006,52,Buesaco,buesaco,False
+52007,52,Chachagüí,chachagüi,False
+52008,52,Colón,colon,False
+52009,52,Consacá,consaca,False
+52010,52,Contadero,contadero,False
+52011,52,Córdoba,cordoba,False
+52012,52,Cuaspud,cuaspud,False
+52013,52,Cumbal,cumbal,False
+52014,52,Cumbitara,cumbitara,False
+52015,52,El Charco,el-charco,False
+52016,52,El Peñol,el-penol,False
+52017,52,El Rosario,el-rosario,False
+52018,52,El Tablón,el-tablon,False
+52019,52,El Tambo,el-tambo,False
+52020,52,Francisco Pizarro,francisco-pizarro,False
+52021,52,Funes,funes,False
+52022,52,Guachucal,guachucal,False
+52023,52,Guaitarilla,guaitarilla,False
+52024,52,Gualmatán,gualmatan,False
+52025,52,Iles,iles,False
+52026,52,Imués,imues,False
+52027,52,Ipiales,ipiales,False
+52028,52,La Cruz,la-cruz,False
+52029,52,La Florida,la-florida,False
+52030,52,La Llanada,la-llanada,False
+52031,52,La Tola,la-tola,False
+52032,52,La Unión,la-union,False
+52033,52,Leiva,leiva,False
+52034,52,Linares,linares,False
+52035,52,Los Andes,los-andes,False
+52036,52,Magüí Payán,magüi-payan,False
+52037,52,Mallama,mallama,False
+52038,52,Mosquera,mosquera,False
+52039,52,Nariño,narino,False
+52040,52,Olaya Herrera,olaya-herrera,False
+52041,52,Ospina,ospina,False
+52042,52,Pasto,pasto,False
+52043,52,Policarpa,policarpa,False
+52044,52,Potosí,potosi,False
+52045,52,Providencia,providencia,False
+52046,52,Puerres,puerres,False
+52047,52,Pupiales,pupiales,False
+52048,52,Ricaurte,ricaurte,False
+52049,52,Roberto Payán,roberto-payan,False
+52050,52,Samaniego,samaniego,False
+52051,52,San Bernardo,san-bernardo,False
+52052,52,San José de Albán,san-jose-de-alban,False
+52053,52,San Lorenzo,san-lorenzo,False
+52054,52,San Pablo,san-pablo,False
+52055,52,San Pedro de Cartago,san-pedro-de-cartago,False
+52056,52,Sandoná,sandona,False
+52057,52,Santa Bárbara,santa-barbara,False
+52058,52,Santacruz,santacruz,False
+52059,52,Sapuyes,sapuyes,False
+52060,52,Taminango,taminango,False
+52061,52,Tangua,tangua,False
+52062,52,Tumaco,tumaco,False
+52063,52,Túquerres,tuquerres,False
+52064,52,Yacuanquer,yacuanquer,False
+54001,54,Ábrego,abrego,True
+54002,54,Arboledas,arboledas,False
+54003,54,Bochalema,bochalema,False
+54004,54,Bucarasica,bucarasica,False
+54005,54,Cáchira,cachira,False
+54006,54,Cácota,cacota,False
+54007,54,Chinácota,chinacota,False
+54008,54,Chitagá,chitaga,False
+54009,54,Convención,convencion,False
+54010,54,Cúcuta,cucuta,False
+54011,54,Cucutilla,cucutilla,False
+54012,54,Duranía,durania,False
+54013,54,El Carmen,el-carmen,False
+54014,54,El Tarra,el-tarra,False
+54015,54,El Zulia,el-zulia,False
+54016,54,Gramalote,gramalote,False
+54017,54,Hacarí,hacari,False
+54018,54,Herrán,herran,False
+54019,54,La Esperanza,la-esperanza,False
+54020,54,La Playa de Belén,la-playa-de-belen,False
+54021,54,Labateca,labateca,False
+54022,54,Los Patios,los-patios,False
+54023,54,Lourdes,lourdes,False
+54024,54,Mutiscua,mutiscua,False
+54025,54,Ocaña,ocana,False
+54026,54,Pamplona,pamplona,False
+54027,54,Pamplonita,pamplonita,False
+54028,54,Puerto Santander,puerto-santander,False
+54029,54,Ragonvalia,ragonvalia,False
+54030,54,Salazar de Las Palmas,salazar-de-las-palmas,False
+54031,54,San Calixto,san-calixto,False
+54032,54,San Cayetano,san-cayetano,False
+54033,54,Santiago,santiago,False
+54034,54,Santo Domingo de Silos,santo-domingo-de-silos,False
+54035,54,Sardinata,sardinata,False
+54036,54,Teorama,teorama,False
+54037,54,Tibú,tibu,False
+54038,54,Toledo,toledo,False
+54039,54,Villa Caro,villa-caro,False
+54040,54,Villa del Rosario,villa-del-rosario,False
+86001,86,Colón,colon,True
+86002,86,Mocoa,mocoa,False
+86003,86,Orito,orito,False
+86004,86,Puerto Asís,puerto-asis,False
+86005,86,Puerto Caicedo,puerto-caicedo,False
+86006,86,Puerto Guzmán,puerto-guzman,False
+86007,86,Puerto Leguízamo,puerto-leguizamo,False
+86008,86,San Francisco,san-francisco,False
+86009,86,San Miguel,san-miguel,False
+86010,86,Santiago,santiago,False
+86011,86,Sibundoy,sibundoy,False
+86012,86,Valle del Guamuez,valle-del-guamuez,False
+86013,86,Villagarzón,villagarzon,False
+63001,63,Armenia,armenia,True
+63002,63,Buenavista,buenavista,False
+63003,63,Calarcá,calarca,False
+63004,63,Circasia,circasia,False
+63005,63,Córdoba,cordoba,False
+63006,63,Filandia,filandia,False
+63007,63,Génova,genova,False
+63008,63,La Tebaida,la-tebaida,False
+63009,63,Montenegro,montenegro,False
+63010,63,Pijao,pijao,False
+63011,63,Quimbaya,quimbaya,False
+63012,63,Salento,salento,False
+66001,66,Apía,apia,True
+66002,66,Balboa,balboa,False
+66003,66,Belén de Umbría,belen-de-umbria,False
+66004,66,Dosquebradas,dosquebradas,False
+66005,66,Guática,guatica,False
+66006,66,La Celia,la-celia,False
+66007,66,La Virginia,la-virginia,False
+66008,66,Marsella,marsella,False
+66009,66,Mistrató,mistrato,False
+66010,66,Pereira,pereira,False
+66011,66,Pueblo Rico,pueblo-rico,False
+66012,66,Quinchía,quinchia,False
+66013,66,Santa Rosa de Cabal,santa-rosa-de-cabal,False
+66014,66,Santuario,santuario,False
+88001,88,Providencia y Santa Catalina Islas,providencia-y-santa-catalina-islas,True
+88002,88,San Andrés,san-andres,False
+68001,68,Aguada,aguada,True
+68002,68,Albania,albania,False
+68003,68,Aratoca,aratoca,False
+68004,68,Barbosa,barbosa,False
+68005,68,Barichara,barichara,False
+68006,68,Barrancabermeja,barrancabermeja,False
+68007,68,Betulia,betulia,False
+68008,68,Bolívar,bolivar,False
+68009,68,Bucaramanga,bucaramanga,False
+68010,68,Cabrera,cabrera,False
+68011,68,California,california,False
+68012,68,Capitanejo,capitanejo,False
+68013,68,Carcasí,carcasi,False
+68014,68,Cepitá,cepita,False
+68015,68,Cerrito,cerrito,False
+68016,68,Charalá,charala,False
+68017,68,Charta,charta,False
+68018,68,Chima,chima,False
+68019,68,Chipatá,chipata,False
+68020,68,Cimitarra,cimitarra,False
+68021,68,Concepción,concepcion,False
+68022,68,Confines,confines,False
+68023,68,Contratación,contratacion,False
+68024,68,Coromoro,coromoro,False
+68025,68,Curití,curiti,False
+68026,68,El Carmen de Chucurí,el-carmen-de-chucuri,False
+68027,68,El Guacamayo,el-guacamayo,False
+68028,68,El Peñón,el-penon,False
+68029,68,El Playón,el-playon,False
+68030,68,El Socorro,el-socorro,False
+68031,68,Encino,encino,False
+68032,68,Enciso,enciso,False
+68033,68,Florián,florian,False
+68034,68,Floridablanca,floridablanca,False
+68035,68,Galán,galan,False
+68036,68,Gámbita,gambita,False
+68037,68,Girón,giron,False
+68038,68,Guaca,guaca,False
+68039,68,Guadalupe,guadalupe,False
+68040,68,Guapotá,guapota,False
+68041,68,Guavatá,guavata,False
+68042,68,Güepsa,güepsa,False
+68043,68,Hato,hato,False
+68044,68,Jesús María,jesus-maria,False
+68045,68,Jordán,jordan,False
+68046,68,La Belleza,la-belleza,False
+68047,68,La Paz,la-paz,False
+68048,68,Landázuri,landazuri,False
+68049,68,Lebrija,lebrija,False
+68050,68,Los Santos,los-santos,False
+68051,68,Macaravita,macaravita,False
+68052,68,Málaga,malaga,False
+68053,68,Matanza,matanza,False
+68054,68,Mogotes,mogotes,False
+68055,68,Molagavita,molagavita,False
+68056,68,Ocamonte,ocamonte,False
+68057,68,Oiba,oiba,False
+68058,68,Onzaga,onzaga,False
+68059,68,Palmar,palmar,False
+68060,68,Palmas del Socorro,palmas-del-socorro,False
+68061,68,Páramo,paramo,False
+68062,68,Piedecuesta,piedecuesta,False
+68063,68,Pinchote,pinchote,False
+68064,68,Puente Nacional,puente-nacional,False
+68065,68,Puerto Parra,puerto-parra,False
+68066,68,Puerto Wilches,puerto-wilches,False
+68067,68,Rionegro,rionegro,False
+68068,68,Sabana de Torres,sabana-de-torres,False
+68069,68,San Andrés,san-andres,False
+68070,68,San Benito,san-benito,False
+68071,68,San Gil,san-gil,False
+68072,68,San Joaquín,san-joaquin,False
+68073,68,San José de Miranda,san-jose-de-miranda,False
+68074,68,San Miguel,san-miguel,False
+68075,68,San Vicente de Chucurí,san-vicente-de-chucuri,False
+68076,68,Santa Bárbara,santa-barbara,False
+68077,68,Santa Helena del Opón,santa-helena-del-opon,False
+68078,68,Simacota,simacota,False
+68079,68,Suaita,suaita,False
+68080,68,Sucre,sucre,False
+68081,68,Suratá,surata,False
+68082,68,Tona,tona,False
+68083,68,Valle de San José,valle-de-san-jose,False
+68084,68,Vélez,velez,False
+68085,68,Vetas,vetas,False
+68086,68,Villanueva,villanueva,False
+68087,68,Zapatoca,zapatoca,False
+70001,70,Buenavista,buenavista,True
+70002,70,Caimito,caimito,False
+70003,70,Chalán,chalan,False
+70004,70,Colosó,coloso,False
+70005,70,Corozal,corozal,False
+70006,70,Coveñas,covenas,False
+70007,70,El Roble,el-roble,False
+70008,70,Galeras,galeras,False
+70009,70,Guaranda,guaranda,False
+70010,70,La Unión,la-union,False
+70011,70,Los Palmitos,los-palmitos,False
+70012,70,Majagual,majagual,False
+70013,70,Morroa,morroa,False
+70014,70,Ovejas,ovejas,False
+70015,70,Sampués,sampues,False
+70016,70,San Antonio de Palmito,san-antonio-de-palmito,False
+70017,70,San Benito Abad,san-benito-abad,False
+70018,70,San Juan de Betulia,san-juan-de-betulia,False
+70019,70,San Marcos,san-marcos,False
+70020,70,San Onofre,san-onofre,False
+70021,70,San Pedro,san-pedro,False
+70022,70,Sincé,since,False
+70023,70,Sincelejo,sincelejo,False
+70024,70,Sucre,sucre,False
+70025,70,Tolú,tolu,False
+70026,70,Tolú Viejo,tolu-viejo,False
+73001,73,Alpujarra,alpujarra,True
+73002,73,Alvarado,alvarado,False
+73003,73,Ambalema,ambalema,False
+73004,73,Anzoátegui,anzoategui,False
+73005,73,Armero,armero,False
+73006,73,Ataco,ataco,False
+73007,73,Cajamarca,cajamarca,False
+73008,73,Carmen de Apicalá,carmen-de-apicala,False
+73009,73,Casabianca,casabianca,False
+73010,73,Chaparral,chaparral,False
+73011,73,Coello,coello,False
+73012,73,Coyaima,coyaima,False
+73013,73,Cunday,cunday,False
+73014,73,Dolores,dolores,False
+73015,73,El Espinal,el-espinal,False
+73016,73,Falán,falan,False
+73017,73,Flandes,flandes,False
+73018,73,Fresno,fresno,False
+73019,73,Guamo,guamo,False
+73020,73,Herveo,herveo,False
+73021,73,Honda,honda,False
+73022,73,Ibagué,ibague,False
+73023,73,Icononzo,icononzo,False
+73024,73,Lérida,lerida,False
+73025,73,Líbano,libano,False
+73026,73,Mariquita,mariquita,False
+73027,73,Melgar,melgar,False
+73028,73,Murillo,murillo,False
+73029,73,Natagaima,natagaima,False
+73030,73,Ortega,ortega,False
+73031,73,Palocabildo,palocabildo,False
+73032,73,Piedras,piedras,False
+73033,73,Planadas,planadas,False
+73034,73,Prado,prado,False
+73035,73,Purificación,purificacion,False
+73036,73,Rioblanco,rioblanco,False
+73037,73,Roncesvalles,roncesvalles,False
+73038,73,Rovira,rovira,False
+73039,73,Saldaña,saldana,False
+73040,73,San Antonio,san-antonio,False
+73041,73,San Luis,san-luis,False
+73042,73,Santa Isabel,santa-isabel,False
+73043,73,Suárez,suarez,False
+73044,73,Valle de San Juan,valle-de-san-juan,False
+73045,73,Venadillo,venadillo,False
+73046,73,Villahermosa,villahermosa,False
+73047,73,Villarrica,villarrica,False
+76001,76,Alcalá,alcala,True
+76002,76,Andalucía,andalucia,False
+76003,76,Ansermanuevo,ansermanuevo,False
+76004,76,Argelia,argelia,False
+76005,76,Bolívar,bolivar,False
+76006,76,Buenaventura,buenaventura,False
+76007,76,Buga,buga,False
+76008,76,Bugalagrande,bugalagrande,False
+76009,76,Caicedonia,caicedonia,False
+76010,76,Cali,cali,False
+76011,76,Calima,calima,False
+76012,76,Candelaria,candelaria,False
+76013,76,Cartago,cartago,False
+76014,76,Dagua,dagua,False
+76015,76,El Águila,el-aguila,False
+76016,76,El Cairo,el-cairo,False
+76017,76,El Cerrito,el-cerrito,False
+76018,76,El Dovio,el-dovio,False
+76019,76,Florida,florida,False
+76020,76,Ginebra,ginebra,False
+76021,76,Guacarí,guacari,False
+76022,76,Jamundí,jamundi,False
+76023,76,La Cumbre,la-cumbre,False
+76024,76,La Unión,la-union,False
+76025,76,La Victoria,la-victoria,False
+76026,76,Obando,obando,False
+76027,76,Palmira,palmira,False
+76028,76,Pradera,pradera,False
+76029,76,Restrepo,restrepo,False
+76030,76,Riofrío,riofrio,False
+76031,76,Roldanillo,roldanillo,False
+76032,76,San Pedro,san-pedro,False
+76033,76,Sevilla,sevilla,False
+76034,76,Toro,toro,False
+76035,76,Trujillo,trujillo,False
+76036,76,Tuluá,tulua,False
+76037,76,Ulloa,ulloa,False
+76038,76,Versalles,versalles,False
+76039,76,Vijes,vijes,False
+76040,76,Yotoco,yotoco,False
+76041,76,Yumbo,yumbo,False
+76042,76,Zarzal,zarzal,False
+97001,97,Carurú,caruru,True
+97002,97,Mitú,mitu,False
+97003,97,Taraira,taraira,False
+99001,99,Cumaribo,cumaribo,True
+99002,99,La Primavera,la-primavera,False
+99003,99,Puerto Carreño,puerto-carreno,False
+99004,99,Santa Rosalía,santa-rosalia,False

@@ -1,0 +1,47 @@
+/**
+ * Configuración Global · Plataforma Avancemos
+ * Llaves públicas y metadatos del proyecto.
+ */
+
+export const CONFIG = {
+  // Supabase
+  SUPABASE_URL: "https://zxlqwhjlgmoqemcuseek.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4bHF3aGpsZ21vcWVtY3VzZWVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NDI2NjgsImV4cCI6MjEwNjExODY2OH0.dI4aGoYxqEktxdfn64J0eDBIDSSo9GgX0NOjkw4t_c8",
+
+  // Datos Institucionales
+  NOMBRE_MOVIMIENTO: "Avancemos",
+  LEMA: "Ni extremos ni excusas: soluciones.",
+  LEMA_SECUNDARIO: "Colombia avanza cuando nos escuchamos.",
+  PAIS: "Colombia",
+  CORREO_CONTACTO: "contacto@avancemos.co",
+  CORREO_SOPORTE: "soporte@avancemos.co",
+  DOMINIO: "https://avancemos.co",
+  RESPONSABLE_DATOS: "Movimiento Político Avancemos Colombia",
+  NIT_DOCUMENTO: "901.884.230-1",
+  DIRECCION_CONTACTO: "Carrera 7 # 71-21, Torre B, Bogotá D. C., Colombia",
+
+  // Cloudflare Turnstile (Site Key de prueba o producción)
+  TURNSTILE_SITE_KEY: "0x4AAAAAAAEkG6kC8_3fX2xL",
+
+  // Rutas de almacenamiento Supabase Storage
+  STORAGE_BUCKETS: {
+    AVATARES: "avatares",
+    PORTADAS: "portadas",
+    MEDIA_PENDIENTE: "media-pendiente",
+    MEDIA_PUBLICA: "media-publica",
+    MEDIA_MIEMBROS: "media-miembros",
+    MENSAJES: "mensajes",
+    IA_MEDIA: "ia-media",
+    SITIO: "sitio"
+  },
+
+  // Ajustes de Interfaz
+  LIMITES: {
+    MAX_CARACTERES_POST: 3000,
+    MAX_CARACTERES_COMENTARIO: 1000,
+    MAX_CARACTERES_MENSAJE: 2000,
+    MAX_IMAGENES_POST: 4,
+    MAX_TAMANO_IMAGEN_MB: 10,
+    MAX_TAMANO_VIDEO_MB: 50
+  }
+};

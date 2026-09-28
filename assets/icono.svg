@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Avancemos Ícono">
+  <rect width="128" height="128" rx="28" fill="#0B2440"/>
+  <g transform="translate(24, 24)">
+    <path d="M12 58L40 22L68 58" stroke="#14B8A6" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M26 68L40 50L54 68" stroke="#E8A33D" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="11" r="5" fill="#2EC4B6"/>
+  </g>
+</svg>

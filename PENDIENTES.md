@@ -1,0 +1,14 @@
+# Pendientes y Datos del Cliente · Avancemos
+
+Valores de ejemplo utilizados que deben ser confirmados o reemplazados por el cliente:
+
+1. **Logo definitivo:**
+   - Se utiliza actualmente el logotipo provisional en SVG con chevrón turquesa (`assets/logo.svg`). Si el movimiento cuenta con un manual de marca definitivo, reemplazar en `assets/logo.svg` y `assets/icono.svg`.
+2. **Cloudflare Turnstile:**
+   - La llave de sitio actual en `js/config.js` es una llave de prueba. Se debe configurar la Site Key definitiva del dominio en producción en Cloudflare y activar la integración en Supabase Auth.
+3. **Servidor SMTP Propio:**
+   - Para producción, configurar un proveedor SMTP (Resend, Brevo o Amazon SES) en el panel de Supabase Auth para envíos a correos reales fuera del equipo de desarrollo.
+4. **Dominio Definitivo:**
+   - Se configuró por defecto `https://avancemos.co`. Si el dominio definitivo cambia, actualizar `CONFIG.DOMINIO` en `js/config.js` y las URL de redirección en Supabase Auth.
+5. **Repositorio de GitHub:**
+   - El código local está preparado y versionado con Git. Se requiere la URL del repositorio remoto o token de GitHub para vincular y subir (`git push`).

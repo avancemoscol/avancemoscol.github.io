@@ -1,0 +1,243 @@
+/* ==========================================================================
+   Estilos del Panel de Administración (`admin.html`) · Avancemos
+   ========================================================================== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--marfil);
+}
+
+/* Barra Lateral de Administración */
+.admin-sidebar {
+  width: 260px;
+  background-color: var(--azul-noche);
+  color: #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}
+.admin-sidebar-header {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-badge-rol {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  background-color: rgba(20, 184, 166, 0.2);
+  color: var(--turquesa-claro);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radio-pleno);
+  font-weight: 700;
+}
+.admin-menu {
+  list-style: none;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.admin-menu-item a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radio-md);
+  color: #CBD5E1;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all var(--transicion-rapida);
+}
+.admin-menu-item a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+.admin-menu-item a.activo {
+  background-color: var(--turquesa);
+  color: #FFFFFF;
+}
+.admin-contador-alerta {
+  margin-left: auto;
+  background-color: var(--ambar);
+  color: var(--azul-noche);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radio-pleno);
+}
+
+/* Contenido Principal Admin */
+.admin-principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* Barra Superior de Administración */
+.admin-topbar {
+  background-color: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+  padding: 0.875rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.admin-territorio-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+.admin-territorio-selector select {
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radio-md);
+  border: 1px solid var(--borde);
+  background-color: var(--marfil);
+}
+
+/* Área de Trabajo y Tarjetas de Métricas */
+.admin-cuerpo {
+  padding: 1.75rem;
+}
+.admin-metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-4);
+  margin-bottom: var(--espacio-6);
+}
+.admin-metrica-card {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 1.25rem;
+  box-shadow: var(--sombra-sm);
+}
+.admin-metrica-card h4 {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  font-family: var(--fuente-cuerpo);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.admin-metrica-card .valor {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--azul-noche);
+  font-family: var(--fuente-titulo);
+}
+
+/* Bandeja de Aprobaciones */
+.aprobacion-tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: 1.5rem;
+  margin-bottom: var(--espacio-4);
+  box-shadow: var(--sombra-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+.aprobacion-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--borde-suave);
+  padding-bottom: var(--espacio-3);
+}
+.aprobacion-ia-alerta {
+  background-color: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: var(--radio-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: var(--fs-xs);
+  color: var(--texto);
+}
+.aprobacion-acciones {
+  display: flex;
+  gap: var(--espacio-3);
+  justify-content: flex-end;
+  border-top: 1px solid var(--borde-suave);
+  padding-top: var(--espacio-4);
+  flex-wrap: wrap;
+}
+
+/* Estudio IA */
+.estudio-ia-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-6);
+}
+.estudio-ia-panel {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: 1.5rem;
+}
+.estudio-ia-preview {
+  min-height: 340px;
+  border: 2px dashed var(--borde);
+  border-radius: var(--radio-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--marfil);
+}
+
+/* Tablas Administrativas */
+.admin-tabla-wrap {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  overflow-x: auto;
+  box-shadow: var(--sombra-sm);
+}
+.admin-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--fs-sm);
+}
+.admin-tabla th {
+  background-color: var(--marfil);
+  padding: 0.875rem 1rem;
+  font-weight: 700;
+  color: var(--texto);
+  border-bottom: 1px solid var(--borde);
+}
+.admin-tabla td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--borde-suave);
+  color: var(--texto);
+}
+.admin-tabla tr:hover td {
+  background-color: rgba(11, 122, 110, 0.02);
+}
+
+@media (max-width: 900px) {
+  .admin-sidebar { width: 72px; }
+  .admin-sidebar span, .admin-sidebar .admin-badge-rol { display: none; }
+  .estudio-ia-grid { grid-template-columns: 1fr; }
+}

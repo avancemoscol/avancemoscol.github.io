@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Ciudadana Avancemos</title>
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- COLUMNA 1: Navegación Lateral Izquierda (260px) -->
+    <aside class="app-nav-lateral">
+      <div>
+        <div class="app-nav-header">
+          <a href="#/inicio" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+            <img src="assets/logo.svg" alt="Avancemos Logo" style="height: 32px;">
+          </a>
+        </div>
+
+        <ul class="app-nav-items">
+          <li>
+            <a href="#/inicio" class="app-nav-enlace activo" data-ruta="/inicio">
+              <span>🏠</span> <span>Inicio</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/explorar" class="app-nav-enlace" data-ruta="/explorar">
+              <span>🧭</span> <span>Explorar</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/notificaciones" class="app-nav-enlace" data-ruta="/notificaciones">
+              <span>🔔</span> <span>Notificaciones</span>
+              <span class="app-nav-badge" id="badge-notificaciones" style="display: none;">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/mensajes" class="app-nav-enlace" data-ruta="/mensajes">
+              <span>✉️</span> <span>Mensajes</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/guardados" class="app-nav-enlace" data-ruta="/guardados">
+              <span>🔖</span> <span>Guardados</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/grupos" class="app-nav-enlace" data-ruta="/grupos">
+              <span>💬</span> <span>Grupos WhatsApp</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/eventos" class="app-nav-enlace" data-ruta="/eventos">
+              <span>📅</span> <span>Eventos</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/perfil" class="app-nav-enlace" id="nav-mi-perfil" data-ruta="/perfil">
+              <span>👤</span> <span>Perfil</span>
+            </a>
+          </li>
+          <li>
+            <a href="#/ajustes" class="app-nav-enlace" data-ruta="/ajustes">
+              <span>⚙️</span> <span>Ajustes</span>
+            </a>
+          </li>
+          <li id="item-panel-admin" style="display: none;">
+            <a href="admin.html" class="app-nav-enlace" style="color: var(--ambar);">
+              <span>🛡️</span> <span>Panel Admin</span>
+            </a>
+          </li>
+        </ul>
+
+        <button class="btn btn-primario app-boton-publicar" onclick="abrirComposer()">
+          <span>Publicar</span>
+        </button>
+      </div>
+
+      <!-- Menú Usuario inferior -->
+      <div class="app-usuario-menu" id="app-usuario-menu" onclick="window.location.hash = '#/ajustes'">
+        <div id="usuario-avatar-slot"></div>
+        <div class="usuario-texto" style="overflow: hidden;">
+          <div style="font-weight: 700; font-size: 0.9rem; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" id="menu-usuario-nombre">Cargando...</div>
+          <div style="font-size: 0.75rem; color: var(--texto-suave);" id="menu-usuario-username">@usuario</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- COLUMNA 2: Feed Central (620px) -->
+    <main class="app-feed-columna" id="app-feed-columna">
+      <!-- Encabezado del Feed con Pestañas -->
+      <header class="app-feed-header" id="feed-header">
+        <div style="padding: 0.85rem 1.25rem 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: var(--fs-lg);" id="feed-titulo-vista">Inicio</h2>
+          <button class="btn btn-fantasma btn-sm" onclick="toggleTema()" title="Cambiar tema">🌓</button>
+        </div>
+        <div class="pestanas" id="feed-pestanas" style="padding: 0 1rem;">
+          <button class="pestana activa" onclick="cambiarFeedTab('nacional')">Nacional</button>
+          <button class="pestana" onclick="cambiarFeedTab('mi_departamento')">Mi Departamento</button>
+          <button class="pestana" onclick="cambiarFeedTab('mi_municipio')">Mi Municipio</button>
+          <button class="pestana" onclick="cambiarFeedTab('siguiendo')">Siguiendo</button>
+        </div>
+      </header>
+
+      <!-- Compositor de Publicaciones -->
+      <section class="app-redactor" id="seccion-redactor">
+        <div id="redactor-avatar-slot"></div>
+        <div class="app-redactor-cuerpo">
+          <textarea
+            class="app-redactor-textarea"
+            id="redactor-texto"
+            placeholder="¿Qué soluciones o propuestas tienes para tu territorio?"
+            maxlength="3000"
+          ></textarea>
+
+          <!-- Opciones de Alcance, Categoría y Visibilidad -->
+          <div class="app-redactor-opciones">
+            <select id="redactor-categoria" class="campo-select" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: auto;">
+              <option value="opinion">Opinión</option>
+              <option value="propuesta">Propuesta</option>
+              <option value="noticia">Noticia</option>
+              <option value="convocatoria">Convocatoria</option>
+              <option value="logro">Logro</option>
+            </select>
+
+            <select id="redactor-alcance" class="campo-select" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: auto;">
+              <option value="departamental">Alcance Departamental</option>
+              <option value="municipal">Alcance Municipal</option>
+              <option value="nacional">Alcance Nacional</option>
+            </select>
+
+            <select id="redactor-visibilidad" class="campo-select" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: auto;">
+              <option value="publica">Pública (Visible fuera)</option>
+              <option value="miembros">Solo Miembros</option>
+            </select>
+          </div>
+
+          <!-- Previsualizador de Medios seleccionados -->
+          <div id="redactor-preview-media" style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;"></div>
+
+          <div class="app-redactor-pie">
+            <div class="app-redactor-herramientas">
+              <label class="app-herramienta-btn" title="Adjuntar foto">
+                <input type="file" id="redactor-input-archivo" accept="image/*,video/mp4" style="display: none;" multiple>
+                🖼️
+              </label>
+              <span id="contador-caracteres" style="font-size: 0.75rem; color: var(--texto-suave); align-self: center; margin-left: 0.5rem;">
+                3000
+              </span>
+            </div>
+            <button class="btn btn-primario btn-sm" id="btn-enviar-post" onclick="enviarPublicacion()">
+              Publicar
+            </button>
+          </div>
+
+          <div style="font-size: 0.7rem; color: var(--texto-suave); margin-top: 0.4rem;" id="aviso-moderacion-post">
+            Tu publicación será revisada por el equipo departamental antes de publicarse.
+          </div>
+        </div>
+      </section>
+
+      <!-- Contenedor Dinámico de la Vista Activa -->
+      <div id="vista-contenido">
+        <div style="padding: 2rem; text-align: center;" class="esqueleto">Cargando publicaciones...</div>
+      </div>
+    </main>
+
+    <!-- COLUMNA 3: Lateral Derecha (340px) -->
+    <aside class="app-lateral-columna">
+      <div class="app-buscador-box">
+        <span class="app-buscador-icono">🔍</span>
+        <input type="text" class="app-buscador-input" placeholder="Buscar personas, #temas..." id="buscador-lateral" onkeydown="if(event.key==='Enter') buscarContenido(this.value)">
+      </div>
+
+      <!-- Tendencias -->
+      <div class="caja-lateral">
+        <h3 class="caja-lateral-titulo">Tendencias en Colombia</h3>
+        <div class="tendencia-item">
+          <div class="tendencia-tema">Educación · Política Pública</div>
+          <div class="tendencia-tag">#PrimeraInfancia</div>
+        </div>
+        <div class="tendencia-item">
+          <div class="tendencia-tema">Transparencia · Anticorrupción</div>
+          <div class="tendencia-tag">#CeroCorrupcion</div>
+        </div>
+        <div class="tendencia-item">
+          <div class="tendencia-tema">Regiones · Infraestructura</div>
+          <div class="tendencia-tag">#ViasTerciarias</div>
+        </div>
+        <div class="tendencia-item">
+          <div class="tendencia-tema">Centro Político · Diálogo</div>
+          <div class="tendencia-tag">#Avancemos</div>
+        </div>
+      </div>
+
+      <!-- Próximos Eventos -->
+      <div class="caja-lateral" id="lateral-eventos-box">
+        <h3 class="caja-lateral-titulo">Próximos Encuentros</h3>
+        <div id="lateral-eventos-lista" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <p style="font-size: 0.8rem; color: var(--texto-suave);">Cargando eventos...</p>
+        </div>
+      </div>
+
+      <div style="font-size: 0.75rem; color: var(--texto-suave); line-height: 1.5;">
+        <a href="privacidad.html" style="color: var(--texto-suave);">Privacidad</a> ·
+        <a href="normas.html" style="color: var(--texto-suave);">Normas</a> ·
+        <a href="insignias.html" style="color: var(--texto-suave);">Insignias</a> ·
+        © 2026 Avancemos
+      </div>
+    </aside>
+  </div>
+
+  <!-- Barra Inferior Móvil (Menos de 768px) -->
+  <nav class="app-barra-movil">
+    <a href="#/inicio" class="barra-movil-item activo">🏠</a>
+    <a href="#/explorar" class="barra-movil-item">🧭</a>
+    <a href="javascript:abrirComposer()" class="barra-movil-item" style="color: var(--turquesa); font-size: 1.4rem;">➕</a>
+    <a href="#/notificaciones" class="barra-movil-item">🔔</a>
+    <a href="#/mensajes" class="barra-movil-item">✉️</a>
+  </nav>
+
+  <!-- Script Principal de la SPA -->
+  <script type="module">
+    import { Router } from "./js/router.js";
+    import { obtenerMiPerfil } from "./js/servicios/perfiles.js";
+    import { obtenerFeed, crearPublicacion, obtenerComentarios, agregarComentario } from "./js/servicios/publicaciones.js";
+    import { obtenerEventos } from "./js/servicios/eventos.js";
+    import { obtenerGruposWhatsApp } from "./js/servicios/grupos.js";
+    import { obtenerConversaciones, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
+    import { obtenerNotificaciones, marcarNotificacionesLeidas, suscribirNotificaciones } from "./js/servicios/notificaciones.js";
+    import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
+    import { renderizarAvatar } from "./js/ui/avatar.js";
+    import { comprimirImagenWebP } from "./js/util/imagenes.js";
+    import { mostrarToast } from "./js/ui/toast.js";
+    import { cargarPermisos } from "./js/permisos.js";
+    import { cerrarSesion } from "./js/auth.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import { solicitarInsignia } from "./js/servicios/verificacion.js";
+
+    // Inicializar soporte inteligente
+    inicializarWidgetSoporte();
+
+    let miUsuario = null;
+    let permisos = null;
+    let feedTipoActual = "nacional";
+    let archivosAdjuntos = [];
+
+    async function init() {
+      try {
+        miUsuario = await obtenerMiPerfil();
+      } catch (e) {
+        console.warn("Sin sesión activa:", e);
+      }
+
+      if (miUsuario) {
+        document.getElementById("menu-usuario-nombre").textContent = miUsuario.nombre;
+        document.getElementById("menu-usuario-username").textContent = `@${miUsuario.username}`;
+        const slotNav = document.getElementById("usuario-avatar-slot");
+        slotNav.innerHTML = "";
+        slotNav.appendChild(renderizarAvatar(miUsuario, "sm"));
+
+        const slotRedactor = document.getElementById("redactor-avatar-slot");
+        if (slotRedactor) {
+          slotRedactor.innerHTML = "";
+          slotRedactor.appendChild(renderizarAvatar(miUsuario, "md"));
+        }
+
+        permisos = await cargarPermisos();
+        if (permisos.es_admin_nacional || (permisos.departamentos_moderacion && permisos.departamentos_moderacion.length > 0)) {
+          document.getElementById("item-panel-admin").style.display = "block";
+        }
+
+        // Suscribir notificaciones realtime
+        suscribirNotificaciones(miUsuario.id, (notif) => {
+          mostrarToast(`🔔 ${notif.texto}`, "exito");
+          actualizarBadgeNotificaciones();
+        });
+      } else {
+        document.getElementById("menu-usuario-nombre").textContent = "Visitante";
+        document.getElementById("menu-usuario-username").textContent = "Iniciar sesión";
+        document.getElementById("app-usuario-menu").onclick = () => window.location.href = "ingresar.html";
+        document.getElementById("seccion-redactor").style.display = "none";
+      }
+
+      // Cargar eventos en la barra lateral
+      cargarEventosLateral();
+
+      // Iniciar enrutador
+      const router = new Router({
+        "/inicio": vistaInicio,
+        "/explorar": vistaExplorar,
+        "/notificaciones": vistaNotificaciones,
+        "/mensajes": vistaMensajes,
+        "/mensajes/:id": vistaConversacion,
+        "/guardados": vistaGuardados,
+        "/grupos": vistaGrupos,
+        "/eventos": vistaEventos,
+        "/perfil": vistaMiPerfil,
+        "/u/:usuario": vistaPerfilPublico,
+        "/ajustes": vistaAjustes
+      }, onCambioRuta);
+
+      router.iniciar();
+    }
+
+    function onCambioRuta(patron) {
+      document.querySelectorAll(".app-nav-enlace").forEach(enlace => {
+        if (enlace.getAttribute("data-ruta") === patron) {
+          enlace.classList.add("activo");
+        } else {
+          enlace.classList.remove("activo");
+        }
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // -------------------------------------------------------------------------
+    // VISTAS DE LA SPA
+    // -------------------------------------------------------------------------
+
+    async function vistaInicio() {
+      document.getElementById("feed-titulo-vista").textContent = "Inicio";
+      document.getElementById("feed-pestanas").style.display = "flex";
+      document.getElementById("seccion-redactor").style.display = miUsuario ? "flex" : "none";
+      cargarFeed(feedTipoActual);
+    }
+
+    async function cargarFeed(tipo) {
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = "<div style='padding: 2.5rem; text-align: center;' class='esqueleto'>Cargando publicaciones...</div>";
+
+      try {
+        const pubs = await obtenerFeed(tipo);
+        cont.innerHTML = "";
+        if (!pubs.length) {
+          cont.innerHTML = `
+            <div class="estado-vacio">
+              <div class="estado-vacio-icono">💬</div>
+              <h3>No hay publicaciones aún</h3>
+              <p>Sé el primero en compartir una propuesta o análisis para tu territorio.</p>
+            </div>
+          `;
+          return;
+        }
+
+        pubs.forEach(p => {
+          cont.appendChild(renderizarTarjetaPublicacion(p, {
+            onComentar: (pub) => abrirModalComentarios(pub)
+          }));
+        });
+      } catch (err) {
+        cont.innerHTML = `<div style="padding: 2rem; color: var(--error);">${err.message}</div>`;
+      }
+    }
+
+    window.cambiarFeedTab = function(tipo) {
+      feedTipoActual = tipo;
+      document.querySelectorAll("#feed-pestanas .pestana").forEach(p => p.classList.remove("activa"));
+      event.target.classList.add("activa");
+      cargarFeed(tipo);
+    };
+
+    async function vistaExplorar() {
+      document.getElementById("feed-titulo-vista").textContent = "Explorar";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = `
+        <div style="padding: 1.25rem;">
+          <h3 style="margin-bottom: 1rem;">Temas y Propuestas en Debate</h3>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="chip chip-turquesa" onclick="cargarFeed('nacional')">#Educacion</button>
+            <button class="chip chip-turquesa" onclick="cargarFeed('nacional')">#Seguridad</button>
+            <button class="chip chip-turquesa" onclick="cargarFeed('nacional')">#Anticorrupcion</button>
+            <button class="chip chip-turquesa" onclick="cargarFeed('nacional')">#DesarrolloRural</button>
+          </div>
+        </div>
+      `;
+      const pubs = await obtenerFeed("nacional");
+      pubs.forEach(p => cont.appendChild(renderizarTarjetaPublicacion(p)));
+    }
+
+    async function vistaNotificaciones() {
+      document.getElementById("feed-titulo-vista").textContent = "Notificaciones";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = "<div style='padding: 2rem; text-align: center;' class='esqueleto'>Cargando notificaciones...</div>";
+
+      if (!miUsuario) {
+        cont.innerHTML = "<div style='padding: 2rem; text-align: center;'>Debes iniciar sesión para ver tus notificaciones.</div>";
+        return;
+      }
+
+      const notifs = await obtenerNotificaciones();
+      cont.innerHTML = "";
+      if (!notifs.length) {
+        cont.innerHTML = "<div class='estado-vacio'><div class='estado-vacio-icono'>🔔</div><p>No tienes notificaciones pendientes.</p></div>";
+        return;
+      }
+
+      notifs.forEach(n => {
+        const item = document.createElement("div");
+        item.style.padding = "1rem 1.25rem";
+        item.style.borderBottom = "1px solid var(--borde)";
+        item.style.backgroundColor = n.leida ? "var(--superficie)" : "rgba(11, 122, 110, 0.04)";
+        item.innerHTML = `
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div style="font-size: 1.2rem;">${n.tipo.includes('me_gusta') ? '❤️' : '💬'}</div>
+            <div>
+              <p style="font-size: var(--fs-sm);">${n.texto}</p>
+              <span style="font-size: var(--fs-xs); color: var(--texto-suave);">${new Date(n.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+        `;
+        cont.appendChild(item);
+      });
+
+      marcarNotificacionesLeidas();
+    }
+
+    async function vistaMensajes() {
+      document.getElementById("feed-titulo-vista").textContent = "Mensajes Directos";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      if (!miUsuario) {
+        cont.innerHTML = "<div style='padding: 2rem;'>Debes ingresar con tu cuenta para acceder a tus mensajes.</div>";
+        return;
+      }
+
+      const convs = await obtenerConversaciones();
+      cont.innerHTML = "";
+      if (!convs.length) {
+        cont.innerHTML = `
+          <div class="estado-vacio">
+            <div class="estado-vacio-icono">✉️</div>
+            <h3>Sin conversaciones</h3>
+            <p>Comunícate directamente con otros líderes y voluntarios de tu región.</p>
+          </div>
+        `;
+        return;
+      }
+
+      convs.forEach(c => {
+        const item = document.createElement("div");
+        item.style.padding = "1rem 1.25rem";
+        item.style.borderBottom = "1px solid var(--borde)";
+        item.style.cursor = "pointer";
+        item.innerHTML = `
+          <strong>Conversación</strong>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${c.conversacion?.ultimo_mensaje_preview || 'Conversación abierta'}</p>
+        `;
+        item.onclick = () => window.location.hash = `#/mensajes/${c.conversacion_id}`;
+        cont.appendChild(item);
+      });
+    }
+
+    async function vistaConversacion(params) {
+      document.getElementById("feed-titulo-vista").textContent = "Chat";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = `
+        <div style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
+          <div id="mensajes-lista" style="flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          <div style="padding: 1rem; border-top: 1px solid var(--borde); display: flex; gap: 0.5rem; background: var(--superficie);">
+            <input type="text" id="input-chat" class="campo-input" placeholder="Escribe un mensaje privado..." style="flex: 1;">
+            <button class="btn btn-primario" id="btn-chat-enviar">Enviar</button>
+          </div>
+        </div>
+      `;
+
+      const lista = document.getElementById("mensajes-lista");
+      const msgs = await obtenerMensajes(params.id);
+      msgs.forEach(m => renderizarMensaje(m, lista));
+      lista.scrollTop = lista.scrollHeight;
+
+      document.getElementById("btn-chat-enviar").onclick = async () => {
+        const inp = document.getElementById("input-chat");
+        const txt = inp.value.trim();
+        if (!txt) return;
+        inp.value = "";
+        const m = await enviarMensaje(params.id, txt);
+        renderizarMensaje(m, lista);
+        lista.scrollTop = lista.scrollHeight;
+      };
+
+      suscribirMensajesConversacion(params.id, (m) => {
+        if (m.autor_id !== miUsuario.id) {
+          renderizarMensaje(m, lista);
+          lista.scrollTop = lista.scrollHeight;
+        }
+      });
+    }
+
+    function renderizarMensaje(m, contenedor) {
+      const mio = miUsuario && m.autor_id === miUsuario.id;
+      const d = document.createElement("div");
+      d.style.alignSelf = mio ? "flex-end" : "flex-start";
+      d.style.maxWidth = "75%";
+      d.style.padding = "0.65rem 1rem";
+      d.style.borderRadius = mio ? "16px 16px 2px 16px" : "16px 16px 16px 2px";
+      d.style.backgroundColor = mio ? "var(--turquesa)" : "var(--superficie)";
+      d.style.color = mio ? "#FFFFFF" : "var(--texto)";
+      d.style.border = mio ? "none" : "1px solid var(--borde)";
+      d.style.fontSize = "0.9rem";
+      d.textContent = m.contenido;
+      contenedor.appendChild(d);
+    }
+
+    async function vistaGuardados() {
+      document.getElementById("feed-titulo-vista").textContent = "Guardados";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = "<div style='padding: 2rem;'><p>Cargando tus publicaciones guardadas...</p></div>";
+      // Cargar publicaciones del feed y filtrar
+      const pubs = await obtenerFeed("nacional");
+      const guardadas = pubs.filter(p => p.guardado);
+      cont.innerHTML = "";
+      if (!guardadas.length) {
+        cont.innerHTML = "<div class='estado-vacio'><div class='estado-vacio-icono'>🔖</div><p>No tienes publicaciones guardadas.</p></div>";
+        return;
+      }
+      guardadas.forEach(p => cont.appendChild(renderizarTarjetaPublicacion(p)));
+    }
+
+    async function vistaGrupos() {
+      document.getElementById("feed-titulo-vista").textContent = "Grupos de WhatsApp";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = `
+        <div style="padding: 1.25rem; border-bottom: 1px solid var(--borde);">
+          <div class="tarjeta" style="background: rgba(11, 122, 110, 0.08); border-left: 4px solid var(--turquesa);">
+            <strong>Aviso de Seguridad Territorial:</strong>
+            <p style="font-size: var(--fs-xs); margin-top: 0.25rem;">
+              Al unirte a un grupo de WhatsApp, los demás miembros pueden ver tu número telefónico. Recomendamos canales y comunidades para mayor privacidad.
+            </p>
+          </div>
+        </div>
+        <div id="lista-grupos-wa" style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem;"></div>
+      `;
+
+      const listCont = document.getElementById("lista-grupos-wa");
+      const grupos = await obtenerGruposWhatsApp(miUsuario?.departamento_id);
+      if (!grupos.length) {
+        listCont.innerHTML = "<p style='color: var(--texto-suave);'>No hay grupos aprobados para tu departamento aún.</p>";
+        return;
+      }
+
+      grupos.forEach(g => {
+        const item = document.createElement("div");
+        item.className = "tarjeta";
+        item.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span class="chip chip-turquesa">${g.tipo}</span>
+              <h4 style="margin: 0.5rem 0;">${g.nombre}</h4>
+              <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${g.descripcion || ''}</p>
+            </div>
+            <a href="${g.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primario btn-sm">Unirme</a>
+          </div>
+        `;
+        listCont.appendChild(item);
+      });
+    }
+
+    async function vistaEventos() {
+      document.getElementById("feed-titulo-vista").textContent = "Eventos";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      const evts = await obtenerEventos(false, miUsuario?.departamento_id);
+      cont.innerHTML = "<div style='padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;' id='evts-lista'></div>";
+      const l = document.getElementById("evts-lista");
+      evts.forEach(e => {
+        const d = document.createElement("div");
+        d.className = "tarjeta";
+        d.innerHTML = `
+          <span class="chip chip-ambar">${e.modalidad}</span>
+          <h3 style="margin: 0.5rem 0;">${e.titulo}</h3>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${e.descripcion}</p>
+        `;
+        l.appendChild(d);
+      });
+    }
+
+    async function vistaMiPerfil() {
+      if (miUsuario) {
+        vistaPerfilPublico({ usuario: miUsuario.username });
+      } else {
+        window.location.href = "ingresar.html";
+      }
+    }
+
+    async function vistaPerfilPublico(params) {
+      document.getElementById("feed-titulo-vista").textContent = "Perfil";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      cont.innerHTML = "<div style='padding: 2rem;' class='esqueleto'>Cargando perfil...</div>";
+
+      // Cargar perfil
+      const { data: p } = await import("./js/servicios/perfiles.js").then(m => m.obtenerPerfilPorUsername(params.usuario));
+      if (!p) {
+        cont.innerHTML = "<div style='padding: 2rem;'>Perfil no encontrado.</div>";
+        return;
+      }
+
+      cont.innerHTML = `
+        <div style="height: 140px; background: linear-gradient(135deg, var(--azul-noche), var(--turquesa)); position: relative;"></div>
+        <div style="padding: 0 1.25rem 1.25rem; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: -45px; margin-bottom: 1rem;">
+            <div id="perfil-avatar-slot"></div>
+            ${miUsuario && miUsuario.username === p.username ? `
+              <a href="#/ajustes" class="btn btn-secundario btn-sm">Editar perfil</a>
+            ` : `
+              <button class="btn btn-primario btn-sm" onclick="mostrarToast('Siguiendo a @${p.username}', 'exito')">Seguir</button>
+            `}
+          </div>
+
+          <h3>${p.nombre}</h3>
+          <div style="color: var(--texto-suave); font-size: 0.85rem;">@${p.username}</div>
+          <p style="margin: 0.75rem 0; font-size: 0.95rem;">${p.bio || 'Sin biografía aún.'}</p>
+
+          <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--texto-suave); margin-top: 1rem;">
+            <div><strong style="color: var(--texto);">${p.siguiendo_n || 0}</strong> Siguiendo</div>
+            <div><strong style="color: var(--texto);">${p.seguidores_n || 0}</strong> Seguidores</div>
+            <div><strong style="color: var(--texto);">${p.publicaciones_n || 0}</strong> Publicaciones</div>
+          </div>
+        </div>
+      `;
+
+      const avSlot = document.getElementById("perfil-avatar-slot");
+      avSlot.appendChild(renderizarAvatar(p, "xl"));
+    }
+
+    async function vistaAjustes() {
+      document.getElementById("feed-titulo-vista").textContent = "Ajustes de Cuenta";
+      document.getElementById("feed-pestanas").style.display = "none";
+      document.getElementById("seccion-redactor").style.display = "none";
+
+      const cont = document.getElementById("vista-contenido");
+      if (!miUsuario) {
+        window.location.href = "ingresar.html";
+        return;
+      }
+
+      cont.innerHTML = `
+        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="tarjeta">
+            <h3>Solicitar Verificación con Insignia</h3>
+            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.5rem 0 1rem;">
+              Solicita tu insignia de verificación Azul (identidad real) o Gris (cargo público).
+            </p>
+            <button class="btn btn-primario btn-sm" onclick="solicitarInsigniaModal()">Solicitar Insignia</button>
+          </div>
+
+          <div class="tarjeta">
+            <h3>Sesión y Privacidad</h3>
+            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.5rem 0 1rem;">
+              Puedes cerrar sesión de forma segura o gestionar tus datos.
+            </p>
+            <button class="btn btn-peligro btn-sm" onclick="cerrarSesionApp()">Cerrar Sesión</button>
+          </div>
+        </div>
+      `;
+    }
+
+    window.solicitarInsigniaModal = async function() {
+      const cargo = prompt("Ingresa tu cargo o actividad comunitaria:");
+      const motivo = prompt("Motivo para solicitar la verificación:");
+      if (cargo && motivo) {
+        try {
+          await solicitarInsignia({
+            insignia: "azul",
+            cargo,
+            motivo
+          });
+          mostrarToast("Solicitud de verificación enviada a tu equipo departamental.", "exito");
+        } catch (e) {
+          mostrarToast(e.message, "error");
+        }
+      }
+    };
+
+    window.cerrarSesionApp = async function() {
+      await cerrarSesion();
+      window.location.href = "index.html";
+    };
+
+    // -------------------------------------------------------------------------
+    // REDACCIÓN Y COMPOSER
+    // -------------------------------------------------------------------------
+
+    window.abrirComposer = function() {
+      const textarea = document.getElementById("redactor-texto");
+      if (textarea) {
+        textarea.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+
+    const redactorInput = document.getElementById("redactor-texto");
+    const contador = document.getElementById("contador-caracteres");
+    redactorInput.addEventListener("input", () => {
+      const restan = 3000 - redactorInput.value.length;
+      contador.textContent = restan;
+    });
+
+    // Subida de archivos con compresión WebP
+    const fileInput = document.getElementById("redactor-input-archivo");
+    fileInput.addEventListener("change", async () => {
+      const files = Array.from(fileInput.files);
+      const previewCont = document.getElementById("redactor-preview-media");
+      previewCont.innerHTML = "";
+      archivosAdjuntos = [];
+
+      for (const f of files.slice(0, 4)) {
+        if (f.type.startsWith("image/")) {
+          const comp = await comprimirImagenWebP(f);
+          archivosAdjuntos.push({ archivo: comp.archivo, tipo: "imagen", ancho: comp.ancho, alto: comp.alto });
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(comp.archivo);
+          img.style.width = "64px";
+          img.style.height = "64px";
+          img.style.objectFit = "cover";
+          img.style.borderRadius = "8px";
+          previewCont.appendChild(img);
+        }
+      }
+    });
+
+    window.enviarPublicacion = async function() {
+      const btn = document.getElementById("btn-enviar-post");
+      const texto = redactorInput.value.trim();
+      if (!texto && archivosAdjuntos.length === 0) {
+        mostrarToast("Escribe algo para publicar", "alerta");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Publicando...";
+
+      try {
+        await crearPublicacion({
+          contenido: texto,
+          categoria: document.getElementById("redactor-categoria").value,
+          alcance: document.getElementById("redactor-alcance").value,
+          visibilidad: document.getElementById("redactor-visibilidad").value,
+          archivosMedia: archivosAdjuntos
+        });
+
+        redactorInput.value = "";
+        archivosAdjuntos = [];
+        document.getElementById("redactor-preview-media").innerHTML = "";
+        btn.disabled = false;
+        btn.textContent = "Publicar";
+        mostrarToast("Publicación enviada. Ha quedado en revisión por el equipo departamental.", "exito", 5000);
+        cargarFeed(feedTipoActual);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Publicar";
+        mostrarToast(err.message || "Error al publicar", "error");
+      }
+    };
+
+    // Modal de comentarios
+    window.abrirModalComentarios = async function(pub) {
+      const c = prompt(`Comentar en la publicación de @${pub.autor_username}:`);
+      if (c && c.trim()) {
+        try {
+          await agregarComentario(pub.id, c.trim());
+          mostrarToast("Comentario agregado exitosamente", "exito");
+          cargarFeed(feedTipoActual);
+        } catch (e) {
+          mostrarToast(e.message, "error");
+        }
+      }
+    };
+
+    async function cargarEventosLateral() {
+      const cont = document.getElementById("lateral-eventos-lista");
+      try {
+        const evts = await obtenerEventos(true);
+        cont.innerHTML = "";
+        evts.slice(0, 3).forEach(e => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <div style="font-size: 0.75rem; color: var(--turquesa); font-weight: 700;">${e.modalidad.toUpperCase()}</div>
+            <strong style="font-size: 0.85rem;">${e.titulo}</strong>
+          `;
+          cont.appendChild(div);
+        });
+      } catch (e) {
+        cont.innerHTML = "<p style='font-size: 0.8rem;'>No hay eventos cercanos.</p>";
+      }
+    }
+
+    window.toggleTema = function() {
+      const actual = document.documentElement.getAttribute("data-tema");
+      document.documentElement.setAttribute("data-tema", actual === "oscuro" ? "claro" : "oscuro");
+    };
+
+    init();
+  </script>
+</body>
+</html>

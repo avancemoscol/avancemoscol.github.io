@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avancemos · Movimiento Político de Centro en Colombia</title>
+  <meta name="description" content="Plataforma ciudadana de Avancemos. Construimos soluciones prácticas con diálogo, evidencia empírica y transparencia en los 32 departamentos y Bogotá.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  
+  <!-- Estilos del Sistema de Diseño -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+
+  <!-- Leaflet para el mapa coroplético -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <a href="#contenido-principal" class="saltar-enlace">Saltar al contenido principal</a>
+
+  <!-- Barra Superior Fija con Desenfoque -->
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio de Avancemos">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+
+      <nav aria-label="Navegación principal">
+        <ul class="sitio-menu" id="sitio-menu">
+          <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
+          <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
+          <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
+          <li><a href="propuestas.html" class="sitio-menu-enlace">Propuestas</a></li>
+          <li><a href="eventos.html" class="sitio-menu-enlace">Eventos</a></li>
+        </ul>
+      </nav>
+
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-fantasma" id="btn-ingresar">Ingresar</a>
+        <a href="unete.html" class="btn btn-primario" id="btn-unete">Únete</a>
+        <button class="menu-hamburguesa" aria-label="Abrir menú" onclick="toggleMenuMovil()">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido-principal">
+    <!-- Héroe Principal con Lema y Métricas en Vivo -->
+    <section class="heroe-seccion">
+      <div class="contenedor heroe-contenido">
+        <div class="heroe-lema-badge">Movimiento Político de Centro · Colombia</div>
+        <h1 class="heroe-titulo">Ni extremos ni excusas: soluciones.</h1>
+        <p class="heroe-subtitulo">
+          Organizamos a ciudadanos de todas las regiones para construir acuerdos prácticos basados en evidencia y resultados medibles, superando la polarización destructiva.
+        </p>
+        <div class="heroe-botones">
+          <a href="unete.html" class="btn btn-primario btn-lg">Únete como voluntario</a>
+          <a href="propuestas.html" class="btn btn-secundario btn-lg heroe-btn-secundario">Conoce las propuestas</a>
+        </div>
+
+        <div class="heroe-metricas" id="heroe-metricas">
+          <div class="metrica-item">
+            <div class="metrica-valor tabular" id="metrica-miembros">—</div>
+            <div class="metrica-rotulo">Miembros activos</div>
+          </div>
+          <div class="metrica-item">
+            <div class="metrica-valor tabular" id="metrica-departamentos">—</div>
+            <div class="metrica-rotulo">Departamentos con presencia</div>
+          </div>
+          <div class="metrica-item">
+            <div class="metrica-valor tabular" id="metrica-municipios">—</div>
+            <div class="metrica-rotulo">Municipios organizados</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Qué es Avancemos y Valores en Chips -->
+    <section class="seccion-sitio">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Qué es Avancemos</h2>
+          <p class="seccion-subtitulo">Un movimiento ciudadano descentralizado que pone el rigor técnico y el diálogo al servicio de Colombia.</p>
+        </div>
+
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem;">
+          <span class="chip chip-turquesa">Pragmatismo y evidencia</span>
+          <span class="chip chip-turquesa">Diálogo sobre trincheras</span>
+          <span class="chip chip-turquesa">Cero tolerancia a la corrupción</span>
+          <span class="chip chip-turquesa">Respeto institucional</span>
+          <span class="chip chip-turquesa">Soluciones desde el territorio</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div class="tarjeta">
+            <h3 style="font-size: var(--fs-xl); margin-bottom: 0.75rem;">Misión</h3>
+            <p style="color: var(--texto-suave);">
+              Organizar a ciudadanos de todas las regiones para construir y ejecutar soluciones prácticas, basadas en evidencia y en acuerdos, que mejoren la vida de los colombianos.
+            </p>
+          </div>
+          <div class="tarjeta">
+            <h3 style="font-size: var(--fs-xl); margin-bottom: 0.75rem;">Visión</h3>
+            <p style="color: var(--texto-suave);">
+              Una Colombia que resuelve sus problemas con diálogo, instituciones confiables y resultados medibles, cerrando brechas territoriales con justicia social.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ejes Programáticos / Propuestas -->
+    <section class="seccion-sitio seccion-sitio-alt">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Ejes Programáticos</h2>
+          <p class="seccion-subtitulo">Políticas evaluables orientadas a transformar la realidad cotidiana.</p>
+        </div>
+        <div class="propuestas-grilla" id="propuestas-grilla">
+          <div class="esqueleto" style="height: 220px;"></div>
+          <div class="esqueleto" style="height: 220px;"></div>
+          <div class="esqueleto" style="height: 220px;"></div>
+        </div>
+        <div style="text-align: center; margin-top: 2.5rem;">
+          <a href="propuestas.html" class="btn btn-secundario">Ver todas las propuestas detalladas</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cómo Participar en 3 Pasos -->
+    <section class="seccion-sitio">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Cómo participar en 3 pasos</h2>
+          <p class="seccion-subtitulo">Construimos comunidad de forma organizada y transparente.</p>
+        </div>
+        <div class="pasos-grilla">
+          <div class="paso-item">
+            <div class="paso-numero">1</div>
+            <h4>Regístrate</h4>
+            <p style="color: var(--texto-suave); font-size: var(--fs-sm);">
+              Crea tu cuenta de simpatizante o voluntario indicando tu departamento y municipio.
+            </p>
+          </div>
+          <div class="paso-item">
+            <div class="paso-numero">2</div>
+            <h4>Tu equipo te aprueba</h4>
+            <p style="color: var(--texto-suave); font-size: var(--fs-sm);">
+              Los moderadores locales de tu región verifican tu solicitud para mantener una comunidad respetuosa.
+            </p>
+          </div>
+          <div class="paso-item">
+            <div class="paso-numero">3</div>
+            <h4>Actúa en tu territorio</h4>
+            <p style="color: var(--texto-suave); font-size: var(--fs-sm);">
+              Únete al grupo de WhatsApp de tu departamento, participa en foros regionales y asiste a eventos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mapa de Presencia Territorial (Leaflet + DANE GeoJSON) -->
+    <section class="seccion-sitio seccion-sitio-alt">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Presencia en los 32 Departamentos y Bogotá</h2>
+          <p class="seccion-subtitulo">Pasa el cursor por cualquier departamento para conocer su organización.</p>
+        </div>
+        <div class="mapa-contenedor" id="mapa-colombia"></div>
+      </div>
+    </section>
+
+    <!-- El Centro Político (Resumen) -->
+    <section class="seccion-sitio">
+      <div class="contenedor">
+        <div class="tarjeta" style="background: linear-gradient(135deg, var(--marfil), #F0EDE6); border-left: 6px solid var(--turquesa);">
+          <div style="max-width: 760px;">
+            <span class="chip chip-turquesa" style="margin-bottom: 0.75rem;">Fundamentos</span>
+            <h2>¿Por qué el centro político?</h2>
+            <p style="margin: 1rem 0; font-size: var(--fs-md); color: var(--texto);">
+              El centro no es la equidistancia vacía ni la tibieza: es la convicción de que las mejores soluciones surgen de la evidencia técnica, la Constitución de 1991 y la capacidad de concertar entre diferentes.
+            </p>
+            <a href="el-centro.html" class="btn btn-primario">Leer el manifiesto del centro</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Referentes de Centro -->
+    <section class="seccion-sitio seccion-sitio-alt">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Referentes de Centro</h2>
+          <p class="seccion-subtitulo">Líderes que demostraron que gobernar desde el consenso y la pedagogía produce resultados duraderos.</p>
+        </div>
+        <div class="referentes-grilla" id="referentes-grilla">
+          <div class="esqueleto" style="height: 240px;"></div>
+          <div class="esqueleto" style="height: 240px;"></div>
+          <div class="esqueleto" style="height: 240px;"></div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+          <a href="referentes.html" class="btn btn-secundario">Ver referentes de Colombia y el Mundo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Publicaciones Oficiales Recientes -->
+    <section class="seccion-sitio">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Voces Oficiales</h2>
+          <p class="seccion-subtitulo">Comunicados y análisis de Avancemos Colombia.</p>
+        </div>
+        <div id="publicaciones-oficiales" style="max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+          <p style="text-align: center; color: var(--texto-suave);">Cargando comunicados oficiales...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Llamado Final -->
+    <section class="seccion-sitio" style="background-color: var(--azul-noche); color: #fff; text-align: center;">
+      <div class="contenedor" style="max-width: 720px;">
+        <h2 style="color: #fff; margin-bottom: 1rem;">Colombia nos necesita unidos y en acción</h2>
+        <p style="color: #CBD5E1; margin-bottom: 2rem; font-size: var(--fs-md);">
+          No dejes que los extremos decidan el futuro de tu departamento. Sé parte de la alternativa sensata.
+        </p>
+        <a href="unete.html" class="btn btn-primario btn-lg">Regístrate en Avancemos</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de Página -->
+  <footer class="sitio-footer">
+    <div class="contenedor">
+      <div class="footer-grilla">
+        <div class="footer-col">
+          <img src="assets/logo.svg" alt="Avancemos Logo" style="filter: brightness(0) invert(1); height: 32px; margin-bottom: 1rem;">
+          <p style="font-size: var(--fs-sm); color: #A0AEC0; max-width: 280px;">
+            Movimiento ciudadano de centro. Colombia avanza cuando nos escuchamos.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h5>Plataforma</h5>
+          <ul class="footer-links">
+            <li><a href="quienes-somos.html">Quiénes somos</a></li>
+            <li><a href="el-centro.html">El centro político</a></li>
+            <li><a href="referentes.html">Referentes</a></li>
+            <li><a href="propuestas.html">Propuestas</a></li>
+            <li><a href="eventos.html">Eventos</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Participación</h5>
+          <ul class="footer-links">
+            <li><a href="unete.html">Únete como voluntario</a></li>
+            <li><a href="ingresar.html">Ingreso a la red social</a></li>
+            <li><a href="insignias.html">Insignias y Verificación</a></li>
+            <li><a href="normas.html">Normas de convivencia</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Transparencia</h5>
+          <ul class="footer-links">
+            <li><a href="privacidad.html">Privacidad (Ley 1581)</a></li>
+            <li><a href="terminos.html">Términos de uso</a></li>
+            <li><a href="estilo.html">Sistema de diseño</a></li>
+            <li><span style="color: #718096; font-size: 0.8rem;">contacto@avancemos.co</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-inferior">
+        <div>© 2026 Movimiento Político Avancemos Colombia · NIT: 901.884.230-1</div>
+        <div>Carrera 7 # 71-21, Bogotá D. C. · 100% Sin sesgos de cookies</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts de la Aplicación -->
+  <script type="module">
+    import { obtenerEstadisticasPublicas, obtenerPropuestas, obtenerReferentes } from "./js/servicios/cms.js";
+    import { obtenerFeedPublico } from "./js/servicios/publicaciones.js";
+    import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import { obtenerSesion } from "./js/auth.js";
+
+    // Inicializar soporte inteligente
+    inicializarWidgetSoporte();
+
+    // Comprobar sesión para actualizar botón de ingreso
+    obtenerSesion().then(sesion => {
+      if (sesion) {
+        const btn = document.getElementById("btn-ingresar");
+        if (btn) {
+          btn.textContent = "Ir a la Red";
+          btn.href = "app.html";
+        }
+      }
+    });
+
+    // Cargar métricas en vivo
+    obtenerEstadisticasPublicas().then(stats => {
+      if (!stats) return;
+      document.getElementById("metrica-miembros").textContent = stats.miembros_activos || "120+";
+      document.getElementById("metrica-departamentos").textContent = stats.departamentos_con_presencia || "33";
+      document.getElementById("metrica-municipios").textContent = stats.municipios_con_presencia || "110+";
+      inicializarMapa(stats.departamentos);
+    });
+
+    // Cargar propuestas
+    obtenerPropuestas().then(props => {
+      const grilla = document.getElementById("propuestas-grilla");
+      if (!grilla || !props.length) return;
+      grilla.innerHTML = "";
+      props.slice(0, 6).forEach(p => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta tarjeta-hover tarjeta-propuesta";
+        tarjeta.innerHTML = `
+          <div>
+            <div class="tarjeta-propuesta-icono">✨</div>
+            <h4>${p.titulo}</h4>
+            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem;">${p.resumen}</p>
+          </div>
+          <a href="propuestas.html#${p.eje}" class="btn btn-secundario btn-sm" style="margin-top: 1rem;">Ver detalle</a>
+        `;
+        grilla.appendChild(tarjeta);
+      });
+    });
+
+    // Cargar referentes
+    obtenerReferentes("colombia").then(refs => {
+      const grilla = document.getElementById("referentes-grilla");
+      if (!grilla || !refs.length) return;
+      grilla.innerHTML = "";
+      refs.slice(0, 4).forEach(r => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta tarjeta-hover tarjeta-referente";
+        tarjeta.innerHTML = `
+          <div class="referente-monograma">${r.nombre.charAt(0)}</div>
+          <h4>${r.nombre}</h4>
+          <span style="font-size: var(--fs-xs); color: var(--turquesa); font-weight: 600;">${r.cargos}</span>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem; line-height: 1.4;">${r.leccion}</p>
+        `;
+        grilla.appendChild(tarjeta);
+      });
+    });
+
+    // Cargar publicaciones oficiales
+    obtenerFeedPublico(null, null, 3).then(pubs => {
+      const cont = document.getElementById("publicaciones-oficiales");
+      if (!cont) return;
+      cont.innerHTML = "";
+      if (!pubs.length) {
+        cont.innerHTML = `<div class="tarjeta" style="text-align: center; color: var(--texto-suave);">No hay comunicados recientes en este momento.</div>`;
+        return;
+      }
+      pubs.forEach(p => {
+        cont.appendChild(renderizarTarjetaPublicacion(p));
+      });
+    });
+
+    // Inicializar Mapa Coroplético con GeoJSON de Colombia
+    async function inicializarMapa(datosDeptos) {
+      const mapaEl = document.getElementById("mapa-colombia");
+      if (!mapaEl) return;
+
+      const map = L.map("mapa-colombia", {
+        center: [4.5709, -74.2973],
+        zoom: 5.5,
+        minZoom: 4,
+        maxZoom: 9,
+        scrollWheelZoom: false
+      });
+
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
+        attribution: "© OpenStreetMap contributors, © CARTO"
+      }).addTo(map);
+
+      try {
+        const resp = await fetch("data/colombia-departamentos.geojson");
+        const geojson = await resp.json();
+
+        L.geoJSON(geojson, {
+          style: (feature) => {
+            const dptoId = feature.properties.DPTO || feature.properties.DPTO_CCDGO;
+            const info = datosDeptos ? datosDeptos[dptoId] : null;
+            const conteo = info ? info.conteo : 0;
+            return {
+              fillColor: conteo > 0 ? "#0B7A6E" : "#80CBC4",
+              weight: 1.5,
+              opacity: 1,
+              color: "#FFFFFF",
+              fillOpacity: conteo > 0 ? 0.8 : 0.4
+            };
+          },
+          onEachFeature: (feature, layer) => {
+            const dptoId = feature.properties.DPTO || feature.properties.DPTO_CCDGO;
+            const nombre = feature.properties.NOMBRE_DPT || feature.properties.nombre || "Departamento";
+            const info = datosDeptos ? datosDeptos[dptoId] : null;
+            const rotulo = info ? info.rotulo : "menos de 5 miembros";
+
+            layer.bindTooltip(`<strong>${nombre}</strong><br>Presencia: ${rotulo}`, {
+              sticky: true,
+              className: "mapa-tooltip"
+            });
+
+            layer.on("mouseover", () => {
+              layer.setStyle({ weight: 3, color: "#0B2440", fillOpacity: 0.9 });
+            });
+            layer.on("mouseout", () => {
+              layer.setStyle({ weight: 1.5, color: "#FFFFFF", fillOpacity: 0.7 });
+            });
+            layer.on("click", () => {
+              window.location.href = `app.html#/d/${dptoId}`;
+            });
+          }
+        }).addTo(map);
+      } catch (e) {
+        console.warn("No se pudo cargar el archivo GeoJSON:", e);
+      }
+    }
+
+    window.toggleMenuMovil = function() {
+      document.getElementById("sitio-menu").classList.toggle("abierto");
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   Estilos de la Red Social Estilo X (`app.html`) · Avancemos
+   ========================================================================== */
+
+.app-layout {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0 auto;
+  max-width: 1280px;
+}
+
+/* Columna Izquierda: Navegación Principal */
+.app-nav-lateral {
+  width: var(--ancho-nav-app);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem 1rem;
+  border-right: 1px solid var(--borde);
+  flex-shrink: 0;
+}
+.app-nav-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--espacio-6);
+  padding: 0 0.5rem;
+}
+.app-nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  list-style: none;
+}
+.app-nav-enlace {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radio-pleno);
+  color: var(--texto);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
+}
+.app-nav-enlace:hover {
+  background-color: rgba(11, 122, 110, 0.08);
+  color: var(--turquesa);
+}
+.app-nav-enlace.activo {
+  color: var(--turquesa);
+  background-color: rgba(11, 122, 110, 0.12);
+}
+.app-nav-badge {
+  margin-left: auto;
+  background-color: var(--turquesa);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radio-pleno);
+  font-weight: 700;
+}
+.app-boton-publicar {
+  width: 100%;
+  margin-top: var(--espacio-4);
+  padding: 0.875rem;
+  font-size: var(--fs-base);
+}
+
+.app-usuario-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: 0.625rem;
+  border-radius: var(--radio-pleno);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+.app-usuario-menu:hover {
+  background-color: var(--borde-suave);
+}
+
+/* Columna Central: Feed Principal */
+.app-feed-columna {
+  width: 100%;
+  max-width: var(--ancho-feed);
+  border-right: 1px solid var(--borde);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-feed-header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--borde);
+}
+[data-tema="oscuro"] .app-feed-header {
+  background-color: rgba(18, 32, 47, 0.85);
+}
+
+/* Caja de Redacción (Composer) */
+.app-redactor {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--borde);
+  display: flex;
+  gap: var(--espacio-3);
+  background-color: var(--superficie);
+}
+.app-redactor-cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.app-redactor-textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: var(--fs-base);
+  color: var(--texto);
+  min-height: 80px;
+  outline: none;
+  padding: 0.25rem 0;
+}
+.app-redactor-opciones {
+  display: flex;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-2);
+  flex-wrap: wrap;
+}
+.app-redactor-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--espacio-3);
+  padding-top: var(--espacio-3);
+  border-top: 1px solid var(--borde-suave);
+}
+.app-redactor-herramientas {
+  display: flex;
+  gap: var(--espacio-1);
+}
+.app-herramienta-btn {
+  background: none;
+  border: none;
+  color: var(--turquesa);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transicion-rapida);
+}
+.app-herramienta-btn:hover {
+  background-color: rgba(11, 122, 110, 0.1);
+}
+
+/* Tarjeta de Publicación */
+.tarjeta-pub {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--borde);
+  display: flex;
+  gap: var(--espacio-3);
+  background-color: var(--superficie);
+  transition: background-color var(--transicion-rapida);
+  cursor: pointer;
+}
+.tarjeta-pub:hover {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+[data-tema="oscuro"] .tarjeta-pub:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+.pub-contenido-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.pub-header {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-bottom: var(--espacio-1);
+  flex-wrap: wrap;
+}
+.pub-nombre {
+  font-weight: 700;
+  color: var(--texto);
+}
+.pub-username, .pub-tiempo {
+  color: var(--texto-suave);
+  font-size: var(--fs-xs);
+}
+.pub-texto {
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  margin-bottom: var(--espacio-3);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.pub-media-grilla {
+  margin-top: var(--espacio-3);
+  margin-bottom: var(--espacio-3);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  display: grid;
+  gap: 2px;
+}
+.pub-media-grilla.grilla-1 { grid-template-columns: 1fr; max-height: 480px; }
+.pub-media-grilla.grilla-2 { grid-template-columns: 1fr 1fr; max-height: 320px; }
+.pub-media-grilla.grilla-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; max-height: 340px; }
+.pub-media-grilla.grilla-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; max-height: 340px; }
+.pub-media-item {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Barra de Acciones de Publicación */
+.pub-acciones {
+  display: flex;
+  justify-content: space-between;
+  max-width: 440px;
+  margin-top: var(--espacio-2);
+}
+.pub-accion-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radio-pleno);
+  transition: all var(--transicion-rapida);
+}
+.pub-accion-btn:hover {
+  color: var(--turquesa);
+  background-color: rgba(11, 122, 110, 0.08);
+}
+.pub-accion-btn.accion-mg:hover,
+.pub-accion-btn.mg-activo {
+  color: #E11D48;
+  background-color: rgba(225, 29, 72, 0.08);
+}
+.pub-accion-btn.guardado-activo {
+  color: var(--ambar);
+}
+
+/* Columna Derecha: Lateral (Tendencias y Eventos) */
+.app-lateral-columna {
+  width: var(--ancho-lateral-app);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  flex-shrink: 0;
+}
+.app-buscador-box {
+  position: relative;
+}
+.app-buscador-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  border-radius: var(--radio-pleno);
+  border: 1px solid var(--borde);
+  background-color: var(--marfil);
+  color: var(--texto);
+}
+.app-buscador-icono {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--texto-suave);
+}
+
+.caja-lateral {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: 1rem 1.25rem;
+}
+.caja-lateral-titulo {
+  font-size: var(--fs-md);
+  font-family: var(--fuente-cuerpo);
+  font-weight: 700;
+  margin-bottom: var(--espacio-4);
+  color: var(--texto);
+}
+.tendencia-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--borde-suave);
+}
+.tendencia-item:last-child {
+  border-bottom: none;
+}
+.tendencia-tema {
+  font-size: var(--fs-xs);
+  color: var(--texto-suave);
+}
+.tendencia-tag {
+  font-weight: 700;
+  color: var(--texto);
+  font-size: var(--fs-sm);
+}
+
+/* Barra Inferior Móvil */
+.app-barra-movil {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--superficie);
+  border-top: 1px solid var(--borde);
+  z-index: 500;
+  justify-content: space-around;
+  align-items: center;
+}
+.barra-movil-item {
+  color: var(--texto-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+.barra-movil-item.activo {
+  color: var(--turquesa);
+}
+
+/* Responsividad de 3 Columnas */
+@media (max-width: 1279px) {
+  .app-lateral-columna { display: none; }
+}
+@media (max-width: 1023px) {
+  .app-nav-lateral {
+    width: 76px;
+    padding: 1rem 0.5rem;
+    align-items: center;
+  }
+  .app-nav-enlace span,
+  .app-nav-header text,
+  .app-usuario-menu .usuario-texto,
+  .app-boton-publicar span {
+    display: none;
+  }
+  .app-boton-publicar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+@media (max-width: 767px) {
+  .app-nav-lateral { display: none; }
+  .app-feed-columna { border-right: none; margin-bottom: 60px; }
+  .app-barra-movil { display: flex; }
+}
