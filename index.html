@@ -48,6 +48,8 @@
   <main id="contenido-principal">
     <!-- Héroe Principal con Lema y Métricas en Vivo -->
     <section class="heroe-seccion">
+      <img src="assets/personajes/personaje-voluntaria.webp" alt="" aria-hidden="true" class="heroe-personaje heroe-personaje-izq" width="313" height="700">
+      <img src="assets/personajes/personaje-maestra.webp" alt="" aria-hidden="true" class="heroe-personaje heroe-personaje-der" width="317" height="700">
       <div class="contenedor heroe-contenido">
         <div class="heroe-lema-badge">Movimiento Político de Centro · Colombia</div>
         <h1 class="heroe-titulo">Ni extremos ni excusas: soluciones.</h1>
@@ -104,6 +106,64 @@
             <p style="color: var(--texto-suave);">
               Una Colombia que resuelve sus problemas con diálogo, instituciones confiables y resultados medibles, cerrando brechas territoriales con justicia social.
             </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Voces del territorio: personajes animados (ilustraciones generadas con Vertex AI) -->
+    <section class="seccion-sitio seccion-sitio-alt" id="voces-territorio">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Voces del territorio</h2>
+          <p class="seccion-subtitulo">Así conversamos en Avancemos: desde el campo, el aula y la universidad. Pasa el cursor para saludar.</p>
+        </div>
+        <div class="personajes-grilla" id="personajes-grilla">
+          <div class="personaje-tarjeta">
+            <div class="personaje-globo"><span data-dialogo="¡Hola! Soy voluntaria en mi municipio. Aquí primero escuchamos y después proponemos."></span></div>
+            <img class="personaje-img" src="assets/personajes/personaje-voluntaria.webp" alt="Ilustración de Laura, voluntaria" loading="lazy" width="313" height="700">
+            <div class="personaje-nombre">Laura</div>
+            <div class="personaje-rol">Voluntaria · Antioquia</div>
+          </div>
+          <div class="personaje-tarjeta">
+            <div class="personaje-globo"><span data-dialogo="Tienes razón, Laura. En el campo necesitamos vías y crédito, no discursos de trinchera."></span></div>
+            <img class="personaje-img" src="assets/personajes/personaje-campesino.webp" alt="Ilustración de don Aurelio, caficultor" loading="lazy" width="280" height="700">
+            <div class="personaje-nombre">Don Aurelio</div>
+            <div class="personaje-rol">Caficultor · Huila</div>
+          </div>
+          <div class="personaje-tarjeta">
+            <div class="personaje-globo"><span data-dialogo="Y que todo se mida con datos abiertos: si una política no funciona, se corrige."></span></div>
+            <img class="personaje-img" src="assets/personajes/personaje-estudiante.webp" alt="Ilustración de Mateo, estudiante" loading="lazy" width="366" height="700">
+            <div class="personaje-nombre">Mateo</div>
+            <div class="personaje-rol">Estudiante · Bogotá</div>
+          </div>
+          <div class="personaje-tarjeta">
+            <div class="personaje-globo"><span data-dialogo="Por eso educamos para el diálogo. ¡Colombia avanza cuando nos escuchamos!"></span></div>
+            <img class="personaje-img" src="assets/personajes/personaje-maestra.webp" alt="Ilustración de la profe Carmen, docente" loading="lazy" width="317" height="700">
+            <div class="personaje-nombre">Profe Carmen</div>
+            <div class="personaje-rol">Docente · Chocó</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video institucional: coloca el archivo en assets/video/video.mp4 (y opcionalmente video.webm) -->
+    <section class="seccion-sitio" id="seccion-video">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Conoce Avancemos en video</h2>
+          <p class="seccion-subtitulo">Un minuto para entender por qué el centro es la salida sensata.</p>
+        </div>
+        <div class="video-marco" id="video-marco">
+          <video id="video-institucional" controls playsinline preload="metadata" poster="assets/video/video-poster.webp">
+            <source src="assets/video/video.webm" type="video/webm">
+            <source src="assets/video/video.mp4" type="video/mp4">
+            Tu navegador no soporta video HTML5.
+          </video>
+          <div class="video-vacio">
+            <div style="font-size: 2.5rem;">🎬</div>
+            <strong>Video próximamente</strong>
+            <span style="font-size: var(--fs-sm);">Estamos preparando nuestro video institucional.</span>
           </div>
         </div>
       </div>
@@ -286,6 +346,7 @@
 
     // Inicializar soporte inteligente
     inicializarWidgetSoporte();
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     // Comprobar sesión para actualizar botón de ingreso
     obtenerSesion().then(sesion => {
@@ -318,8 +379,8 @@
         tarjeta.innerHTML = `
           <div>
             <div class="tarjeta-propuesta-icono">✨</div>
-            <h4>${p.titulo}</h4>
-            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem;">${p.resumen}</p>
+            <h4>${esc(p.titulo)}</h4>
+            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem;">${esc(p.resumen)}</p>
           </div>
           <a href="propuestas.html#${p.eje}" class="btn btn-secundario btn-sm" style="margin-top: 1rem;">Ver detalle</a>
         `;
@@ -336,10 +397,10 @@
         const tarjeta = document.createElement("div");
         tarjeta.className = "tarjeta tarjeta-hover tarjeta-referente";
         tarjeta.innerHTML = `
-          <div class="referente-monograma">${r.nombre.charAt(0)}</div>
-          <h4>${r.nombre}</h4>
-          <span style="font-size: var(--fs-xs); color: var(--turquesa); font-weight: 600;">${r.cargos}</span>
-          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem; line-height: 1.4;">${r.leccion}</p>
+          <div class="referente-monograma">${esc(r.nombre.charAt(0))}</div>
+          <h4>${esc(r.nombre)}</h4>
+          <span style="font-size: var(--fs-xs); color: var(--turquesa); font-weight: 600;">${esc(r.cargos)}</span>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin-top: 0.5rem; line-height: 1.4;">${esc(r.leccion)}</p>
         `;
         grilla.appendChild(tarjeta);
       });
@@ -419,6 +480,48 @@
         console.warn("No se pudo cargar el archivo GeoJSON:", e);
       }
     }
+
+    // Personajes: aparecen al hacer scroll y "conversan" en orden con efecto de escritura
+    (function animarPersonajes() {
+      const tarjetas = [...document.querySelectorAll(".personaje-tarjeta")];
+      if (!tarjetas.length) return;
+      const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const escribir = (span) => new Promise(resolve => {
+        const texto = span.dataset.dialogo;
+        if (reducir) { span.textContent = texto; return resolve(); }
+        let i = 0;
+        span.classList.add("escribiendo");
+        const t = setInterval(() => {
+          span.textContent = texto.slice(0, ++i);
+          if (i >= texto.length) { clearInterval(t); span.classList.remove("escribiendo"); resolve(); }
+        }, 28);
+      });
+      const iniciar = async () => {
+        for (const tarjeta of tarjetas) {
+          tarjeta.classList.add("visible");
+          await escribir(tarjeta.querySelector("[data-dialogo]"));
+          await new Promise(r => setTimeout(r, 350));
+        }
+      };
+      if (!("IntersectionObserver" in window)) return iniciar();
+      const obs = new IntersectionObserver((entradas) => {
+        if (entradas.some(e => e.isIntersecting)) { obs.disconnect(); iniciar(); }
+      }, { threshold: 0.25 });
+      obs.observe(document.getElementById("personajes-grilla"));
+    })();
+
+    // Video: si aún no existe el archivo, mostrar aviso en lugar de un reproductor roto
+    (function prepararVideo() {
+      const video = document.getElementById("video-institucional");
+      const marco = document.getElementById("video-marco");
+      if (!video) return;
+      const fuentes = [...video.querySelectorAll("source")];
+      if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) marco.classList.add("sin-video");
+      let fallidas = 0;
+      fuentes.forEach(s => s.addEventListener("error", () => {
+        if (++fallidas === fuentes.length) marco.classList.add("sin-video");
+      }));
+    })();
 
     window.toggleMenuMovil = function() {
       document.getElementById("sitio-menu").classList.toggle("abierto");

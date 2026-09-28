@@ -1,0 +1,8 @@
+Coloca aquí el video institucional:
+  - video.mp4  (H.264 + AAC; compatible con todos los navegadores)  <- obligatorio
+  - video.webm (VP9/AV1 + Opus; más liviano, opcional)
+  - video-poster.webp (imagen de portada; ya incluida)
+
+Conversión recomendada con ffmpeg:
+  ffmpeg -i original.mov -c:v libx264 -crf 23 -preset slow -c:a aac -b:a 128k -movflags +faststart video.mp4
+  ffmpeg -i original.mov -c:v libvpx-vp9 -crf 32 -b:v 0 -c:a libopus video.webm

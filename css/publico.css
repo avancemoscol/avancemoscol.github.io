@@ -360,3 +360,134 @@
 @media (max-width: 800px) {
   .footer-grilla { grid-template-columns: 1fr; }
 }
+
+/* Personajes animados del héroe (generados con Vertex AI) */
+.heroe-personaje {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  height: 78%;
+  max-height: 460px;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.35));
+  animation: personaje-flotar 5s ease-in-out infinite;
+}
+.heroe-personaje-izq { left: 2%; }
+.heroe-personaje-der { right: 2%; animation-delay: -2.5s; }
+@media (max-width: 1100px) {
+  .heroe-personaje { display: none; }
+}
+
+/* Sección "Voces del territorio": personajes que conversan */
+.personajes-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-6);
+  align-items: end;
+}
+.personaje-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.personaje-tarjeta.visible { opacity: 1; transform: none; }
+.personaje-globo {
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg, 16px);
+  padding: 0.85rem 1rem;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--texto);
+  box-shadow: 0 6px 18px rgba(11, 36, 64, 0.08);
+  margin-bottom: 1rem;
+  min-height: 5.2em;
+  display: flex;
+  align-items: center;
+}
+.personaje-globo::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  background: var(--superficie);
+  border-right: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+  transform: translateX(-50%) rotate(45deg);
+}
+.personaje-globo .escribiendo::after {
+  content: "▍";
+  animation: parpadeo 0.9s steps(1) infinite;
+  color: var(--turquesa);
+}
+.personaje-img {
+  height: 260px;
+  width: auto;
+  animation: personaje-flotar 4.5s ease-in-out infinite;
+  transform-origin: bottom center;
+  cursor: pointer;
+  filter: drop-shadow(0 10px 14px rgba(11, 36, 64, 0.18));
+  transition: filter 0.2s;
+}
+.personaje-tarjeta:nth-child(2) .personaje-img { animation-delay: -1.1s; }
+.personaje-tarjeta:nth-child(3) .personaje-img { animation-delay: -2.2s; }
+.personaje-tarjeta:nth-child(4) .personaje-img { animation-delay: -3.3s; }
+.personaje-img:hover { animation: personaje-saludar 0.8s ease-in-out; }
+.personaje-nombre { font-weight: 700; margin-top: 0.5rem; }
+.personaje-rol { font-size: var(--fs-xs); color: var(--turquesa); font-weight: 600; }
+
+@keyframes personaje-flotar {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.6deg); }
+}
+@keyframes personaje-saludar {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-4deg) scale(1.04); }
+  75% { transform: rotate(4deg) scale(1.04); }
+}
+@keyframes parpadeo { 50% { opacity: 0; } }
+
+/* Video institucional */
+.video-marco {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radio-lg, 16px);
+  overflow: hidden;
+  background: var(--azul-noche);
+  box-shadow: 0 20px 40px rgba(11, 36, 64, 0.2);
+}
+.video-marco video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  background: #000;
+}
+.video-vacio {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #CBD5E1;
+  text-align: center;
+  padding: 1rem;
+}
+.video-marco.sin-video video { display: none; }
+.video-marco.sin-video .video-vacio { display: flex; }
+
+@media (prefers-reduced-motion: reduce) {
+  .heroe-personaje, .personaje-img { animation: none; }
+  .personaje-tarjeta { opacity: 1; transform: none; transition: none; }
+}

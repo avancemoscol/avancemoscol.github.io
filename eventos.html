@@ -60,6 +60,7 @@
     import { formatearFecha } from "./js/util/fechas.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     inicializarWidgetSoporte();
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     async function cargar() {
       const cont = document.getElementById("eventos-lista");
@@ -81,14 +82,14 @@
         tarjeta.className = "tarjeta tarjeta-hover";
         tarjeta.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-            <span class="chip chip-turquesa" style="text-transform: uppercase;">${e.modalidad}</span>
+            <span class="chip chip-turquesa" style="text-transform: uppercase;">${esc(e.modalidad)}</span>
             <span style="font-size: var(--fs-xs); color: var(--texto-suave); font-weight: 600;">
               ${formatearFecha(e.inicio, true)}
             </span>
           </div>
-          <h3>${e.titulo}</h3>
-          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.75rem 0;">${e.descripcion}</p>
-          ${e.lugar ? `<p style="font-size: var(--fs-xs); font-weight: 600;">📍 ${e.lugar}</p>` : ''}
+          <h3>${esc(e.titulo)}</h3>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.75rem 0;">${esc(e.descripcion)}</p>
+          ${e.lugar ? `<p style="font-size: var(--fs-xs); font-weight: 600;">📍 ${esc(e.lugar)}</p>` : ''}
           <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: var(--fs-xs); color: var(--texto-suave);">${e.asistentes_n || 0} personas asistirán</span>
             <a href="unete.html" class="btn btn-primario btn-sm">Inscribirme</a>

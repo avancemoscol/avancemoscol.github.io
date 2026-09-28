@@ -230,7 +230,7 @@
     import { obtenerFeed, crearPublicacion, obtenerComentarios, agregarComentario } from "./js/servicios/publicaciones.js";
     import { obtenerEventos } from "./js/servicios/eventos.js";
     import { obtenerGruposWhatsApp } from "./js/servicios/grupos.js";
-    import { obtenerConversaciones, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
+    import { obtenerConversaciones, iniciarConversacion, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
     import { obtenerNotificaciones, marcarNotificacionesLeidas, suscribirNotificaciones } from "./js/servicios/notificaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
     import { renderizarAvatar } from "./js/ui/avatar.js";
@@ -240,6 +240,9 @@
     import { cerrarSesion } from "./js/auth.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     import { solicitarInsignia } from "./js/servicios/verificacion.js";
+    import { supabase } from "./js/supabase.js";
+    import { seguirUsuario, dejarDeSeguir, obtenerPerfilPorUsername } from "./js/servicios/perfiles.js";
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     // Inicializar soporte inteligente
     inicializarWidgetSoporte();
@@ -417,7 +420,7 @@
           <div style="display: flex; gap: 0.75rem; align-items: center;">
             <div style="font-size: 1.2rem;">${n.tipo.includes('me_gusta') ? '❤️' : '💬'}</div>
             <div>
-              <p style="font-size: var(--fs-sm);">${n.texto}</p>
+              <p style="font-size: var(--fs-sm);">${esc(n.texto)}</p>
               <span style="font-size: var(--fs-xs); color: var(--texto-suave);">${new Date(n.created_at).toLocaleDateString()}</span>
             </div>
           </div>
@@ -439,7 +442,13 @@
         return;
       }
 
-      const convs = await obtenerConversaciones();
+      let convs = [];
+      try {
+        convs = await obtenerConversaciones();
+      } catch (e) {
+        cont.innerHTML = `<div style="padding: 2rem; color: var(--error);">No se pudieron cargar tus conversaciones: ${esc(e.message)}</div>`;
+        return;
+      }
       cont.innerHTML = "";
       if (!convs.length) {
         cont.innerHTML = `
@@ -459,7 +468,7 @@
         item.style.cursor = "pointer";
         item.innerHTML = `
           <strong>Conversación</strong>
-          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${c.conversacion?.ultimo_mensaje_preview || 'Conversación abierta'}</p>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${esc(c.conversacion?.ultimo_mensaje_preview || 'Conversación abierta')}</p>
         `;
         item.onclick = () => window.location.hash = `#/mensajes/${c.conversacion_id}`;
         cont.appendChild(item);
@@ -569,11 +578,11 @@
         item.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
-              <span class="chip chip-turquesa">${g.tipo}</span>
-              <h4 style="margin: 0.5rem 0;">${g.nombre}</h4>
-              <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${g.descripcion || ''}</p>
+              <span class="chip chip-turquesa">${esc(g.tipo)}</span>
+              <h4 style="margin: 0.5rem 0;">${esc(g.nombre)}</h4>
+              <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${esc(g.descripcion)}</p>
             </div>
-            <a href="${g.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primario btn-sm">Unirme</a>
+            <a href="${/^https:\/\/chat\.whatsapp\.com\//.test(g.url || "") ? esc(g.url) : "#"}" target="_blank" rel="noopener noreferrer" class="btn btn-primario btn-sm">Unirme</a>
           </div>
         `;
         listCont.appendChild(item);
@@ -586,16 +595,20 @@
       document.getElementById("seccion-redactor").style.display = "none";
 
       const cont = document.getElementById("vista-contenido");
-      const evts = await obtenerEventos(false, miUsuario?.departamento_id);
+      let evts = [];
+      try { evts = await obtenerEventos(false, miUsuario?.departamento_id); } catch (e) { console.warn("Eventos:", e); }
       cont.innerHTML = "<div style='padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;' id='evts-lista'></div>";
       const l = document.getElementById("evts-lista");
+      if (!evts.length) {
+        l.innerHTML = "<div class='estado-vacio'><div class='estado-vacio-icono'>📅</div><h3>Sin eventos próximos</h3><p>Pronto anunciaremos encuentros en tu territorio.</p></div>";
+      }
       evts.forEach(e => {
         const d = document.createElement("div");
         d.className = "tarjeta";
         d.innerHTML = `
-          <span class="chip chip-ambar">${e.modalidad}</span>
-          <h3 style="margin: 0.5rem 0;">${e.titulo}</h3>
-          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${e.descripcion}</p>
+          <span class="chip chip-ambar">${esc(e.modalidad)}</span>
+          <h3 style="margin: 0.5rem 0;">${esc(e.titulo)}</h3>
+          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${esc(e.descripcion)}</p>
         `;
         l.appendChild(d);
       });
@@ -618,7 +631,8 @@
       cont.innerHTML = "<div style='padding: 2rem;' class='esqueleto'>Cargando perfil...</div>";
 
       // Cargar perfil
-      const { data: p } = await import("./js/servicios/perfiles.js").then(m => m.obtenerPerfilPorUsername(params.usuario));
+      let p = null;
+      try { p = await obtenerPerfilPorUsername(params.usuario); } catch (_) { p = null; }
       if (!p) {
         cont.innerHTML = "<div style='padding: 2rem;'>Perfil no encontrado.</div>";
         return;
@@ -632,13 +646,16 @@
             ${miUsuario && miUsuario.username === p.username ? `
               <a href="#/ajustes" class="btn btn-secundario btn-sm">Editar perfil</a>
             ` : `
-              <button class="btn btn-primario btn-sm" onclick="mostrarToast('Siguiendo a @${p.username}', 'exito')">Seguir</button>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secundario btn-sm" id="btn-mensaje-perfil">Mensaje</button>
+                <button class="btn btn-primario btn-sm" id="btn-seguir-perfil">Seguir</button>
+              </div>
             `}
           </div>
 
-          <h3>${p.nombre}</h3>
-          <div style="color: var(--texto-suave); font-size: 0.85rem;">@${p.username}</div>
-          <p style="margin: 0.75rem 0; font-size: 0.95rem;">${p.bio || 'Sin biografía aún.'}</p>
+          <h3>${esc(p.nombre)}</h3>
+          <div style="color: var(--texto-suave); font-size: 0.85rem;">@${esc(p.username)}</div>
+          <p style="margin: 0.75rem 0; font-size: 0.95rem;">${esc(p.bio || 'Sin biografía aún.')}</p>
 
           <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--texto-suave); margin-top: 1rem;">
             <div><strong style="color: var(--texto);">${p.siguiendo_n || 0}</strong> Siguiendo</div>
@@ -650,6 +667,48 @@
 
       const avSlot = document.getElementById("perfil-avatar-slot");
       avSlot.appendChild(renderizarAvatar(p, "xl"));
+
+      const btnMensaje = document.getElementById("btn-mensaje-perfil");
+      if (btnMensaje) {
+        btnMensaje.onclick = async () => {
+          if (!miUsuario) return window.location.href = "ingresar.html";
+          try {
+            const convId = await iniciarConversacion(p.id);
+            window.location.hash = `#/mensajes/${convId}`;
+          } catch (e) {
+            mostrarToast(e.message || "No se pudo abrir la conversación", "error");
+          }
+        };
+      }
+
+      const btnSeguir = document.getElementById("btn-seguir-perfil");
+      if (btnSeguir) {
+        if (!miUsuario) {
+          btnSeguir.onclick = () => window.location.href = "ingresar.html";
+        } else {
+          const { data: rel } = await supabase.from("seguidores").select("seguido_id")
+            .eq("seguidor_id", miUsuario.id).eq("seguido_id", p.id).maybeSingle();
+          let siguiendo = !!rel;
+          const pintar = () => {
+            btnSeguir.textContent = siguiendo ? "Siguiendo" : "Seguir";
+            btnSeguir.className = siguiendo ? "btn btn-secundario btn-sm" : "btn btn-primario btn-sm";
+          };
+          pintar();
+          btnSeguir.onclick = async () => {
+            btnSeguir.disabled = true;
+            try {
+              if (siguiendo) await dejarDeSeguir(p.id); else await seguirUsuario(p.id);
+              siguiendo = !siguiendo;
+              pintar();
+              mostrarToast(siguiendo ? `Ahora sigues a @${p.username}` : `Dejaste de seguir a @${p.username}`, "exito");
+            } catch (e) {
+              mostrarToast(e.message || "No se pudo actualizar", "error");
+            } finally {
+              btnSeguir.disabled = false;
+            }
+          };
+        }
+      }
     }
 
     async function vistaAjustes() {
@@ -805,7 +864,7 @@
           const div = document.createElement("div");
           div.innerHTML = `
             <div style="font-size: 0.75rem; color: var(--turquesa); font-weight: 700;">${e.modalidad.toUpperCase()}</div>
-            <strong style="font-size: 0.85rem;">${e.titulo}</strong>
+            <strong style="font-size: 0.85rem;">${esc(e.titulo)}</strong>
           `;
           cont.appendChild(div);
         });
@@ -841,9 +900,9 @@
         <div class="modal-contenido" style="text-align: center; max-width: 520px; border-top: 5px solid var(--turquesa);">
           <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📢</div>
           <span class="chip chip-ambar" style="margin-bottom: 0.75rem;">Comunicado Oficial · Avancemos</span>
-          <h3 style="color: var(--azul-noche); margin: 0.5rem 0 1rem; font-size: var(--fs-lg);">${anuncio.titulo}</h3>
+          <h3 style="color: var(--azul-noche); margin: 0.5rem 0 1rem; font-size: var(--fs-lg);">${esc(anuncio.titulo)}</h3>
           <div style="font-size: var(--fs-base); color: var(--texto); line-height: 1.6; text-align: left; background: var(--marfil); padding: 1.25rem; border-radius: var(--radio-md); border: 1px solid var(--borde); margin-bottom: 1.5rem;">
-            ${anuncio.cuerpo}
+            ${esc(anuncio.cuerpo)}
           </div>
           <button class="btn btn-primario btn-lg" style="width: 100%;" id="btn-cerrar-anuncio">
             Entendido

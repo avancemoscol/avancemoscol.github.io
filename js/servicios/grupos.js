@@ -18,7 +18,7 @@ export async function obtenerGruposWhatsApp(deptoId = null) {
       url,
       departamento_id,
       municipio_id,
-      departamento:departamentos (nombre),
+      departamento:departamentos!grupos_whatsapp_departamento_id_fkey (nombre),
       municipio:municipios (nombre)
     `)
     .eq("estado", "aprobado");

@@ -24,7 +24,7 @@ export async function obtenerEventos(soloPublicos = false, deptoId = null) {
       imagen_path,
       visibilidad,
       departamento_id,
-      departamento:departamentos (nombre),
+      departamento:departamentos!eventos_departamento_id_fkey (nombre),
       municipio:municipios (nombre)
     `)
     .eq("estado", "aprobado");

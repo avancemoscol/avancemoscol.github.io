@@ -277,6 +277,10 @@
     import { mostrarToast } from "./js/ui/toast.js";
     import { cerrarSesion } from "./js/auth.js";
 
+    // Escapa datos de usuario antes de interpolarlos en plantillas HTML
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const urlSegura = (u) => /^https:\/\/chat\.whatsapp\.com\//.test(u || "") ? esc(u) : "#";
+
     let deptoSeleccionado = null;
     let permisosActuales = null;
 
@@ -351,7 +355,9 @@
     window.cambiarTabAprobacion = function(tab) {
       tabAprobacionActual = tab;
       document.querySelectorAll("#aprobaciones-pestanas .pestana").forEach(p => p.classList.remove("activa"));
-      event.target.classList.add("activa");
+      document.querySelectorAll("#aprobaciones-pestanas .pestana").forEach(p => {
+        if (p.getAttribute("onclick")?.includes(`'${tab}'`)) p.classList.add("activa");
+      });
       cargarAprobaciones(tab);
     };
 
@@ -381,13 +387,13 @@
           tarjeta.innerHTML = `
             <div class="aprobacion-cabecera">
               <div>
-                <strong>${item.perfil?.nombre}</strong> (@${item.perfil?.username})
-                <div style="font-size: 0.8rem; color: var(--texto-suave);">Rol solicitado: <span class="chip chip-turquesa">${item.rol_solicitado}</span></div>
+                <strong>${esc(item.perfil?.nombre)}</strong> (@${esc(item.perfil?.username)})
+                <div style="font-size: 0.8rem; color: var(--texto-suave);">Rol solicitado: <span class="chip chip-turquesa">${esc(item.rol_solicitado)}</span></div>
               </div>
               <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
             </div>
             <div>
-              <p style="font-size: 0.85rem;"><strong>Motivo:</strong> ${item.motivo || 'Sin motivo ingresado'}</p>
+              <p style="font-size: 0.85rem;"><strong>Motivo:</strong> ${esc(item.motivo || 'Sin motivo ingresado')}</p>
             </div>
             <div class="aprobacion-acciones">
               <button class="btn btn-peligro btn-sm" onclick="resolverUsuario('${item.id}', 'rechazado')">Rechazar</button>
@@ -398,12 +404,12 @@
           tarjeta.innerHTML = `
             <div class="aprobacion-cabecera">
               <div>
-                <strong>${item.autor?.nombre}</strong> (@${item.autor?.username})
-                <span class="chip">${item.categoria}</span>
+                <strong>${esc(item.autor?.nombre)}</strong> (@${esc(item.autor?.username)})
+                <span class="chip">${esc(item.categoria)}</span>
               </div>
               <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
             </div>
-            <p style="font-size: 0.95rem; line-height: 1.5;">${item.contenido}</p>
+            <p style="font-size: 0.95rem; line-height: 1.5;">${esc(item.contenido)}</p>
             <div class="aprobacion-acciones">
               <button class="btn btn-peligro btn-sm" onclick="resolverPub('${item.id}', 'rechazado')">Rechazar</button>
               <button class="btn btn-primario btn-sm" onclick="resolverPub('${item.id}', 'aprobado')">Aprobar Publicación</button>
@@ -413,14 +419,15 @@
           tarjeta.innerHTML = `
             <div class="aprobacion-cabecera">
               <div>
-                <strong>${item.nombre}</strong> (${item.tipo})
-                <div style="font-size: 0.8rem;"><a href="${item.url}" target="_blank">${item.url}</a></div>
+                <strong>${esc(item.nombre)}</strong> (${esc(item.tipo)})
+                <div style="font-size: 0.8rem;"><a href="${urlSegura(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.url)}</a></div>
               </div>
-              <span style="font-size: 0.75rem; color: var(--texto-suave);">${item.creador?.nombre}</span>
+              <span style="font-size: 0.75rem; color: var(--texto-suave);">${esc(item.creador?.nombre)}</span>
             </div>
-            <p style="font-size: 0.85rem;">${item.descripcion || ''}</p>
+            <p style="font-size: 0.85rem;">${esc(item.descripcion)}</p>
             <div class="aprobacion-acciones">
-              <button class="btn btn-primario btn-sm" onclick="alert('Grupo aprobado')">Aprobar Grupo</button>
+              <button class="btn btn-peligro btn-sm" onclick="resolverGrupo('${item.id}', 'rechazado')">Rechazar</button>
+              <button class="btn btn-primario btn-sm" onclick="resolverGrupo('${item.id}', 'aprobado')">Aprobar Grupo</button>
             </div>
           `;
         }
@@ -452,6 +459,15 @@
       }
     };
 
+    window.resolverGrupo = async function(id, decision) {
+      const motivo = decision === "rechazado" ? prompt("Motivo del rechazo:") : null;
+      const { error } = await supabase.rpc("revisar_grupo", { p_grupo_id: id, p_decision: decision, p_motivo: motivo });
+      if (error) return mostrarToast(error.message, "error");
+      mostrarToast(`Grupo ${decision}.`, "exito");
+      cargarAprobaciones("grupos");
+      cargarMetricas();
+    };
+
     // Casos de Soporte
     async function cargarCasosSoporte() {
       const tbody = document.getElementById("tabla-casos-soporte");
@@ -471,9 +487,9 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><strong>${c.numero_radicado}</strong></td>
-          <td>${c.nombre_contacto}<br><span style="font-size: 0.75rem; color: var(--texto-suave);">${c.correo_contacto}</span></td>
-          <td><span class="chip">${c.categoria}</span></td>
-          <td>${c.asunto}</td>
+          <td>${esc(c.nombre_contacto)}<br><span style="font-size: 0.75rem; color: var(--texto-suave);">${esc(c.correo_contacto)}</span></td>
+          <td><span class="chip">${esc(c.categoria)}</span></td>
+          <td>${esc(c.asunto)}</td>
           <td><span class="chip chip-${c.estado === 'resuelto' ? 'turquesa' : 'ambar'}">${c.estado}</span></td>
           <td style="font-size: 0.75rem;">${new Date(c.created_at).toLocaleDateString()}</td>
           <td>
@@ -511,8 +527,8 @@
       (users || []).forEach(u => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>@${u.username}</td>
-          <td>${u.nombre}</td>
+          <td>@${esc(u.username)}</td>
+          <td>${esc(u.nombre)}</td>
           <td><span class="chip chip-${u.estado === 'activo' ? 'turquesa' : 'ambar'}">${u.estado}</span></td>
           <td><span class="chip">${u.insignia}</span></td>
           <td>
@@ -545,11 +561,11 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td style="font-size: 0.75rem;">${new Date(l.created_at).toLocaleString()}</td>
-          <td>${l.actor?.nombre || 'Sistema'}</td>
+          <td>${esc(l.actor?.nombre || 'Sistema')}</td>
           <td><span class="chip">${l.accion}</span></td>
           <td>${l.entidad}</td>
           <td style="font-family: monospace; font-size: 0.75rem;">${l.entidad_id.slice(0, 8)}...</td>
-          <td style="font-size: 0.8rem;">${JSON.stringify(l.despues || {})}</td>
+          <td style="font-size: 0.8rem;">${esc(JSON.stringify(l.despues || {}))}</td>
         `;
         tbody.appendChild(tr);
       });

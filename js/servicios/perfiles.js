@@ -46,7 +46,7 @@ export async function obtenerMiPerfil() {
     .select(`
       *,
       privado:perfiles_privados (*),
-      roles:user_roles (*)
+      roles:user_roles!user_roles_user_id_fkey (*)
     `)
     .eq("id", user.id)
     .single();

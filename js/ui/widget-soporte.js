@@ -3,7 +3,7 @@
  * Atiende dudas tanto de visitantes como de usuarios inscritos en todas las páginas.
  */
 
-import { el } from "../util/texto-seguro.js";
+import { el, escaparTexto as esc } from "../util/texto-seguro.js";
 import { resolverDudaConIA, radicarCasoSoporte, consultarCasoSoporte, enviarMensajeACaso } from "../servicios/soporte.js";
 import { obtenerUsuarioActual } from "../auth.js";
 import { mostrarToast } from "./toast.js";
@@ -276,11 +276,11 @@ async function renderizarVista(vista, contenedor) {
                 <strong style="color: var(--azul-noche);">${c.numero_radicado}</strong>
                 <span class="chip chip-${c.estado === 'resuelto' ? 'turquesa' : 'ambar'}">${c.estado}</span>
               </div>
-              <p style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">${c.asunto}</p>
+              <p style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">${esc(c.asunto)}</p>
               ${c.respuesta_oficial ? `
                 <div style="margin-top: 0.75rem; background: var(--superficie); padding: 0.75rem; border-radius: var(--radio-md); border-left: 3px solid var(--turquesa);">
                   <strong style="color: var(--turquesa); font-size: 0.75rem;">Respuesta del equipo de moderación:</strong>
-                  <p style="font-size: 0.8rem; margin-top: 0.25rem;">${c.respuesta_oficial}</p>
+                  <p style="font-size: 0.8rem; margin-top: 0.25rem;">${esc(c.respuesta_oficial)}</p>
                 </div>
               ` : '<p style="font-size: 0.75rem; color: var(--texto-suave); margin-top: 0.5rem;">Tu caso se encuentra en revisión por el equipo.</p>'}
             </div>
