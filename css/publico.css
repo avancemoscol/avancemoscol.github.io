@@ -584,3 +584,21 @@ p.heroe-titulo {
 .faq-item summary::after { content: "+"; color: var(--turquesa); font-size: 1.3rem; line-height: 1; }
 .faq-item[open] summary::after { content: "−"; }
 .faq-item p { margin-top: 0.6rem; color: var(--texto-suave); line-height: 1.6; }
+
+/* Redes sociales */
+.redes-sociales { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+.red-social {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  color: #E2E8F0; font-size: var(--fs-sm); font-weight: 600; text-decoration: none !important;
+  padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radio-pleno);
+  transition: background-color var(--transicion-rapida), border-color var(--transicion-rapida);
+}
+.red-social:hover { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.4); color: #fff; }
+.llamado-botones { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.btn-instagram {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: #fff; border: none;
+  background: linear-gradient(45deg, #F58529, #DD2A7B 50%, #8134AF 80%, #515BD4);
+}
+.btn-instagram:hover { color: #fff; filter: brightness(1.08); }
+@media (max-width: 480px) { .llamado-botones .btn { width: 100%; justify-content: center; } }
