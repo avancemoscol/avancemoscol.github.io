@@ -2,5 +2,10 @@ User-agent: *
 Allow: /
 Disallow: /app.html
 Disallow: /admin.html
+Disallow: /estilo.html
+Disallow: /restablecer.html
+Disallow: /offline.html
+Disallow: /tests/
+Disallow: /supabase/
 
-Sitemap: https://avancemos.co/sitemap.xml
+Sitemap: https://avancemoscol.github.io/sitemap.xml

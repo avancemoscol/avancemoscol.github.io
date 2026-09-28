@@ -3,6 +3,7 @@
   "short_name": "Avancemos",
   "description": "Plataforma ciudadana y red social del movimiento de centro en Colombia.",
   "start_url": "/app.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F7F5F0",
   "theme_color": "#0B2440",

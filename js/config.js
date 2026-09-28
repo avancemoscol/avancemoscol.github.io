@@ -15,7 +15,7 @@ export const CONFIG = {
   PAIS: "Colombia",
   CORREO_CONTACTO: "abulingo.help@gmail.com",
   CORREO_SOPORTE: "abulingo.help@gmail.com",
-  DOMINIO: "https://avancemos.co",
+  DOMINIO: "https://avancemoscol.github.io",
   RESPONSABLE_DATOS: "Movimiento Político Avancemos Colombia",
   NIT_DOCUMENTO: "",
   DIRECCION_CONTACTO: "",
