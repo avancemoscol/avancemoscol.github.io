@@ -26,3 +26,15 @@ Este documento registra todas las decisiones técnicas tomadas durante el desarr
 ## 5. Prevención Estricta de Vulnerabilidades XSS
 - **Decisión:** Prohibición absoluta de `innerHTML` con datos ingresados por usuarios en la red social (`tarjeta-publicacion.js`). El Markdown administrativo del CMS se purifica con `DOMPurify` y `marked`.
 - **Razón:** Cumplimiento de la regla de oro número 5 de seguridad web.
+
+## 6. Desactivación de Confirmación de Correo Electrónico
+- **Decisión:** Se activó la propiedad `mailer_autoconfirm: true` en la configuración de Supabase Auth mediante la Management API y se adaptó la interfaz de registro (`unete.html`) para omitir la espera o verificación de correo.
+- **Razón:** Requerimiento explícito del usuario para agilizar el proceso de incorporación de miembros sin depender de confirmación por correo electrónico.
+
+## 7. Cuenta de Administración Nacional
+- **Decisión:** Se creó y aprovisionó la cuenta oficial de administración nacional:
+  - Correo: `admin@avancemos.co`
+  - Nombre: Administrador Colombia
+  - Usuario: `@admin_nacional`
+  - Rol asignado: `admin_nacional` con estado `activo` e insignia `dorada`.
+- **Razón:** Requerimiento explícito del usuario para gestionar la plataforma y el panel administrativo.
