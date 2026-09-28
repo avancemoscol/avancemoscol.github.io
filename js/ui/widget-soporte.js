@@ -4,7 +4,7 @@
  */
 
 import { el, escaparTexto as esc } from "../util/texto-seguro.js";
-import { resolverDudaConIA, radicarCasoSoporte, consultarCasoSoporte, enviarMensajeACaso } from "../servicios/soporte.js";
+import { resolverDudaConIA, radicarCasoSoporte, consultarCasoSoporte, enviarMensajeACaso, MAX_CARACTERES_PREGUNTA } from "../servicios/soporte.js";
 import { obtenerUsuarioActual } from "../auth.js";
 import { mostrarToast } from "./toast.js";
 
@@ -107,16 +107,26 @@ async function renderizarVista(vista, contenedor) {
 
     const inputMsg = el("input", {
       className: "campo-input",
-      placeholder: "Escribe tu pregunta...",
+      placeholder: "Escribe tu pregunta (máx. 120 caracteres)...",
+      maxlength: String(MAX_CARACTERES_PREGUNTA),
+      "aria-label": "Tu pregunta para el asistente",
       style: "flex: 1; font-size: 0.85rem;"
+    });
+    const contadorChars = el("span", { className: "widget-contador", textContent: `0/${MAX_CARACTERES_PREGUNTA}` });
+    const infoUsos = el("span", {
+      className: "widget-contador",
+      textContent: usuario ? "Hasta 5 preguntas al día." : "Visitantes: 3 preguntas al día. Regístrate para tener más."
+    });
+    inputMsg.addEventListener("input", () => {
+      contadorChars.textContent = `${inputMsg.value.length}/${MAX_CARACTERES_PREGUNTA}`;
     });
 
     const btnEnviar = el("button", {
       className: "btn btn-primario btn-sm",
       textContent: "Enviar",
       onclick: async () => {
-        const txt = inputMsg.value.trim();
-        if (!txt) return;
+        const txt = inputMsg.value.trim().slice(0, MAX_CARACTERES_PREGUNTA);
+        if (!txt || btnEnviar.disabled) return;
 
         // Agregar mensaje usuario
         listaMensajes.appendChild(el("div", {
@@ -133,18 +143,31 @@ async function renderizarVista(vista, contenedor) {
         listaMensajes.appendChild(pensando);
         listaMensajes.scrollTop = listaMensajes.scrollHeight;
 
+        btnEnviar.disabled = true;
         try {
-          const resp = await resolverDudaConIA(txt, usuario);
+          const res = await resolverDudaConIA(txt);
           pensando.remove();
           listaMensajes.appendChild(el("div", {
-            style: "align-self: flex-start; background: var(--superficie); border: 1px solid var(--borde); padding: 0.65rem 0.85rem; border-radius: 12px 12px 12px 2px; font-size: 0.85rem; max-width: 90%; line-height: 1.45; white-space: pre-wrap;"
-          }, formatearRespuesta(resp)));
+            style: `align-self: flex-start; background: var(--superficie); border: 1px solid ${res.limite ? "var(--ambar)" : "var(--borde)"}; padding: 0.65rem 0.85rem; border-radius: 12px 12px 12px 2px; font-size: 0.85rem; max-width: 90%; line-height: 1.45; white-space: pre-wrap;`
+          }, formatearRespuesta(res.respuesta)));
+          if (res.restantes !== null && res.restantes !== undefined) {
+            infoUsos.textContent = res.restantes > 0
+              ? `Te quedan ${res.restantes} ${res.restantes === 1 ? "pregunta" : "preguntas"} hoy.`
+              : "Llegaste al límite de hoy. Puedes radicar un caso en la pestaña siguiente.";
+          }
+          if (res.limite) {
+            inputMsg.disabled = true;
+            inputMsg.placeholder = "Límite diario alcanzado";
+          }
+          contadorChars.textContent = `0/${MAX_CARACTERES_PREGUNTA}`;
           listaMensajes.scrollTop = listaMensajes.scrollHeight;
         } catch (e) {
           pensando.remove();
           listaMensajes.appendChild(el("div", {
             style: "color: var(--error); font-size: 0.8rem;"
           }, ["No pudimos conectar en este momento. Puedes radicar tu caso en la siguiente pestaña."]));
+        } finally {
+          btnEnviar.disabled = inputMsg.disabled;
         }
       }
     });
@@ -159,6 +182,7 @@ async function renderizarVista(vista, contenedor) {
 
     contenedor.appendChild(listaMensajes);
     contenedor.appendChild(boxInput);
+    contenedor.appendChild(el("div", { className: "widget-pie-info" }, [infoUsos, contadorChars]));
   } else if (vista === "radicar") {
     // Vista de Radicación de Caso Formal
     const form = el("form", {

@@ -55,4 +55,5 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url><loc>https://avancemos.co/grupos.html</loc><changefreq>weekly</changefreq></url>
 </urlset>

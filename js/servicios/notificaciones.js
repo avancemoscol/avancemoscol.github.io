@@ -18,7 +18,7 @@ export async function obtenerNotificaciones() {
       created_at,
       actor:perfiles!notificaciones_actor_id_fkey (
         id,
-        nombre,
+        nombre:primer_nombre,
         username,
         avatar_path
       )

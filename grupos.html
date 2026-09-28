@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupos de Avancemos por Departamento</title>
+  <meta name="description" content="Únete al grupo de Avancemos de tu departamento en WhatsApp o a la comunidad nacional en Telegram y Discord.">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio">
+        <img src="assets/logo.svg" alt="Avancemos Logo">
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="sitio-menu" id="sitio-menu">
+          <li><a href="quienes-somos.html" class="sitio-menu-enlace">Quiénes somos</a></li>
+          <li><a href="el-centro.html" class="sitio-menu-enlace">El centro</a></li>
+          <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
+          <li><a href="propuestas.html" class="sitio-menu-enlace">Propuestas</a></li>
+          <li><a href="eventos.html" class="sitio-menu-enlace">Eventos</a></li>
+          <li><a href="grupos.html" class="sitio-menu-enlace activo">Grupos</a></li>
+        </ul>
+      </nav>
+      <div class="sitio-acciones">
+        <a href="ingresar.html" class="btn btn-fantasma">Ingresar</a>
+        <a href="unete.html" class="btn btn-primario">Únete</a>
+        <button class="menu-hamburguesa" aria-label="Abrir menú">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+    <div class="seccion-encabezado">
+      <span class="chip chip-turquesa">Organización territorial</span>
+      <h1>Grupos de Avancemos</h1>
+      <p class="seccion-subtitulo">Encuentra el grupo de tu departamento y conecta con voluntarios de tu región.</p>
+    </div>
+    <div id="directorio-grupos"></div>
+  </main>
+
+  <footer class="sitio-footer">
+    <div class="contenedor footer-inferior">
+      <div>© 2026 Movimiento Político Avancemos Colombia</div>
+      <div><a href="privacidad.html" style="color: #A0AEC0;">Privacidad</a> · <a href="terminos.html" style="color: #A0AEC0;">Términos</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { montarDirectorioGrupos } from "./js/ui/grupos.js";
+    import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
+    import "./js/ui/menu-sitio.js";
+    inicializarWidgetSoporte();
+
+    // grupos.html?d=05 resalta el departamento elegido en el mapa
+    const deptoInicial = new URLSearchParams(location.search).get("d");
+    montarDirectorioGrupos(document.getElementById("directorio-grupos"), { deptoInicial });
+  </script>
+</body>
+</html>

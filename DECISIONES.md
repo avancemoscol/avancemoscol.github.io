@@ -58,3 +58,24 @@ Este documento registra todas las decisiones técnicas tomadas durante el desarr
 ## 12. Mapa con CARTO Basemaps
 - **Decisión:** Las teselas usan `basemaps.cartocdn.com/rastertiles/light_nolabels/...?key=` con la llave en `CONFIG.CARTO_API_KEY`. En celular el mapa se mueve con dos dedos y muestra la información al tocar.
 - **Razón:** Sin llave CARTO muestra la marca de agua "API key required".
+
+## 13. Ahorro en IA (Gemini 2.5 Flash-Lite)
+- **Decisión:** El asistente de soporte, la mejora de textos y la moderación usan `gemini-2.5-flash-lite`. El asistente acepta preguntas de máximo 120 caracteres, responde con máximo 100 tokens, solo sobre Avancemos y la plataforma, y tiene límites diarios: 3 preguntas por dirección IP para visitantes y 5 por cuenta registrada (tabla `uso_ia`, zona horaria de Bogotá). El admin nacional no tiene límite.
+- **Excepción:** El Estudio de imágenes sigue con `gemini-2.5-flash-image`, porque Flash-Lite no genera imágenes. Solo lo usan administradores y moderadores.
+
+## 14. Privacidad del nombre y edición de perfil
+- **Decisión:** La columna `perfiles.nombre` no es legible por la API; los demás usuarios ven `primer_nombre` (columna generada). El propio usuario obtiene su perfil completo con `mi_perfil()` y los administradores con sus RPCs. El usuario solo puede actualizar `bio`.
+- **Seguridad:** Se eliminó la política que permitía al autor modificar cualquier columna de su publicación (podía auto-aprobarse). Editar/eliminar va por `editar_publicacion` (vuelve a revisión) y `eliminar_publicacion` (borrado lógico).
+
+## 15. Mensajes directos
+- **Decisión:** Solo se puede escribir a personas que uno sigue (validado en `iniciar_conversacion` y en la política de inserción de `mensajes`). Un trigger actualiza la vista previa y notifica al destinatario. Los administradores no leen mensajes privados (Ley 1581 y la promesa de privacidad de la plataforma).
+
+## 16. Grupos, anuncios y eventos
+- **Grupos:** Se cargaron los 33 grupos departamentales de WhatsApp, el grupo Internacional, Discord y Telegram publicados en beacons.ai/avancemoscol. Son públicos y se abren desde la sección Grupos, `grupos.html` y el mapa.
+- **Anuncios:** `anuncios` admite comunicados, encuestas (una o varias respuestas, comentario opcional) y votaciones (una respuesta), con imagen, video o audio, audiencia nacional o departamental, vigencia y modo obligatorio (modal que no se puede cerrar hasta responder).
+- **Eventos:** Los administradores los crean desde `admin.html` y quedan aprobados; también aprueban o eliminan los propuestos por usuarios.
+
+## 17. Formatos de media
+- **Imágenes:** WebP (máx. 1600 px) en el navegador.
+- **Audio:** Opus en WebM a 48 kbps mono (WebCodecs + webm-muxer); notas de voz con MediaRecorder. Se descartó WAV porque no está comprimido (~10 MB/min frente a ~0,35 MB/min).
+- **Video:** MP4 (H.264/AAC) tal como se sube, máx. 50 MB: es el formato compatible con todos los celulares. Recomprimir video en el navegador agota batería y tarda minutos en equipos modestos.

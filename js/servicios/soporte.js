@@ -17,23 +17,34 @@ Grupos de WhatsApp: Disponibles exclusivamente para miembros activos aprobados p
 Eventos: Encuentros ciudadanos, foros programáticos y jornadas de voluntariado en las regiones.
 `;
 
-export async function resolverDudaConIA(pregunta, datosUsuario = null) {
+export const MAX_CARACTERES_PREGUNTA = 120;
+
+/**
+ * Consulta al asistente de IA (Gemini 2.5 Flash-Lite).
+ * Límites en el servidor: 3 preguntas/día para visitantes y 5/día para usuarios registrados.
+ * @returns {{ respuesta: string, restantes: number|null, limite?: boolean, sinIA?: boolean }}
+ */
+export async function resolverDudaConIA(pregunta) {
+  const texto = String(pregunta || "").trim().slice(0, MAX_CARACTERES_PREGUNTA);
   try {
-    // 1. Intentar llamar a Edge Function con Vertex AI
-    const { data, error } = await supabase.functions.invoke("soporte-ia", {
-      body: { pregunta, usuario: datosUsuario }
-    });
-
+    const { data, error } = await supabase.functions.invoke("soporte-ia", { body: { pregunta: texto } });
     if (!error && data?.respuesta) {
-      return data.respuesta;
+      return { respuesta: data.respuesta, restantes: data.restantes ?? null };
     }
+    // Leer el mensaje de error del servidor (límite alcanzado, pregunta muy larga, etc.)
+    let cuerpo = null;
+    try { cuerpo = await error?.context?.json(); } catch (_) { /* sin cuerpo */ }
+    if (cuerpo?.limite_alcanzado) return { respuesta: cuerpo.error, restantes: 0, limite: true };
+    if (error?.context?.status === 400 && cuerpo?.error) return { respuesta: cuerpo.error, restantes: null };
   } catch (e) {
-    // Continuar con resolución inteligente en cliente
+    // Sin conexión: continuar con respuestas locales
   }
+  return { respuesta: respuestaLocal(texto), restantes: null, sinIA: true };
+}
 
-  // 2. Resolvedor semántico y contextual para respuestas inmediatas de alta calidad
+// Respuestas locales (sin IA) cuando el servicio no está disponible
+function respuestaLocal(pregunta) {
   const p = pregunta.toLowerCase();
-
   if (p.includes("inscri") || p.includes("unir") || p.includes("registro") || p.includes("crear cuenta")) {
     return "¡Unirte a Avancemos es muy fácil y gratuito! Ve a la sección 'Únete', ingresa tus datos, selecciona tu departamento y municipio, y elige el rol con el que deseas aportar (Simpatizante, Voluntario o Líder). El equipo departamental de tu región revisará tu solicitud para activar tu cuenta.";
   }
@@ -47,7 +58,7 @@ export async function resolverDudaConIA(pregunta, datosUsuario = null) {
     return "Avancemos cuenta con un sistema de verificación con insignias estilo X: la Insignia Azul certifica tu identidad real verificada en videollamada; la Insignia Dorada distingue a líderes oficiales y cuentas territoriales; y la Insignia Gris reconoce a servidores públicos de elección popular.";
   }
   if (p.includes("whatsapp") || p.includes("grupo") || p.includes("chat")) {
-    return "Los grupos oficiales de WhatsApp son exclusivos para miembros aprobados para proteger los números telefónicos y la seguridad de simpatizantes y líderes regionales. Una vez tu cuenta esté activa, podrás ver el directorio de tu departamento en la pestaña 'Grupos'.";
+    return "Cada departamento tiene su grupo oficial de WhatsApp, además de la comunidad nacional en Telegram y Discord. Encuéntralos en la sección 'Grupos' o tocando tu departamento en el mapa de la página de inicio.";
   }
   if (p.includes("costo") || p.includes("pago") || p.includes("plata") || p.includes("dinero") || p.includes("cobro")) {
     return "Unirte y participar en la plataforma de Avancemos es totalmente gratuito. No se cobra ninguna tarifa por registro, verificación ni acceso a grupos o eventos comunitarios.";

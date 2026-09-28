@@ -34,6 +34,11 @@ export function renderizarTarjetaPublicacion(pub, opciones = {}) {
     if (badge) cabecera.appendChild(badge);
   }
 
+  // Etiqueta libre asignada por la administración (p. ej. "Líder de Bogotá")
+  if (pub.autor_cargo) {
+    cabecera.appendChild(el("span", { className: "etiqueta-cargo", textContent: pub.autor_cargo }));
+  }
+
   if (pub.es_oficial) {
     cabecera.appendChild(el("span", { className: "chip chip-ambar", style: "font-size: 0.65rem; padding: 0.1rem 0.4rem;", textContent: "Oficial" }));
   }
@@ -42,7 +47,14 @@ export function renderizarTarjetaPublicacion(pub, opciones = {}) {
   enlaceUsuario.onclick = (e) => e.stopPropagation();
   cabecera.appendChild(enlaceUsuario);
   cabecera.appendChild(el("span", { style: "color: var(--texto-suave); font-size: 0.75rem;", textContent: "·" }));
-  cabecera.appendChild(el("span", { className: "pub-tiempo", textContent: tiempoRelativo(pub.publicado_en) }));
+  cabecera.appendChild(el("span", { className: "pub-tiempo", textContent: tiempoRelativo(pub.publicado_en || pub.created_at) }));
+
+  // Estado visible solo para el autor en su propio perfil
+  const ESTADOS = { pendiente: ["En revisión", "chip-ambar"], rechazado: ["No aprobada", "chip-peligro"], cambios_solicitados: ["Cambios solicitados", "chip-ambar"] };
+  if (pub.estado && ESTADOS[pub.estado]) {
+    const [txt, cls] = ESTADOS[pub.estado];
+    cabecera.appendChild(el("span", { className: `chip ${cls}`, style: "font-size: 0.65rem; padding: 0.1rem 0.45rem;", textContent: txt, title: pub.motivo_revision || "" }));
+  }
 
   // Texto del post
   const textoP = el("p", { className: "pub-texto" });
@@ -53,8 +65,9 @@ export function renderizarTarjetaPublicacion(pub, opciones = {}) {
 
   // Media (Imágenes / Video)
   if (pub.media && pub.media.length > 0) {
-    const cant = Math.min(pub.media.length, 4);
-    const grillaMedia = el("div", { className: `pub-media-grilla grilla-${cant}` });
+    const visuales = pub.media.filter(m => m.tipo !== "audio").length;
+    const cant = Math.max(1, Math.min(visuales, 4));
+    const grillaMedia = el("div", { className: `pub-media-grilla grilla-${cant}${visuales === 0 ? " solo-audio" : ""}` });
 
     pub.media.slice(0, 4).forEach((m) => {
       let mediaElem;
@@ -65,6 +78,8 @@ export function renderizarTarjetaPublicacion(pub, opciones = {}) {
           playsinline: true,
           preload: "metadata"
         });
+      } else if (m.tipo === "audio") {
+        mediaElem = el("audio", { className: "pub-media-audio", controls: true, preload: "none" });
       } else {
         mediaElem = el("img", {
           alt: m.alt_text || "Imagen adjunta",
@@ -204,6 +219,24 @@ export function renderizarTarjetaPublicacion(pub, opciones = {}) {
 
   colContenido.appendChild(accionesBarra);
   if (opciones.mostrarEnlaceComentarios !== false) colContenido.appendChild(enlaceComentarios);
+
+  // Acciones del autor: editar y eliminar
+  if (opciones.esPropia) {
+    const barraAutor = el("div", { className: "pub-acciones-autor" }, [
+      el("button", {
+        className: "btn btn-fantasma btn-sm",
+        textContent: "✏️ Editar",
+        onclick: (e) => { e.stopPropagation(); opciones.onEditar && opciones.onEditar(pub, textoP); }
+      }),
+      el("button", {
+        className: "btn btn-fantasma btn-sm",
+        style: "color: var(--error);",
+        textContent: "🗑️ Eliminar",
+        onclick: (e) => { e.stopPropagation(); opciones.onEliminar && opciones.onEliminar(pub, tarjeta); }
+      })
+    ]);
+    colContenido.appendChild(barraAutor);
+  }
 
   tarjeta.appendChild(colAvatar);
   tarjeta.appendChild(colContenido);

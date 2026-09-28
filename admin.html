@@ -45,6 +45,26 @@
           </a>
         </li>
         <li class="admin-menu-item">
+          <a href="#publicaciones" onclick="cambiarSeccion('publicaciones')">
+            <span>📝</span> <span>Publicaciones</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#anuncios" onclick="cambiarSeccion('anuncios')">
+            <span>📢</span> <span>Anuncios y Encuestas</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#eventos" onclick="cambiarSeccion('eventos')">
+            <span>📅</span> <span>Eventos</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
+          <a href="#grupos" onclick="cambiarSeccion('grupos')">
+            <span>💬</span> <span>Grupos</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
           <a href="#estudio-ia" onclick="cambiarSeccion('estudio-ia')">
             <span>✨</span> <span>Estudio Vertex AI</span>
           </a>
@@ -161,25 +181,43 @@
 
         <!-- SECCIÓN 4: USUARIOS Y ROLES -->
         <section id="sec-usuarios" style="display: none;">
-          <div class="admin-seccion-cabecera" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;">
-            <h2>Directorio de Usuarios y Roles</h2>
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Usuarios y Roles</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Consulta toda la información de cada usuario, edita sus datos, asigna roles, insignias y la etiqueta que se muestra junto a su nombre.</p>
           </div>
-          <div class="admin-tabla-wrap">
-            <table class="admin-tabla">
-              <thead>
-                <tr>
-                  <th>Usuario</th>
-                  <th>Nombre</th>
-                  <th>Estado</th>
-                  <th>Insignia</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tabla-usuarios-lista">
-                <tr><td colspan="5" style="text-align: center;">Cargando usuarios...</td></tr>
-              </tbody>
-            </table>
+          <div id="contenido-usuarios"></div>
+        </section>
+
+        <section id="sec-publicaciones" style="display: none;">
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Publicaciones y Comentarios</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Todas las publicaciones de la red (aprobadas, pendientes, rechazadas y eliminadas) con sus comentarios.</p>
           </div>
+          <div id="contenido-publicaciones"></div>
+        </section>
+
+        <section id="sec-eventos" style="display: none;">
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Eventos</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Crea, edita y aprueba encuentros, foros y jornadas. Los eventos creados aquí se publican de inmediato.</p>
+          </div>
+          <div id="contenido-eventos"></div>
+        </section>
+
+        <section id="sec-anuncios" style="display: none;">
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Anuncios, Encuestas y Votaciones</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Publica comunicados con texto, imagen, video o audio, y consultas que los usuarios responden al entrar.</p>
+          </div>
+          <div id="contenido-anuncios"></div>
+        </section>
+
+        <section id="sec-grupos" style="display: none;">
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Grupos</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Enlaces oficiales de WhatsApp, Telegram y Discord por departamento. Se muestran en la red, en grupos.html y en el mapa.</p>
+          </div>
+          <div id="contenido-grupos"></div>
         </section>
 
         <!-- SECCIÓN 5: ESTUDIO VERTEX AI -->
@@ -276,12 +314,14 @@
     } from "./js/servicios/admin.js";
     import { mostrarToast } from "./js/ui/toast.js";
     import { cerrarSesion } from "./js/auth.js";
+    import * as gestion from "./js/vistas/admin/gestion.js";
 
     // Escapa datos de usuario antes de interpolarlos en plantillas HTML
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const urlSegura = (u) => /^https:\/\/chat\.whatsapp\.com\//.test(u || "") ? esc(u) : "#";
 
     let deptoSeleccionado = null;
+    let deptosCache = [];
     let permisosActuales = null;
 
     async function initAdmin() {
@@ -301,6 +341,7 @@
 
       // Cargar departamentos en el selector territorial
       const deptos = await obtenerDepartamentos();
+      deptosCache = deptos;
       const sel = document.getElementById("selector-territorio-admin");
       deptos.forEach(d => {
         if (permisosActuales.es_admin_nacional || permisosActuales.departamentos_moderacion.includes(d.id)) {
@@ -312,7 +353,8 @@
       });
 
       cargarMetricas();
-      cambiarSeccion("resumen");
+      const inicial = location.hash.replace("#", "");
+      cambiarSeccion(document.getElementById(`sec-${inicial}`) ? inicial : "resumen");
     }
 
     async function cargarMetricas() {
@@ -337,11 +379,23 @@
       const link = document.querySelector(`.admin-menu-item a[href='#${seccionId}']`);
       if (link) link.classList.add("activo");
 
+      const ctx = { permisos: permisosActuales, departamentos: deptosCache, depto: () => deptoSeleccionado };
+      const contenido = (id) => document.getElementById(`contenido-${id}`);
       if (seccionId === "aprobaciones") cargarAprobaciones("usuarios");
       else if (seccionId === "soporte-casos") cargarCasosSoporte();
-      else if (seccionId === "usuarios") cargarUsuarios();
+      else if (seccionId === "usuarios") gestion.montarUsuarios(contenido("usuarios"), ctx);
+      else if (seccionId === "publicaciones") gestion.montarPublicaciones(contenido("publicaciones"), ctx);
+      else if (seccionId === "eventos") gestion.montarEventos(contenido("eventos"), ctx);
+      else if (seccionId === "anuncios") gestion.montarAnuncios(contenido("anuncios"), ctx);
+      else if (seccionId === "grupos") gestion.montarGrupos(contenido("grupos"), ctx);
       else if (seccionId === "auditoria") cargarAuditoria();
     };
+
+    // Navegación por #seccion (enlaces directos y botón atrás del navegador)
+    window.addEventListener("hashchange", () => {
+      const id = location.hash.replace("#", "");
+      if (permisosActuales && document.getElementById(`sec-${id}`)) cambiarSeccion(id);
+    });
 
     window.alCambiarTerritorio = function(val) {
       deptoSeleccionado = val || null;
@@ -388,6 +442,7 @@
             <div class="aprobacion-cabecera">
               <div>
                 <strong>${esc(item.perfil?.nombre)}</strong> (@${esc(item.perfil?.username)})
+                <div style="font-size: 0.8rem; color: var(--texto-suave);">${esc(item.perfil?.correo)} · ${esc([item.municipio, item.departamento].filter(Boolean).join(", "))}</div>
                 <div style="font-size: 0.8rem; color: var(--texto-suave);">Rol solicitado: <span class="chip chip-turquesa">${esc(item.rol_solicitado)}</span></div>
               </div>
               <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
@@ -401,20 +456,9 @@
             </div>
           `;
         } else if (tab === "publicaciones") {
-          tarjeta.innerHTML = `
-            <div class="aprobacion-cabecera">
-              <div>
-                <strong>${esc(item.autor?.nombre)}</strong> (@${esc(item.autor?.username)})
-                <span class="chip">${esc(item.categoria)}</span>
-              </div>
-              <span style="font-size: 0.75rem; color: var(--texto-suave);">${new Date(item.created_at).toLocaleDateString()}</span>
-            </div>
-            <p style="font-size: 0.95rem; line-height: 1.5;">${esc(item.contenido)}</p>
-            <div class="aprobacion-acciones">
-              <button class="btn btn-peligro btn-sm" onclick="resolverPub('${item.id}', 'rechazado')">Rechazar</button>
-              <button class="btn btn-primario btn-sm" onclick="resolverPub('${item.id}', 'aprobado')">Aprobar Publicación</button>
-            </div>
-          `;
+          // Vista completa con imágenes, video y audio antes de aprobar
+          cont.appendChild(gestion.tarjetaPublicacionAdmin(item, () => { cargarAprobaciones("publicaciones"); cargarMetricas(); }));
+          return;
         } else if (tab === "grupos") {
           tarjeta.innerHTML = `
             <div class="aprobacion-cabecera">
@@ -510,43 +554,6 @@
           cargarMetricas();
         } catch (e) {
           mostrarToast(e.message, "error");
-        }
-      }
-    };
-
-    // Usuarios
-    async function cargarUsuarios() {
-      const tbody = document.getElementById("tabla-usuarios-lista");
-      tbody.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
-
-      let q = supabase.from("perfiles").select("id, nombre, username, estado, insignia, created_at");
-      if (deptoSeleccionado) q = q.eq("departamento_id", deptoSeleccionado);
-      const { data: users } = await q.order("created_at", { ascending: false }).limit(25);
-
-      tbody.innerHTML = "";
-      (users || []).forEach(u => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>@${esc(u.username)}</td>
-          <td>${esc(u.nombre)}</td>
-          <td><span class="chip chip-${u.estado === 'activo' ? 'turquesa' : 'ambar'}">${u.estado}</span></td>
-          <td><span class="chip">${u.insignia}</span></td>
-          <td>
-            <button class="btn btn-secundario btn-sm" onclick="otorgarInsigniaPrompt('${u.id}')">Insignia</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    window.otorgarInsigniaPrompt = async function(uid) {
-      const ins = prompt("Tipo de insignia a otorgar (azul, dorada, gris, ninguna):");
-      if (ins && ["azul", "dorada", "gris", "ninguna"].includes(ins)) {
-        const { error } = await supabase.rpc("otorgar_insignia", { p_user_id: uid, p_insignia: ins });
-        if (error) mostrarToast(error.message, "error");
-        else {
-          mostrarToast("Insignia actualizada", "exito");
-          cargarUsuarios();
         }
       }
     };

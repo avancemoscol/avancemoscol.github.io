@@ -34,6 +34,7 @@
           <li><a href="referentes.html" class="sitio-menu-enlace">Referentes</a></li>
           <li><a href="propuestas.html" class="sitio-menu-enlace">Propuestas</a></li>
           <li><a href="eventos.html" class="sitio-menu-enlace">Eventos</a></li>
+          <li><a href="grupos.html" class="sitio-menu-enlace">Grupos</a></li>
         </ul>
       </nav>
 
@@ -224,7 +225,7 @@
       <div class="contenedor">
         <div class="seccion-encabezado">
           <h2>Presencia en los 32 Departamentos y Bogotá</h2>
-          <p class="seccion-subtitulo">Pasa el cursor por cualquier departamento para conocer su organización.</p>
+          <p class="seccion-subtitulo">Toca o haz clic en tu departamento para unirte a su grupo de WhatsApp.</p>
         </div>
         <div class="mapa-contenedor" id="mapa-colombia"></div>
       </div>
@@ -308,6 +309,7 @@
             <li><a href="referentes.html">Referentes</a></li>
             <li><a href="propuestas.html">Propuestas</a></li>
             <li><a href="eventos.html">Eventos</a></li>
+            <li><a href="grupos.html">Grupos</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -325,13 +327,13 @@
             <li><a href="privacidad.html">Privacidad (Ley 1581)</a></li>
             <li><a href="terminos.html">Términos de uso</a></li>
             <li><a href="estilo.html">Sistema de diseño</a></li>
-            <li><span style="color: #718096; font-size: 0.8rem;">contacto@avancemos.co</span></li>
+            <li><a href="mailto:abulingo.help@gmail.com" style="font-size: 0.8rem;">abulingo.help@gmail.com</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-inferior">
-        <div>© 2026 Movimiento Político Avancemos Colombia · NIT: 901.884.230-1</div>
-        <div>Carrera 7 # 71-21, Bogotá D. C. · 100% Sin sesgos de cookies</div>
+        <div>© 2026 Movimiento Político Avancemos Colombia</div>
+        <div>Sin cookies de rastreo publicitario</div>
       </div>
     </div>
   </footer>
@@ -345,6 +347,7 @@
     import "./js/ui/menu-sitio.js";
     import { obtenerSesion } from "./js/auth.js";
     import { CONFIG } from "./js/config.js";
+    import { cargarGrupos } from "./js/ui/grupos.js";
 
     // Inicializar soporte inteligente
     inicializarWidgetSoporte();
@@ -449,6 +452,18 @@
         detectRetina: true
       }).addTo(map);
 
+      // Grupos oficiales por departamento para abrirlos desde el mapa
+      const gruposPorDepto = {};
+      const dptosNombres = {};
+      try {
+        (await cargarGrupos()).forEach(g => {
+          if (g.departamento_id) {
+            gruposPorDepto[g.departamento_id] = g;
+            if (g.departamento?.nombre) dptosNombres[g.departamento_id] = g.departamento.nombre;
+          }
+        });
+      } catch (e) { console.warn("Grupos:", e); }
+
       try {
         const resp = await fetch("data/colombia-departamentos.geojson");
         const geojson = await resp.json();
@@ -472,11 +487,17 @@
             const info = datosDeptos ? datosDeptos[dptoId] : null;
             const rotulo = info ? info.rotulo : "menos de 5 miembros";
 
-            const htmlInfo = `<strong>${esc(nombre)}</strong><br>Presencia: ${esc(rotulo)}`;
-            if (esMovil) {
-              layer.bindPopup(htmlInfo, { className: "mapa-tooltip", closeButton: false });
-            } else {
-              layer.bindTooltip(htmlInfo, { sticky: true, className: "mapa-tooltip" });
+            const nombreBonito = (dptosNombres[dptoId] || nombre);
+            const grupo = gruposPorDepto[dptoId];
+            const urlGrupo = grupo && /^https:\/\/chat\.whatsapp\.com\//.test(grupo.url) ? grupo.url : null;
+            const htmlPopup = `
+              <strong>${esc(nombreBonito)}</strong><br>
+              <span>Presencia: ${esc(rotulo)}</span>
+              ${urlGrupo ? `<a class="mapa-popup-btn" href="${esc(urlGrupo)}" target="_blank" rel="noopener noreferrer">🟢 Unirme al grupo de WhatsApp</a>` : ""}
+              <a class="mapa-popup-enlace" href="grupos.html?d=${esc(dptoId)}">Ver todos los grupos →</a>`;
+            layer.bindPopup(htmlPopup, { className: "mapa-popup", closeButton: true, autoPanPadding: [20, 20] });
+            if (!esMovil) {
+              layer.bindTooltip(`<strong>${esc(nombreBonito)}</strong><br>Clic para unirte a su grupo`, { sticky: true, className: "mapa-tooltip" });
             }
 
             layer.on("mouseover", () => {
@@ -485,9 +506,7 @@
             layer.on("mouseout", () => {
               layer.setStyle({ weight: 1.5, color: "#FFFFFF", fillOpacity: 0.7 });
             });
-            if (!esMovil) {
-              layer.on("click", () => layer.openTooltip());
-            }
+            layer.on("click", () => layer.closeTooltip && layer.closeTooltip());
           }
         }).addTo(map);
       } catch (e) {

@@ -35,55 +35,15 @@ export async function obtenerResumenMetricas(deptoId = null) {
 
 export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = null) {
   if (tab === "usuarios") {
-    let q = supabase
-      .from("solicitudes")
-      .select(`
-        id,
-        user_id,
-        rol_solicitado,
-        motivo,
-        created_at,
-        departamento_id,
-        municipio_id,
-        perfil:perfiles!solicitudes_user_id_fkey (
-          nombre,
-          username,
-          avatar_path,
-          ocupacion,
-          intereses
-        )
-      `)
-      .eq("estado", "pendiente");
-    if (deptoId) q = q.eq("departamento_id", deptoId);
-    const { data, error } = await q.order("created_at", { ascending: true });
+    const { data, error } = await supabase.rpc("admin_solicitudes_pendientes", { p_depto: deptoId });
     if (error) throw error;
-    return data || [];
+    return (data || []).map(s => ({ ...s, perfil: { nombre: s.nombre, username: s.username, ocupacion: s.ocupacion, correo: s.correo } }));
   }
 
   if (tab === "publicaciones") {
-    let q = supabase
-      .from("publicaciones")
-      .select(`
-        id,
-        contenido,
-        categoria,
-        alcance,
-        visibilidad,
-        created_at,
-        departamento_moderacion,
-        autor:perfiles!publicaciones_autor_id_fkey (
-          nombre,
-          username,
-          avatar_path,
-          insignia
-        ),
-        media:publicacion_media (*)
-      `)
-      .eq("estado", "pendiente");
-    if (deptoId) q = q.eq("departamento_moderacion", deptoId);
-    const { data, error } = await q.order("created_at", { ascending: true });
+    const { data, error } = await supabase.rpc("admin_publicaciones", { p_estado: "pendiente", p_depto: deptoId });
     if (error) throw error;
-    return data || [];
+    return (data || []).map(p => ({ ...p, autor: { nombre: p.autor_nombre, username: p.autor_username, insignia: p.autor_insignia } }));
   }
 
   if (tab === "grupos") {
@@ -98,7 +58,7 @@ export async function obtenerAprobacionesPendientes(tab = "usuarios", deptoId = 
         alcance,
         url,
         created_at,
-        creador:perfiles!grupos_whatsapp_creado_por_fkey (nombre, username)
+        creador:perfiles!grupos_whatsapp_creado_por_fkey (nombre:primer_nombre, username)
       `)
       .eq("estado", "pendiente");
     if (deptoId) q = q.eq("departamento_moderacion", deptoId);
@@ -177,7 +137,7 @@ export async function obtenerAuditoria(deptoId = null, limite = 50) {
       antes,
       despues,
       created_at,
-      actor:perfiles!auditoria_actor_id_fkey (nombre, username)
+      actor:perfiles!auditoria_actor_id_fkey (nombre:primer_nombre, username)
     `);
 
   if (deptoId) q = q.eq("departamento_id", deptoId);
@@ -185,3 +145,37 @@ export async function obtenerAuditoria(deptoId = null, limite = 50) {
   if (error) throw error;
   return data || [];
 }
+
+// ---------------------------------------------------------------------------
+// Gestión avanzada (usuarios, publicaciones, eventos, anuncios, grupos)
+// ---------------------------------------------------------------------------
+async function rpc(nombre, args = {}) {
+  const { data, error } = await supabase.rpc(nombre, args);
+  if (error) throw error;
+  return data;
+}
+
+export const listarUsuarios = (busqueda, depto, estado) =>
+  rpc("admin_listar_usuarios", { p_busqueda: busqueda || null, p_depto: depto || null, p_estado: estado || null, p_limite: 100 });
+export const actualizarUsuario = (id, datos) => rpc("admin_actualizar_usuario", { p_id: id, p_datos: datos });
+export const asignarRol = (userId, rol, deptoId, titulo, activo = true) =>
+  rpc("admin_asignar_rol", { p_user_id: userId, p_rol: rol, p_departamento_id: deptoId || null, p_titulo: titulo || null, p_activo: activo });
+export const otorgarInsignia = (userId, insignia) => rpc("otorgar_insignia", { p_user_id: userId, p_insignia: insignia });
+
+export const listarPublicacionesAdmin = (estado, depto, busqueda) =>
+  rpc("admin_publicaciones", { p_estado: estado || null, p_depto: depto || null, p_busqueda: busqueda || null, p_limite: 100 });
+export const listarComentariosAdmin = (pubId) => rpc("admin_comentarios", { p_publicacion_id: pubId });
+export const moderarComentario = (id, estado) => rpc("admin_moderar_comentario", { p_id: id, p_estado: estado });
+export const eliminarPublicacionAdmin = (id) => rpc("eliminar_publicacion", { p_id: id });
+
+export const listarEventosAdmin = () => rpc("admin_eventos");
+export const guardarEvento = (id, datos) => rpc("admin_guardar_evento", { p_id: id || null, p_datos: datos });
+export const resolverEvento = (id, accion) => rpc("admin_resolver_evento", { p_id: id, p_accion: accion });
+
+export const listarAnunciosAdmin = () => rpc("admin_anuncios");
+export const guardarAnuncio = (id, datos) => rpc("admin_guardar_anuncio", { p_id: id || null, p_datos: datos });
+export const eliminarAnuncio = (id) => rpc("admin_eliminar_anuncio", { p_id: id });
+export const resultadosAnuncio = (id) => rpc("resultados_anuncio", { p_anuncio_id: id });
+
+export const guardarGrupo = (id, datos) => rpc("admin_guardar_grupo", { p_id: id || null, p_datos: datos });
+export const eliminarGrupo = (id) => rpc("admin_eliminar_grupo", { p_id: id });

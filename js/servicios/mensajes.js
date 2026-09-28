@@ -6,23 +6,8 @@
 import { supabase } from "../supabase.js";
 
 export async function obtenerConversaciones() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data, error } = await supabase
-    .from("conversacion_participantes")
-    .select(`
-      conversacion_id,
-      ultimo_leido_en,
-      conversacion:conversaciones (
-        id,
-        ultimo_mensaje_en,
-        ultimo_mensaje_preview
-      )
-    `)
-    .eq("user_id", user.id)
-    .order("ultimo_leido_en", { ascending: false });
-
+  // Incluye el primer nombre del otro participante y si todavía puedes escribirle
+  const { data, error } = await supabase.rpc("mis_conversaciones");
   if (error) throw error;
   return data || [];
 }
@@ -46,7 +31,7 @@ export async function obtenerMensajes(conversacionId) {
       created_at,
       autor:perfiles (
         id,
-        nombre,
+        nombre:primer_nombre,
         username,
         avatar_path
       )
@@ -73,17 +58,11 @@ export async function enviarMensaje(conversacionId, contenido, mediaPath = null)
     .select()
     .single();
 
-  if (error) throw error;
-
-  // Actualizar previsualización en la conversación
-  await supabase
-    .from("conversaciones")
-    .update({
-      ultimo_mensaje_en: new Date().toISOString(),
-      ultimo_mensaje_preview: contenido.slice(0, 80)
-    })
-    .eq("id", conversacionId);
-
+  if (error) {
+    if (error.code === "42501") throw new Error("Solo puedes escribir a personas que sigues.");
+    throw error;
+  }
+  // La vista previa y la notificación las actualiza un trigger en la base de datos
   return data;
 }
 

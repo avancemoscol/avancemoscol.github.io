@@ -50,7 +50,7 @@
           </li>
           <li>
             <a href="#/grupos" class="app-nav-enlace" data-ruta="/grupos">
-              <span>💬</span> <span>Grupos WhatsApp</span>
+              <span>💬</span> <span>Grupos</span>
             </a>
           </li>
           <li>
@@ -147,10 +147,12 @@
 
           <div class="app-redactor-pie">
             <div class="app-redactor-herramientas">
-              <label class="app-herramienta-btn" title="Adjuntar foto">
+              <label class="app-herramienta-btn" title="Adjuntar foto, video o audio" aria-label="Adjuntar foto, video o audio">
                 <input type="file" id="redactor-input-archivo" accept="image/*,video/mp4" style="display: none;" multiple>
                 🖼️
               </label>
+              <button type="button" class="app-herramienta-btn" id="btn-grabar-audio" title="Grabar nota de voz" aria-label="Grabar nota de voz">🎙️</button>
+              <span id="indicador-grabacion" class="indicador-grabacion" style="display: none;">● <span id="tiempo-grabacion">0:00</span> <button type="button" class="btn btn-fantasma btn-sm" id="btn-detener-grabacion">Detener</button></span>
               <span id="contador-caracteres" style="font-size: 0.75rem; color: var(--texto-suave); align-self: center; margin-left: 0.5rem;">
                 3000
               </span>
@@ -231,22 +233,24 @@
   <script type="module">
     import { Router } from "./js/router.js";
     import { obtenerMiPerfil } from "./js/servicios/perfiles.js";
-    import { obtenerFeed, crearPublicacion, obtenerComentarios, agregarComentario } from "./js/servicios/publicaciones.js";
+    import { obtenerFeed, crearPublicacion, obtenerGuardados } from "./js/servicios/publicaciones.js";
     import { obtenerEventos } from "./js/servicios/eventos.js";
-    import { obtenerGruposWhatsApp } from "./js/servicios/grupos.js";
-    import { obtenerConversaciones, iniciarConversacion, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
+    import { obtenerConversaciones, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
     import { obtenerNotificaciones, marcarNotificacionesLeidas, suscribirNotificaciones } from "./js/servicios/notificaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
     import { abrirComentarios } from "./js/ui/comentarios.js";
     import { renderizarAvatar } from "./js/ui/avatar.js";
     import { comprimirImagenWebP } from "./js/util/imagenes.js";
+    import { comprimirAudio, iniciarGrabacion } from "./js/util/audio.js";
     import { mostrarToast } from "./js/ui/toast.js";
     import { cargarPermisos } from "./js/permisos.js";
     import { cerrarSesion } from "./js/auth.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     import { solicitarInsignia } from "./js/servicios/verificacion.js";
     import { supabase } from "./js/supabase.js";
-    import { seguirUsuario, dejarDeSeguir, obtenerPerfilPorUsername } from "./js/servicios/perfiles.js";
+    import { montarPerfil, montarAjustes } from "./js/vistas/app/perfil.js";
+    import { montarDirectorioGrupos } from "./js/ui/grupos.js";
+    import { mostrarAnunciosPendientes } from "./js/ui/anuncios.js";
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     // Inicializar soporte inteligente
@@ -303,8 +307,8 @@
       // Cargar eventos en la barra lateral
       cargarEventosLateral();
 
-      // Comprobar y mostrar anuncios oficiales
-      comprobarAnuncios();
+      // Comunicados, encuestas y votaciones pendientes (obligatorias bloquean hasta responder)
+      if (miUsuario && miUsuario.estado === "activo") mostrarAnunciosPendientes();
 
       // Iniciar enrutador
       const router = new Router({
@@ -318,6 +322,7 @@
         "/eventos": vistaEventos,
         "/perfil": vistaMiPerfil,
         "/u/:usuario": vistaPerfilPublico,
+        "/u/:usuario/:pestana": vistaPerfilPublico,
         "/ajustes": vistaAjustes
       }, onCambioRuta);
 
@@ -481,7 +486,7 @@
           <div class="estado-vacio">
             <div class="estado-vacio-icono">✉️</div>
             <h3>Sin conversaciones</h3>
-            <p>Comunícate directamente con otros líderes y voluntarios de tu región.</p>
+            <p>Para escribirle a alguien, síguelo y usa el botón "Mensaje" en su perfil.</p>
           </div>
         `;
         return;
@@ -489,13 +494,13 @@
 
       convs.forEach(c => {
         const item = document.createElement("div");
-        item.style.padding = "1rem 1.25rem";
-        item.style.borderBottom = "1px solid var(--borde)";
-        item.style.cursor = "pointer";
-        item.innerHTML = `
-          <strong>Conversación</strong>
-          <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${esc(c.conversacion?.ultimo_mensaje_preview || 'Conversación abierta')}</p>
-        `;
+        item.className = "conv-item";
+        item.appendChild(renderizarAvatar({ nombre: c.otro_nombre, avatar_path: c.otro_avatar }, "md"));
+        const texto = document.createElement("div");
+        texto.className = "conv-texto";
+        texto.innerHTML = `<strong>${esc(c.otro_nombre)}</strong> <span class="pub-username">@${esc(c.otro_username)}</span>
+          <div class="conv-preview">${esc(c.ultimo_mensaje_preview || "Conversación abierta")}</div>`;
+        item.appendChild(texto);
         item.onclick = () => window.location.hash = `#/mensajes/${c.conversacion_id}`;
         cont.appendChild(item);
       });
@@ -507,29 +512,51 @@
       document.getElementById("seccion-redactor").style.display = "none";
 
       const cont = document.getElementById("vista-contenido");
+      if (!miUsuario) { window.location.href = "ingresar.html"; return; }
       cont.innerHTML = `
-        <div style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
+        <div style="display: flex; flex-direction: column; height: calc(100dvh - 190px); min-height: 360px;">
+          <div id="chat-cabecera" style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--borde); font-weight: 700;"></div>
           <div id="mensajes-lista" style="flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;"></div>
-          <div style="padding: 1rem; border-top: 1px solid var(--borde); display: flex; gap: 0.5rem; background: var(--superficie);">
-            <input type="text" id="input-chat" class="campo-input" placeholder="Escribe un mensaje privado..." style="flex: 1;">
-            <button class="btn btn-primario" id="btn-chat-enviar">Enviar</button>
-          </div>
+          <div id="chat-aviso" class="chat-aviso" style="display: none;"></div>
+          <form id="form-chat" style="padding: 0.75rem; border-top: 1px solid var(--borde); display: flex; gap: 0.5rem; background: var(--superficie);">
+            <input type="text" id="input-chat" class="campo-input" maxlength="2000" placeholder="Escribe un mensaje privado..." style="flex: 1;" aria-label="Mensaje">
+            <button class="btn btn-primario" id="btn-chat-enviar" type="submit">Enviar</button>
+          </form>
         </div>
       `;
+
+      const convs = await obtenerConversaciones().catch(() => []);
+      const conv = convs.find(c => c.conversacion_id === params.id);
+      if (conv) {
+        document.getElementById("chat-cabecera").innerHTML = `<a href="#/u/${esc(conv.otro_username)}">${esc(conv.otro_nombre)} <span class="pub-username">@${esc(conv.otro_username)}</span></a>`;
+        if (!conv.puedo_escribir) {
+          const aviso = document.getElementById("chat-aviso");
+          aviso.style.display = "block";
+          aviso.textContent = "Solo puedes escribir a personas que sigues. Sigue a esta persona desde su perfil para responder.";
+          document.getElementById("input-chat").disabled = true;
+          document.getElementById("btn-chat-enviar").disabled = true;
+        }
+      }
 
       const lista = document.getElementById("mensajes-lista");
       const msgs = await obtenerMensajes(params.id);
       msgs.forEach(m => renderizarMensaje(m, lista));
       lista.scrollTop = lista.scrollHeight;
 
-      document.getElementById("btn-chat-enviar").onclick = async () => {
+      document.getElementById("form-chat").onsubmit = async (e) => {
+        e.preventDefault();
         const inp = document.getElementById("input-chat");
         const txt = inp.value.trim();
         if (!txt) return;
         inp.value = "";
-        const m = await enviarMensaje(params.id, txt);
-        renderizarMensaje(m, lista);
-        lista.scrollTop = lista.scrollHeight;
+        try {
+          const m = await enviarMensaje(params.id, txt);
+          renderizarMensaje(m, lista);
+          lista.scrollTop = lista.scrollHeight;
+        } catch (err) {
+          inp.value = txt;
+          mostrarToast(err.message || "No se pudo enviar", "error");
+        }
       };
 
       suscribirMensajesConversacion(params.id, (m) => {
@@ -561,10 +588,10 @@
       document.getElementById("seccion-redactor").style.display = "none";
 
       const cont = document.getElementById("vista-contenido");
+      if (!miUsuario) { window.location.href = "ingresar.html"; return; }
       cont.innerHTML = "<div style='padding: 2rem;'><p>Cargando tus publicaciones guardadas...</p></div>";
-      // Cargar publicaciones del feed y filtrar
-      const pubs = await obtenerFeed("nacional");
-      const guardadas = pubs.filter(p => p.guardado);
+      let guardadas = [];
+      try { guardadas = await obtenerGuardados(); } catch (e) { console.warn(e); }
       cont.innerHTML = "";
       if (!guardadas.length) {
         cont.innerHTML = "<div class='estado-vacio'><div class='estado-vacio-icono'>🔖</div><p>No tienes publicaciones guardadas.</p></div>";
@@ -574,45 +601,13 @@
     }
 
     async function vistaGrupos() {
-      document.getElementById("feed-titulo-vista").textContent = "Grupos de WhatsApp";
+      document.getElementById("feed-titulo-vista").textContent = "Grupos";
       document.getElementById("feed-pestanas").style.display = "none";
       document.getElementById("seccion-redactor").style.display = "none";
 
       const cont = document.getElementById("vista-contenido");
-      cont.innerHTML = `
-        <div style="padding: 1.25rem; border-bottom: 1px solid var(--borde);">
-          <div class="tarjeta" style="background: rgba(11, 122, 110, 0.08); border-left: 4px solid var(--turquesa);">
-            <strong>Aviso de Seguridad Territorial:</strong>
-            <p style="font-size: var(--fs-xs); margin-top: 0.25rem;">
-              Al unirte a un grupo de WhatsApp, los demás miembros pueden ver tu número telefónico. Recomendamos canales y comunidades para mayor privacidad.
-            </p>
-          </div>
-        </div>
-        <div id="lista-grupos-wa" style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem;"></div>
-      `;
-
-      const listCont = document.getElementById("lista-grupos-wa");
-      const grupos = await obtenerGruposWhatsApp(miUsuario?.departamento_id);
-      if (!grupos.length) {
-        listCont.innerHTML = "<p style='color: var(--texto-suave);'>No hay grupos aprobados para tu departamento aún.</p>";
-        return;
-      }
-
-      grupos.forEach(g => {
-        const item = document.createElement("div");
-        item.className = "tarjeta";
-        item.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-              <span class="chip chip-turquesa">${esc(g.tipo)}</span>
-              <h4 style="margin: 0.5rem 0;">${esc(g.nombre)}</h4>
-              <p style="font-size: var(--fs-sm); color: var(--texto-suave);">${esc(g.descripcion)}</p>
-            </div>
-            <a href="${/^https:\/\/chat\.whatsapp\.com\//.test(g.url || "") ? esc(g.url) : "#"}" target="_blank" rel="noopener noreferrer" class="btn btn-primario btn-sm">Unirme</a>
-          </div>
-        `;
-        listCont.appendChild(item);
-      });
+      cont.innerHTML = "<div id='directorio-grupos-app' style='padding: 1.25rem;'></div>";
+      montarDirectorioGrupos(document.getElementById("directorio-grupos-app"), { deptoUsuario: miUsuario?.departamento_id });
     }
 
     async function vistaEventos() {
@@ -652,121 +647,21 @@
       document.getElementById("feed-titulo-vista").textContent = "Perfil";
       document.getElementById("feed-pestanas").style.display = "none";
       document.getElementById("seccion-redactor").style.display = "none";
-
-      const cont = document.getElementById("vista-contenido");
-      cont.innerHTML = "<div style='padding: 2rem;' class='esqueleto'>Cargando perfil...</div>";
-
-      // Cargar perfil
-      let p = null;
-      try { p = await obtenerPerfilPorUsername(params.usuario); } catch (_) { p = null; }
-      if (!p) {
-        cont.innerHTML = "<div style='padding: 2rem;'>Perfil no encontrado.</div>";
-        return;
-      }
-
-      cont.innerHTML = `
-        <div style="height: 140px; background: linear-gradient(135deg, var(--azul-noche), var(--turquesa)); position: relative;"></div>
-        <div style="padding: 0 1.25rem 1.25rem; position: relative;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: -45px; margin-bottom: 1rem;">
-            <div id="perfil-avatar-slot"></div>
-            ${miUsuario && miUsuario.username === p.username ? `
-              <a href="#/ajustes" class="btn btn-secundario btn-sm">Editar perfil</a>
-            ` : `
-              <div style="display: flex; gap: 0.5rem;">
-                <button class="btn btn-secundario btn-sm" id="btn-mensaje-perfil">Mensaje</button>
-                <button class="btn btn-primario btn-sm" id="btn-seguir-perfil">Seguir</button>
-              </div>
-            `}
-          </div>
-
-          <h3>${esc(p.nombre)}</h3>
-          <div style="color: var(--texto-suave); font-size: 0.85rem;">@${esc(p.username)}</div>
-          <p style="margin: 0.75rem 0; font-size: 0.95rem;">${esc(p.bio || 'Sin biografía aún.')}</p>
-
-          <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--texto-suave); margin-top: 1rem;">
-            <div><strong style="color: var(--texto);">${p.siguiendo_n || 0}</strong> Siguiendo</div>
-            <div><strong style="color: var(--texto);">${p.seguidores_n || 0}</strong> Seguidores</div>
-            <div><strong style="color: var(--texto);">${p.publicaciones_n || 0}</strong> Publicaciones</div>
-          </div>
-        </div>
-      `;
-
-      const avSlot = document.getElementById("perfil-avatar-slot");
-      avSlot.appendChild(renderizarAvatar(p, "xl"));
-
-      const btnMensaje = document.getElementById("btn-mensaje-perfil");
-      if (btnMensaje) {
-        btnMensaje.onclick = async () => {
-          if (!miUsuario) return window.location.href = "ingresar.html";
-          try {
-            const convId = await iniciarConversacion(p.id);
-            window.location.hash = `#/mensajes/${convId}`;
-          } catch (e) {
-            mostrarToast(e.message || "No se pudo abrir la conversación", "error");
-          }
-        };
-      }
-
-      const btnSeguir = document.getElementById("btn-seguir-perfil");
-      if (btnSeguir) {
-        if (!miUsuario) {
-          btnSeguir.onclick = () => window.location.href = "ingresar.html";
-        } else {
-          const { data: rel } = await supabase.from("seguidores").select("seguido_id")
-            .eq("seguidor_id", miUsuario.id).eq("seguido_id", p.id).maybeSingle();
-          let siguiendo = !!rel;
-          const pintar = () => {
-            btnSeguir.textContent = siguiendo ? "Siguiendo" : "Seguir";
-            btnSeguir.className = siguiendo ? "btn btn-secundario btn-sm" : "btn btn-primario btn-sm";
-          };
-          pintar();
-          btnSeguir.onclick = async () => {
-            btnSeguir.disabled = true;
-            try {
-              if (siguiendo) await dejarDeSeguir(p.id); else await seguirUsuario(p.id);
-              siguiendo = !siguiendo;
-              pintar();
-              mostrarToast(siguiendo ? `Ahora sigues a @${p.username}` : `Dejaste de seguir a @${p.username}`, "exito");
-            } catch (e) {
-              mostrarToast(e.message || "No se pudo actualizar", "error");
-            } finally {
-              btnSeguir.disabled = false;
-            }
-          };
-        }
-      }
+      await montarPerfil(document.getElementById("vista-contenido"), params.usuario, miUsuario, params.pestana);
     }
 
     async function vistaAjustes() {
       document.getElementById("feed-titulo-vista").textContent = "Ajustes de Cuenta";
       document.getElementById("feed-pestanas").style.display = "none";
       document.getElementById("seccion-redactor").style.display = "none";
-
-      const cont = document.getElementById("vista-contenido");
       if (!miUsuario) {
         window.location.href = "ingresar.html";
         return;
       }
-
-      cont.innerHTML = `
-        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-          <div class="tarjeta">
-            <h3>Solicitar Verificación con Insignia</h3>
-            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.5rem 0 1rem;">
-              Solicita tu insignia de verificación Azul (identidad real) o Gris (cargo público).
-            </p>
-            <button class="btn btn-primario btn-sm" onclick="solicitarInsigniaModal()">Solicitar Insignia</button>
-          </div>
-
-          <div class="tarjeta">
-            <h3>Sesión y Privacidad</h3>
-            <p style="font-size: var(--fs-sm); color: var(--texto-suave); margin: 0.5rem 0 1rem;">
-              Puedes cerrar sesión de forma segura o gestionar tus datos.
-            </p>
-            <button class="btn btn-peligro btn-sm" onclick="cerrarSesionApp()">Cerrar Sesión</button>
-          </div>
-        </div>
-      `;
+      montarAjustes(document.getElementById("vista-contenido"), miUsuario, {
+        onSolicitarInsignia: () => solicitarInsigniaModal(),
+        onCerrarSesion: () => cerrarSesionApp()
+      });
     }
 
     window.solicitarInsigniaModal = async function() {
@@ -839,9 +734,9 @@
     });
 
     // Adjuntos: imágenes (comprimidas a WebP en el navegador) y videos MP4/MOV
-    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime"];
+    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime", "video/webm"];
     const fileInput = document.getElementById("redactor-input-archivo");
-    fileInput.setAttribute("accept", "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime");
+    fileInput.setAttribute("accept", "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm,audio/*");
 
     function pintarAdjuntos() {
       const previewCont = document.getElementById("redactor-preview-media");
@@ -849,9 +744,10 @@
       archivosAdjuntos.forEach((adj, i) => {
         const caja = document.createElement("div");
         caja.className = "redactor-adjunto";
-        const media = document.createElement(adj.tipo === "video" ? "video" : "img");
+        const media = document.createElement(adj.tipo === "video" ? "video" : adj.tipo === "audio" ? "audio" : "img");
         media.src = adj.vistaPrevia;
         if (adj.tipo === "video") { media.muted = true; media.playsInline = true; }
+        if (adj.tipo === "audio") { media.controls = true; caja.classList.add("redactor-adjunto-audio"); }
         media.alt = "Vista previa del adjunto";
         const quitar = document.createElement("button");
         quitar.type = "button";
@@ -880,9 +776,10 @@
           break;
         }
         const esVideo = f.type.startsWith("video/");
-        const limiteMb = esVideo ? 50 : 10;
-        if (!f.type.startsWith("image/") && !esVideo) {
-          mostrarToast(`"${f.name}" no es una imagen ni un video.`, "alerta");
+        const esAudio = f.type.startsWith("audio/");
+        const limiteMb = esVideo ? 50 : esAudio ? 25 : 10;
+        if (!f.type.startsWith("image/") && !esVideo && !esAudio) {
+          mostrarToast(`"${f.name}" no es una imagen, video ni audio.`, "alerta");
           continue;
         }
         if (f.size > limiteMb * 1024 * 1024) {
@@ -890,8 +787,12 @@
           continue;
         }
         try {
-          if (esVideo) {
-            if (!TIPOS_PERMITIDOS.includes(f.type)) throw new Error("Solo se admiten videos MP4 o MOV.");
+          if (esAudio) {
+            mostrarToast("Comprimiendo audio a Opus...", "exito", 2000);
+            const comp = await comprimirAudio(f);
+            archivosAdjuntos.push({ archivo: comp.archivo, tipo: "audio", duracion_s: comp.duracion_s, vistaPrevia: URL.createObjectURL(comp.archivo) });
+          } else if (esVideo) {
+            if (!TIPOS_PERMITIDOS.includes(f.type)) throw new Error("Solo se admiten videos MP4, MOV o WebM.");
             archivosAdjuntos.push({ archivo: f, tipo: "video", vistaPrevia: URL.createObjectURL(f) });
           } else if (f.type === "image/gif") {
             archivosAdjuntos.push({ archivo: f, tipo: "imagen", vistaPrevia: URL.createObjectURL(f) });
@@ -912,6 +813,33 @@
       }
       pintarAdjuntos();
       btnPost.disabled = false;
+    });
+
+    // Notas de voz
+    let grabacionActual = null;
+    document.getElementById("btn-grabar-audio").addEventListener("click", async () => {
+      if (grabacionActual) return;
+      if (archivosAdjuntos.length >= 4) return mostrarToast("Máximo 4 archivos por publicación.", "alerta");
+      try {
+        const indicador = document.getElementById("indicador-grabacion");
+        grabacionActual = await iniciarGrabacion((seg) => {
+          document.getElementById("tiempo-grabacion").textContent = `${Math.floor(seg / 60)}:${String(seg % 60).padStart(2, "0")}`;
+        });
+        indicador.style.display = "inline-flex";
+      } catch (e) {
+        grabacionActual = null;
+        mostrarToast(e.name === "NotAllowedError" ? "Debes permitir el micrófono para grabar." : e.message, "error");
+      }
+    });
+    document.getElementById("btn-detener-grabacion").addEventListener("click", async () => {
+      if (!grabacionActual) return;
+      const archivo = await grabacionActual.detener();
+      grabacionActual = null;
+      document.getElementById("indicador-grabacion").style.display = "none";
+      if (archivo && archivo.size > 0) {
+        archivosAdjuntos.push({ archivo, tipo: "audio", vistaPrevia: URL.createObjectURL(archivo) });
+        pintarAdjuntos();
+      }
     });
 
     window.enviarPublicacion = async function() {
@@ -971,54 +899,6 @@
       } catch (e) {
         cont.innerHTML = "<p style='font-size: 0.8rem;'>No hay eventos cercanos.</p>";
       }
-    }
-
-    async function comprobarAnuncios() {
-      try {
-        const { data: anuncios } = await supabase
-          .from("anuncios")
-          .select("id, titulo, cuerpo, created_at")
-          .order("created_at", { ascending: false })
-          .limit(1);
-
-        if (anuncios && anuncios.length > 0) {
-          const a = anuncios[0];
-          let visto = null;
-          try { visto = localStorage.getItem(`anuncio_visto_${a.id}`); } catch (_) {}
-          if (!visto) {
-            mostrarModalAnuncio(a);
-          }
-        }
-      } catch (e) {
-        console.warn("Aviso de anuncios:", e);
-      }
-    }
-
-    function mostrarModalAnuncio(anuncio) {
-      const overlay = document.createElement("div");
-      overlay.className = "modal-overlay abierto";
-      overlay.innerHTML = `
-        <div class="modal-contenido" style="text-align: center; max-width: 520px; border-top: 5px solid var(--turquesa);">
-          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📢</div>
-          <span class="chip chip-ambar" style="margin-bottom: 0.75rem;">Comunicado Oficial · Avancemos</span>
-          <h3 style="color: var(--azul-noche); margin: 0.5rem 0 1rem; font-size: var(--fs-lg);">${esc(anuncio.titulo)}</h3>
-          <div style="font-size: var(--fs-base); color: var(--texto); line-height: 1.6; text-align: left; background: var(--marfil); padding: 1.25rem; border-radius: var(--radio-md); border: 1px solid var(--borde); margin-bottom: 1.5rem;">
-            ${esc(anuncio.cuerpo)}
-          </div>
-          <button class="btn btn-primario btn-lg" style="width: 100%;" id="btn-cerrar-anuncio">
-            Entendido
-          </button>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-
-      const cerrarAnuncio = () => {
-        try { localStorage.setItem(`anuncio_visto_${anuncio.id}`, "true"); } catch (_) {}
-        overlay.classList.remove("abierto");
-        setTimeout(() => overlay.remove(), 220);
-      };
-      document.getElementById("btn-cerrar-anuncio").onclick = cerrarAnuncio;
-      overlay.addEventListener("click", (e) => { if (e.target === overlay) cerrarAnuncio(); });
     }
 
     window.toggleTema = function() {

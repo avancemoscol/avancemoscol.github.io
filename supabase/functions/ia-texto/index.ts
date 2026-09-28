@@ -22,7 +22,7 @@ serve(async (req) => {
     }
 
     const token = await tokenGoogle();
-    const endpoint = urlModelo("global", "gemini-2.5-flash", "generateContent");
+    const endpoint = urlModelo("global", "gemini-2.5-flash-lite", "generateContent");
 
     let promptSistema = "";
     if (accion === "mejorar_prompt") {
@@ -43,9 +43,10 @@ serve(async (req) => {
         contents: [
           {
             role: "user",
-            parts: [{ text: `${promptSistema}\n\n${texto}` }]
+            parts: [{ text: `${promptSistema}\n\n${String(texto).slice(0, 1000)}` }]
           }
-        ]
+        ],
+        generationConfig: { maxOutputTokens: 200, temperature: 0.4, thinkingConfig: { thinkingBudget: 0 } }
       })
     });
 

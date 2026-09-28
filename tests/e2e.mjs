@@ -1,3 +1,5 @@
+// Prueba E2E: registro de 2 usuarios, aprobación por admin, publicar, seguir, DM, me gusta y comentarios.
+// Uso: python3 -m http.server 3000 & ; cd tests && npm i playwright-core && ADMP='<clave admin>' node e2e.mjs
 import { chromium } from 'playwright-core';
 const BASE='http://localhost:3000/';
 const ts=Date.now().toString().slice(-6);
@@ -47,7 +49,7 @@ if(await A.locator('#redactor-texto').isVisible()){await A.fill('#redactor-texto
 await ADM.goto(BASE+'admin.html');await ADM.waitForTimeout(2500);await ADM.click("a[href='#aprobaciones']");await ADM.waitForTimeout(1500);
 await ADM.click("#aprobaciones-pestanas >> text=Publicaciones");await ADM.waitForTimeout(2500);
 const pc=ADM.locator('.aprobacion-tarjeta',{hasText:ts});
-if(await pc.count()){await pc.getByText('Aprobar Publicación').click();log('aprobar post:',await toast(ADM));}else log('post no requiere/aparece en moderación');
+if(await pc.count()){await pc.getByRole('button',{name:'Aprobar'}).click();log('aprobar post:',await toast(ADM));}else log('post no requiere/aparece en moderación');
 // Beto ve feed
 await B.goto(BASE+'app.html#/inicio');await B.waitForTimeout(4000);if(await B.locator('#btn-cerrar-anuncio').count()) await B.click('#btn-cerrar-anuncio');
 const post=B.locator('.tarjeta-pub',{hasText:texto}).first();

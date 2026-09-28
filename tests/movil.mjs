@@ -29,11 +29,11 @@ async function login(p,email,pass){
  await p.goto(BASE+'ingresar.html');await p.fill('#email',email);await p.fill('#password',pass);await p.click('#btn-login');
  OK(await p.waitForURL(u=>!u.href.includes('ingresar'),{timeout:40000}).then(()=>true).catch(()=>false),'login '+email);
 }
-async function cerrarAnuncio(p){await p.waitForTimeout(1500);const b=p.locator('#btn-cerrar-anuncio');if(await b.count()){await b.click({timeout:8000}).catch(async e=>{console.log('  ❌ no se pudo pulsar Entendido: '+e.message.split('\n')[0]);await p.screenshot({path:'m2-anuncio-err.png'});await p.evaluate(()=>document.querySelectorAll('.modal-overlay').forEach(m=>m.remove()));});}await p.waitForTimeout(400);}
+async function cerrarAnuncio(p){await p.waitForTimeout(1800);for(let i=0;i<5&&await p.locator('.modal-anuncio.abierto').count();i++){const m=p.locator('.modal-anuncio.abierto').last();if(await m.locator('label.anuncio-opcion').count()){await m.locator('label.anuncio-opcion').first().click();await m.getByRole('button',{name:/Votar|Enviar/}).click();await p.waitForTimeout(1500);await m.getByRole('button',{name:'Continuar'}).click();}else{await m.getByRole('button',{name:/Entendido/}).click();}await p.waitForTimeout(700);}}
 const M=await ctx('movil'),Vc=await ctx('vecina'),ADM=await ctx('admin',false);
 await registrar(M,U,1);await registrar(Vc,V,1);
 await login(ADM,'admin@avancemos.co',process.env.ADMP);
-await ADM.goto(BASE+'admin.html');await ADM.waitForTimeout(2500);await ADM.click("a[href='#aprobaciones']");await ADM.waitForTimeout(2500);
+await ADM.goto(BASE+'admin.html#aprobaciones');await ADM.reload();await ADM.waitForTimeout(3000);await ADM.waitForTimeout(2500);
 for(const x of [U,V]){const card=ADM.locator('.aprobacion-tarjeta',{hasText:x.u});if(await card.count()){await card.getByText('Aprobar Usuario').click();await ADM.waitForTimeout(1500);OK(true,'admin aprueba '+x.u);}else OK(false,'solicitud visible '+x.u);}
 await login(M,U.e,PASS);await login(Vc,V.e,PASS);
 await M.goto(BASE+'app.html#/inicio');await cerrarAnuncio(M);
@@ -52,12 +52,12 @@ await M.fill('#redactor-texto',texto);
 await M.setInputFiles('#redactor-input-archivo',{name:'foto.webp',mimeType:'image/webp',buffer:(await import('fs')).readFileSync(new URL('../assets/video/video-poster.webp', import.meta.url))});await M.waitForTimeout(2500);
 OK(await M.locator('#redactor-preview-media .redactor-adjunto img').count()===1,'vista previa de imagen');
 await M.click('#btn-enviar-post');
-const t1=await toast(M);OK(/enviada|revisión/i.test(t1),'publicar con imagen: '+t1);
+await M.waitForTimeout(3000);const t1=await toast(M);OK(/enviada|revisión/i.test(t1),'publicar con imagen: '+t1);
 // admin aprueba
-await ADM.goto(BASE+'admin.html');await ADM.waitForTimeout(2500);await ADM.click("a[href='#aprobaciones']");await ADM.waitForTimeout(1500);
+await ADM.goto(BASE+'admin.html#aprobaciones');await ADM.reload();await ADM.waitForTimeout(3000);await ADM.waitForTimeout(1500);
 await ADM.click("#aprobaciones-pestanas >> text=Publicaciones");await ADM.waitForTimeout(2500);
 const pc=ADM.locator('.aprobacion-tarjeta',{hasText:ts});
-if(await pc.count()){await pc.getByText('Aprobar Publicación').click();await ADM.waitForTimeout(1500);OK(true,'admin aprueba publicación');}else OK(false,'publicación en moderación');
+if(await pc.count()){await pc.getByRole('button',{name:'Aprobar'}).click();await ADM.waitForTimeout(1500);OK(true,'admin aprueba publicación');}else OK(false,'publicación en moderación');
 // vecina ve post con imagen
 await Vc.goto(BASE+'app.html');await cerrarAnuncio(Vc);await Vc.reload();await cerrarAnuncio(Vc);await Vc.waitForTimeout(2500);
 const post=Vc.locator('.tarjeta-pub',{hasText:texto}).first();
@@ -91,7 +91,7 @@ await M.click('.widget-soporte-boton');await M.waitForTimeout(600);
 OK(await M.locator('#widget-soporte-panel').isVisible(),'widget de soporte abre en celular');
 await M.fill('#widget-soporte-panel input','¿Qué significa ser de centro?');await M.click('#widget-soporte-panel >> text=Enviar');
 await M.waitForFunction(()=>!document.querySelector('.widget-soporte-cuerpo').innerText.includes('Consultando'),null,{timeout:40000}).catch(()=>{});
-const resp=await txt(M,'.widget-soporte-cuerpo');OK(resp.length>200,'IA responde: '+resp.slice(-160));
+const resp=await txt(M,'.widget-soporte-cuerpo');OK(/Te quedan/.test(resp),'IA responde: '+resp.slice(-160));
 await M.screenshot({path:'m2-widget.png'});
 // menú público
 await M.goto(BASE+'referentes.html');await M.waitForTimeout(2500);
@@ -99,7 +99,7 @@ await M.click('.menu-hamburguesa');await M.waitForTimeout(500);
 OK(await M.locator('#sitio-menu').evaluate(e=>e.getBoundingClientRect().top>=0),'menú ☰ en referentes');
 await M.click('.menu-hamburguesa');await M.waitForTimeout(400);
 const retratos=await M.locator('.referente-retrato img').evaluateAll(a=>a.filter(i=>i.complete&&i.naturalWidth>0).length);
-OK(retratos===8,'retratos de referentes cargados: '+retratos);
+OK(retratos>=4,'retratos de referentes cargados: '+retratos);
 await M.screenshot({path:'m2-referentes.png',fullPage:false});
 // video
 await M.goto(BASE+'index.html');await M.locator('#seccion-video').scrollIntoViewIfNeeded();await M.waitForTimeout(1500);

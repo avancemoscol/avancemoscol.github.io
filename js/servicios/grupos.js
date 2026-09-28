@@ -1,12 +1,12 @@
 /**
- * Servicio de Grupos de WhatsApp Territoriales · Avancemos
- * Regla: Solo miembros activos pueden ver y acceder a grupos de WhatsApp.
+ * Servicio de Grupos (WhatsApp, Telegram y Discord) · Avancemos
+ * Los grupos aprobados son públicos: son los mismos enlaces oficiales de beacons.ai/avancemoscol.
  */
 
 import { supabase } from "../supabase.js";
 
-export async function obtenerGruposWhatsApp(deptoId = null) {
-  let query = supabase
+export async function obtenerGrupos() {
+  const { data, error } = await supabase
     .from("grupos_whatsapp")
     .select(`
       id,
@@ -16,21 +16,20 @@ export async function obtenerGruposWhatsApp(deptoId = null) {
       tema,
       alcance,
       url,
+      plataforma,
+      orden,
       departamento_id,
-      municipio_id,
-      departamento:departamentos!grupos_whatsapp_departamento_id_fkey (nombre),
-      municipio:municipios (nombre)
+      departamento:departamentos!grupos_whatsapp_departamento_id_fkey (nombre, region)
     `)
-    .eq("estado", "aprobado");
-
-  if (deptoId) {
-    query = query.or(`departamento_id.eq.${deptoId},alcance.eq.nacional`);
-  }
-
-  const { data, error } = await query.order("created_at", { ascending: false });
+    .eq("estado", "aprobado")
+    .order("orden")
+    .order("nombre");
   if (error) throw error;
   return data || [];
 }
+
+// Compatibilidad con el nombre anterior
+export const obtenerGruposWhatsApp = obtenerGrupos;
 
 export async function proponerGrupoWhatsApp({
   nombre,

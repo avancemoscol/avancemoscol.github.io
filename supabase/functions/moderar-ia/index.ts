@@ -18,7 +18,7 @@ serve(async (req) => {
     }
 
     const token = await tokenGoogle();
-    const endpoint = urlModelo("global", "gemini-2.5-flash", "generateContent");
+    const endpoint = urlModelo("global", "gemini-2.5-flash-lite", "generateContent");
 
     const promptMod = `
 Analiza el siguiente texto publicado en una red cívico-política en Colombia. Devuelve SOLO un JSON con este formato exacto:

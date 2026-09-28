@@ -13,12 +13,12 @@ export const CONFIG = {
   LEMA: "Ni extremos ni excusas: soluciones.",
   LEMA_SECUNDARIO: "Colombia avanza cuando nos escuchamos.",
   PAIS: "Colombia",
-  CORREO_CONTACTO: "contacto@avancemos.co",
-  CORREO_SOPORTE: "soporte@avancemos.co",
+  CORREO_CONTACTO: "abulingo.help@gmail.com",
+  CORREO_SOPORTE: "abulingo.help@gmail.com",
   DOMINIO: "https://avancemos.co",
   RESPONSABLE_DATOS: "Movimiento Político Avancemos Colombia",
-  NIT_DOCUMENTO: "901.884.230-1",
-  DIRECCION_CONTACTO: "Carrera 7 # 71-21, Torre B, Bogotá D. C., Colombia",
+  NIT_DOCUMENTO: "",
+  DIRECCION_CONTACTO: "",
 
   // CARTO Basemaps (teselas raster del mapa; la llave elimina la marca de agua)
   CARTO_API_KEY: "cb1_2nsz_1_2e810fa90ac9971bc0c7f6b9",

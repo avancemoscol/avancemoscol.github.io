@@ -21,6 +21,7 @@ function renderizarComentario(c) {
   ]);
   const badge = renderizarInsignia(autor.insignia);
   if (badge) cabecera.appendChild(badge);
+  if (autor.cargo_titulo) cabecera.appendChild(el("span", { className: "etiqueta-cargo", textContent: autor.cargo_titulo }));
   if (autor.username) {
     cabecera.appendChild(el("a", {
       className: "pub-username",

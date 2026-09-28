@@ -70,7 +70,7 @@ export async function crearPublicacion({
       mediaSubida.push({
         path: uploadData.path,
         bucket: CONFIG.STORAGE_BUCKETS.MEDIA_PENDIENTE,
-        tipo: item.tipo || (archivo.type.startsWith("video/") ? "video" : "imagen"),
+        tipo: item.tipo || (archivo.type.startsWith("video/") ? "video" : archivo.type.startsWith("audio/") ? "audio" : "imagen"),
         ancho: item.ancho || null,
         alto: item.alto || null,
         duracion_s: item.duracion_s || null,
@@ -150,10 +150,11 @@ export async function obtenerComentarios(publicacionId) {
       created_at,
       autor:perfiles!comentarios_autor_id_fkey (
         id,
-        nombre,
+        nombre:primer_nombre,
         username,
         avatar_path,
-        insignia
+        insignia,
+        cargo_titulo
       )
     `)
     .eq("publicacion_id", publicacionId)
@@ -183,10 +184,11 @@ export async function agregarComentario(publicacionId, contenido, padreId = null
       created_at,
       autor:perfiles!comentarios_autor_id_fkey (
         id,
-        nombre,
+        nombre:primer_nombre,
         username,
         avatar_path,
-        insignia
+        insignia,
+        cargo_titulo
       )
     `)
     .single();
@@ -207,4 +209,27 @@ export async function obtenerUrlMedia(m) {
   const { data, error } = await supabase.storage.from(m.bucket).createSignedUrl(m.path, 3600);
   if (error) return null;
   return data.signedUrl;
+}
+
+export async function obtenerPublicacionesDePerfil(username, limite = 30) {
+  const { data, error } = await supabase.rpc("publicaciones_de_perfil", { p_username: username, p_limite: limite });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function editarPublicacion(id, contenido) {
+  const { data, error } = await supabase.rpc("editar_publicacion", { p_id: id, p_contenido: contenido });
+  if (error) throw error;
+  return data; // estado resultante
+}
+
+export async function eliminarPublicacion(id) {
+  const { error } = await supabase.rpc("eliminar_publicacion", { p_id: id });
+  if (error) throw error;
+}
+
+export async function obtenerGuardados() {
+  const { data, error } = await supabase.rpc("mis_guardados");
+  if (error) throw error;
+  return data || [];
 }

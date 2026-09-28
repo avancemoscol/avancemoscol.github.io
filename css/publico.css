@@ -554,3 +554,8 @@
 @media (prefers-reduced-motion: reduce) {
   .referente-retrato img { animation: none !important; }
 }
+
+/* Ventana emergente del mapa con enlace al grupo */
+.mapa-popup .leaflet-popup-content { margin: 0.8rem 1rem; font-family: var(--fuente-cuerpo); font-size: var(--fs-sm); line-height: 1.5; min-width: 200px; }
+.mapa-popup-btn { display: block; margin-top: 0.6rem; background: var(--turquesa); color: #fff !important; text-align: center; padding: 0.55rem 0.8rem; border-radius: var(--radio-pleno); font-weight: 700; text-decoration: none !important; }
+.mapa-popup-enlace { display: block; margin-top: 0.45rem; text-align: center; font-size: var(--fs-xs); }

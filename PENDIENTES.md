@@ -16,3 +16,7 @@ Valores de ejemplo utilizados que deben ser confirmados o reemplazados por el cl
    - La Edge Function `publicar-media` (mover archivos a `media-publica`) y `moderar-ia` no están desplegadas: requieren configurar Database Webhooks en Supabase. La plataforma funciona sin ellas gracias a la migración 0010.
 7. **Rotar credenciales:**
    - `credenciales.txt` contiene en texto plano el token de GitHub, la `service_role` y el token de administración de Supabase. Se recomienda rotarlos y guardarlos en un gestor de secretos.
+8. **Datos legales del responsable del tratamiento:**
+   - El NIT y la dirección quedaron en blanco en `privacidad.html` y `js/config.js` hasta tener los datos reales.
+9. **Límite de visitantes del asistente por IP:**
+   - Personas que comparten conexión (universidad, oficina) comparten las 3 preguntas diarias de visitante.

@@ -3,14 +3,13 @@
  */
 
 import { supabase } from "../supabase.js";
-import { CONFIG } from "../config.js";
 
 export async function obtenerPerfilPorUsername(username) {
   const { data, error } = await supabase
     .from("perfiles")
     .select(`
       id,
-      nombre,
+      nombre:primer_nombre,
       username,
       bio,
       avatar_path,
@@ -38,57 +37,25 @@ export async function obtenerPerfilPorUsername(username) {
 }
 
 export async function obtenerMiPerfil() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase
-    .from("perfiles")
-    .select(`
-      *,
-      privado:perfiles_privados (*),
-      roles:user_roles!user_roles_user_id_fkey (*)
-    `)
-    .eq("id", user.id)
-    .single();
-
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return null;
+  // Incluye nombre completo, datos privados y roles (solo del propio usuario)
+  const { data, error } = await supabase.rpc("mi_perfil");
   if (error) throw error;
   return data;
 }
 
-export async function actualizarMiPerfil(cambios) {
+export async function actualizarBio(bio) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("No autenticado");
-
-  const { data, error } = await supabase
-    .from("perfiles")
-    .update(cambios)
-    .eq("id", user.id)
-    .select()
-    .single();
-
+  const { error } = await supabase.from("perfiles").update({ bio: bio.trim() || null }).eq("id", user.id);
   if (error) throw error;
-  return data;
 }
 
-export async function subirAvatar(archivo) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("No autenticado");
-
-  const ext = archivo.name.split(".").pop();
-  const ruta = `${user.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-
-  const { data, error } = await supabase.storage
-    .from(CONFIG.STORAGE_BUCKETS.AVATARES)
-    .upload(ruta, archivo, { upsert: true });
-
+export async function obtenerRelaciones(username, tipo = "seguidores") {
+  const { data, error } = await supabase.rpc("relaciones_de_perfil", { p_username: username, p_tipo: tipo });
   if (error) throw error;
-
-  const { data: { publicUrl } } = supabase.storage
-    .from(CONFIG.STORAGE_BUCKETS.AVATARES)
-    .getPublicUrl(data.path);
-
-  await actualizarMiPerfil({ avatar_path: publicUrl });
-  return publicUrl;
+  return data || [];
 }
 
 export async function seguirUsuario(targetId) {
