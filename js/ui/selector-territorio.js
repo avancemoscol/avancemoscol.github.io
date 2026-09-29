@@ -16,8 +16,8 @@ export async function inicializarSelectorTerritorio({
 }) {
   const deptos = await obtenerDepartamentos();
 
-  // "Internacional" (EX) va al final, después de los 32 departamentos y Bogotá
-  const ordenados = [...deptos.filter(d => d.id !== "EX"), ...deptos.filter(d => d.id === "EX")];
+  // "Internacional" (EX) va de primero, antes de los 32 departamentos y Bogotá
+  const ordenados = [...deptos.filter(d => d.id === "EX"), ...deptos.filter(d => d.id !== "EX")];
   const etiquetaMuni = selectMuni.id ? document.querySelector(`label[for="${selectMuni.id}"]`) : null;
   const textoEtiquetaOriginal = etiquetaMuni?.textContent || "";
 
