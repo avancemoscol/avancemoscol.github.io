@@ -16,8 +16,13 @@ export async function inicializarSelectorTerritorio({
 }) {
   const deptos = await obtenerDepartamentos();
 
+  // "Internacional" (EX) va al final, después de los 32 departamentos y Bogotá
+  const ordenados = [...deptos.filter(d => d.id !== "EX"), ...deptos.filter(d => d.id === "EX")];
+  const etiquetaMuni = selectMuni.id ? document.querySelector(`label[for="${selectMuni.id}"]`) : null;
+  const textoEtiquetaOriginal = etiquetaMuni?.textContent || "";
+
   selectDepto.innerHTML = "<option value=''>Selecciona departamento...</option>";
-  deptos.forEach(d => {
+  ordenados.forEach(d => {
     const opt = el("option", { value: d.id, textContent: d.nombre });
     if (d.id === deptoInicial) opt.selected = true;
     selectDepto.appendChild(opt);
@@ -31,11 +36,13 @@ export async function inicializarSelectorTerritorio({
       return;
     }
 
+    const exterior = deptoId === "EX";
+    if (etiquetaMuni) etiquetaMuni.textContent = exterior ? "País de residencia *" : textoEtiquetaOriginal;
     selectMuni.disabled = false;
-    selectMuni.innerHTML = "<option value=''>Cargando municipios...</option>";
+    selectMuni.innerHTML = `<option value=''>${exterior ? "Cargando países..." : "Cargando municipios..."}</option>`;
     const munis = await obtenerMunicipios(deptoId);
 
-    selectMuni.innerHTML = "<option value=''>Selecciona municipio...</option>";
+    selectMuni.innerHTML = `<option value=''>${exterior ? "Selecciona el país donde vives..." : "Selecciona municipio..."}</option>`;
     munis.forEach(m => {
       const opt = el("option", { value: m.id, textContent: m.nombre + (m.es_capital ? " (Capital)" : "") });
       if (m.id === muniInicial) opt.selected = true;
