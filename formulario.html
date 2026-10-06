@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es-CO" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario · Avancemos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio"><img src="assets/logo.svg" alt="Avancemos Logo"></a>
+    </div>
+  </header>
+
+  <main class="contenedor" style="max-width: 680px; padding: 2rem 1rem 4rem;">
+    <div id="raiz"><div class="esqueleto" style="height: 220px;"></div></div>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./js/supabase.js";
+    import { el } from "./js/util/texto-seguro.js";
+
+    const raiz = document.getElementById("raiz");
+    const slug = new URLSearchParams(location.search).get("f") || "";
+    const aviso = (txt, color) => raiz.replaceChildren(el("div", { className: "tarjeta", style: `padding:1.5rem;text-align:center;${color ? "color:" + color : ""}`, textContent: txt }));
+
+    async function iniciar() {
+      const { data: f, error } = await supabase.rpc("formulario_publico", { p_slug: slug });
+      if (error || !f) return aviso("Este formulario no existe o el enlace es incorrecto.");
+      document.title = `${f.titulo} · Avancemos`;
+      if (!f.disponible) return aviso("Este formulario ya no está recibiendo respuestas.");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (f.requiere_login && !session) {
+        return raiz.replaceChildren(el("div", { className: "tarjeta", style: "padding:1.5rem;text-align:center;" }, [
+          el("h1", { textContent: f.titulo, style: "font-size:var(--fs-xl);margin-bottom:0.5rem;" }),
+          el("p", { textContent: "Para responder necesitas ingresar con tu cuenta de Avancemos (así se garantiza una respuesta por persona)." }),
+          el("a", { className: "btn btn-primario", style: "margin-top:1rem;", href: `ingresar.html?siguiente=${encodeURIComponent("formulario.html?f=" + f.slug)}`, textContent: "Ingresar" })
+        ]));
+      }
+
+      const entradas = {}; // id -> () => valor
+      const form = el("form", { className: "tarjeta", style: "padding:1.5rem;display:grid;gap:1.1rem;" });
+      form.append(el("h1", { textContent: f.titulo, style: "font-size:var(--fs-xl);" }));
+      if (f.descripcion) form.append(el("p", { textContent: f.descripcion, style: "white-space:pre-wrap;color:var(--texto-suave);" }));
+
+      let nombre, contacto;
+      if (!session) {
+        nombre = el("input", { className: "campo-input", maxlength: "120", autocomplete: "name" });
+        contacto = el("input", { className: "campo-input", maxlength: "160", placeholder: "Correo o teléfono (opcional)" });
+        form.append(
+          el("label", { className: "campo" }, [el("span", { className: "campo-etiqueta", textContent: "Tu nombre" }), nombre]),
+          el("label", { className: "campo" }, [el("span", { className: "campo-etiqueta", textContent: "Contacto" }), contacto])
+        );
+      }
+
+      f.campos.forEach(c => {
+        const etiqueta = c.etiqueta + (c.requerido ? " *" : "");
+        let control, leer;
+        if (c.tipo === "parrafo") {
+          control = el("textarea", { className: "campo-textarea", rows: 4, maxlength: "4000" }); leer = () => control.value.trim();
+        } else if (c.tipo === "lista") {
+          control = el("select", { className: "campo-select" }, [el("option", { value: "", textContent: "Selecciona…" }), ...c.opciones.map(o => el("option", { value: o, textContent: o }))]);
+          leer = () => control.value;
+        } else if (c.tipo === "opcion" || c.tipo === "multiple") {
+          const radio = c.tipo === "opcion";
+          const marcas = c.opciones.map(o => {
+            const i = el("input", { type: radio ? "radio" : "checkbox", name: c.id }); i.value = o;
+            return { i, fila: el("label", { style: "display:flex;gap:0.5rem;align-items:center;padding:0.35rem 0;" }, [i, o]) };
+          });
+          control = el("div", {}, marcas.map(m => m.fila));
+          leer = () => { const v = marcas.filter(m => m.i.checked).map(m => m.i.value); return radio ? (v[0] || "") : v; };
+        } else {
+          const tipos = { texto: "text", numero: "number", fecha: "date", correo: "email", telefono: "tel" };
+          control = el("input", { className: "campo-input", type: tipos[c.tipo] || "text", maxlength: "4000" }); leer = () => control.value.trim();
+        }
+        entradas[c.id] = { leer, c };
+        form.append(el("div", { className: "campo" }, [el("span", { className: "campo-etiqueta", textContent: etiqueta }), control]));
+      });
+
+      const btn = el("button", { className: "btn btn-primario", type: "submit", textContent: "Enviar respuesta" });
+      form.append(btn);
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const respuestas = {};
+        for (const [id, { leer, c }] of Object.entries(entradas)) {
+          const v = leer();
+          const vacio = v === "" || (Array.isArray(v) && !v.length);
+          if (vacio && c.requerido) return alert(`Falta responder: ${c.etiqueta}`);
+          if (!vacio) respuestas[id] = v;
+        }
+        btn.disabled = true; btn.textContent = "Enviando…";
+        const { error } = await supabase.rpc("enviar_formulario", {
+          p_slug: f.slug, p_respuestas: respuestas, p_nombre: nombre?.value || null, p_contacto: contacto?.value || null
+        });
+        if (error) { btn.disabled = false; btn.textContent = "Enviar respuesta"; return alert(error.message); }
+        raiz.replaceChildren(el("div", { className: "tarjeta", style: "padding:1.5rem;text-align:center;" }, [
+          el("h2", { textContent: "¡Gracias!" }), el("p", { textContent: f.mensaje_final })
+        ]));
+      });
+      raiz.replaceChildren(form);
+    }
+    iniciar().catch(() => aviso("No se pudo cargar el formulario. Intenta de nuevo.", "var(--error)"));
+  </script>
+</body>
+</html>

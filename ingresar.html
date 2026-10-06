@@ -105,6 +105,20 @@
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
     inicializarWidgetSoporte();
 
+    // Volver a un formulario compartido tras ingresar (solo enlaces internos de formularios)
+    const validoSiguiente = (v) => /^formulario\.html\?f=[A-Za-z0-9-]+$/.test(v || "") ? v : null;
+    try {
+      const p = validoSiguiente(new URLSearchParams(location.search).get("siguiente"));
+      if (p) sessionStorage.setItem("siguiente", p);
+    } catch {}
+    function destinoSiguiente() {
+      try {
+        const v = validoSiguiente(sessionStorage.getItem("siguiente"));
+        sessionStorage.removeItem("siguiente");
+        return v;
+      } catch { return null; }
+    }
+
     // Comprobar retorno de OAuth o sesión existente
     obtenerSesion().then(async (sesion) => {
       if (sesion) {
@@ -123,6 +137,8 @@
           return;
         }
 
+        const volver = destinoSiguiente();
+        if (volver) { window.location.href = volver; return; }
         const perms = await cargarPermisos(true);
         if (perms.es_admin_nacional || (perms.departamentos_moderacion && perms.departamentos_moderacion.length > 0)) {
           window.location.href = "admin.html";
@@ -150,6 +166,8 @@
 
       try {
         await iniciarSesion(form.email.value.trim(), form.password.value);
+        const volver = destinoSiguiente();
+        if (volver) { window.location.href = volver; return; }
         const perms = await cargarPermisos(true);
 
         if (perms.es_admin_nacional || (perms.departamentos_moderacion && perms.departamentos_moderacion.length > 0)) {

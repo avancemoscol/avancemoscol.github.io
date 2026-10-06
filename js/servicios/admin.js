@@ -187,3 +187,10 @@ export const guardarGrupo = (id, datos) => rpc("admin_guardar_grupo", { p_id: id
 export const eliminarGrupo = (id) => rpc("admin_eliminar_grupo", { p_id: id });
 
 export const resolverVerificacion = (id, decision, notas) => rpc("resolver_verificacion", { p_id: id, p_decision: decision, p_notas: notas || null });
+
+export const listarFormularios = () => rpc("admin_formularios");
+export const guardarFormulario = (id, datos) => rpc("admin_guardar_formulario", { p_id: id || null, p_datos: datos });
+export const eliminarFormulario = (id) => rpc("admin_eliminar_formulario", { p_id: id });
+export const listarRespuestasFormulario = (id, estado = "pendiente") => rpc("admin_respuestas_formulario", { p_id: id, p_estado: estado });
+export const revisarRespuestaFormulario = (id, estado) => rpc("admin_revisar_respuesta", { p_id: id, p_estado: estado });
+export const resultadosFormulario = (slug) => rpc("resultados_formulario", { p_slug: slug });

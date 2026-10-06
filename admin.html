@@ -63,6 +63,11 @@
           </a>
         </li>
         <li class="admin-menu-item">
+          <a href="#formularios" onclick="cambiarSeccion('formularios')">
+            <span>📝</span> <span>Formularios y Votaciones</span>
+          </a>
+        </li>
+        <li class="admin-menu-item">
           <a href="#eventos" onclick="cambiarSeccion('eventos')">
             <span>📅</span> <span>Eventos</span>
           </a>
@@ -221,6 +226,14 @@
           <div id="contenido-anuncios"></div>
         </section>
 
+        <section id="sec-formularios" style="display: none;">
+          <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
+            <h2>Formularios, Encuestas y Votaciones</h2>
+            <p style="color: var(--texto-suave); font-size: 0.9rem; width: 100%;">Crea, comparte por enlace y revisa las respuestas antes de que cuenten.</p>
+          </div>
+          <div id="contenido-formularios"></div>
+        </section>
+
         <section id="sec-grupos" style="display: none;">
           <div class="admin-seccion-cabecera" style="margin-bottom: 1rem;">
             <h2>Grupos</h2>
@@ -325,6 +338,7 @@
     import { mostrarToast } from "./js/ui/toast.js";
     import { cerrarSesion } from "./js/auth.js";
     import * as gestion from "./js/vistas/admin/gestion.js";
+    import { montarFormularios } from "./js/vistas/admin/formularios.js";
     import { nombreAreaApoyo } from "./js/util/areas-apoyo.js";
 
     // Escapa datos de usuario antes de interpolarlos en plantillas HTML
@@ -398,6 +412,7 @@
       else if (seccionId === "publicaciones") gestion.montarPublicaciones(contenido("publicaciones"), ctx);
       else if (seccionId === "eventos") gestion.montarEventos(contenido("eventos"), ctx);
       else if (seccionId === "anuncios") gestion.montarAnuncios(contenido("anuncios"), ctx);
+      else if (seccionId === "formularios") montarFormularios(contenido("formularios"));
       else if (seccionId === "grupos") gestion.montarGrupos(contenido("grupos"), ctx);
       else if (seccionId === "auditoria") cargarAuditoria();
     };
