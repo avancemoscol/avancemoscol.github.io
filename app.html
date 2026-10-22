@@ -110,7 +110,8 @@
           <button class="btn btn-fantasma btn-sm" onclick="toggleTema()" title="Cambiar tema" aria-label="Cambiar tema">🌓</button>
         </div>
         <div class="pestanas" id="feed-pestanas" style="padding: 0 1rem;">
-          <button class="pestana activa" onclick="cambiarFeedTab('nacional')">Nacional</button>
+          <button class="pestana activa" onclick="cambiarFeedTab('avance')">Avance</button>
+          <button class="pestana" onclick="cambiarFeedTab('nacional')">Nacional</button>
           <button class="pestana" onclick="cambiarFeedTab('mi_departamento')">Mi Departamento</button>
           <button class="pestana" onclick="cambiarFeedTab('mi_municipio')">Mi Municipio</button>
           <button class="pestana" onclick="cambiarFeedTab('siguiendo')">Siguiendo</button>
@@ -241,6 +242,7 @@
   <script type="module">
     import { Router } from "./js/router.js";
     import { obtenerMiPerfil } from "./js/servicios/perfiles.js";
+    import { montarLineaTiempo } from "./js/ui/linea-tiempo.js";
     import { obtenerFeed, crearPublicacion, obtenerGuardados } from "./js/servicios/publicaciones.js";
     import { obtenerEventos } from "./js/servicios/eventos.js";
     import { obtenerConversaciones, obtenerMensajes, enviarMensaje, suscribirMensajesConversacion } from "./js/servicios/mensajes.js";
@@ -265,7 +267,7 @@
 
     let miUsuario = null;
     let permisos = null;
-    let feedTipoActual = "nacional";
+    let feedTipoActual = "avance";
     let archivosAdjuntos = [];
 
     async function init() {
@@ -365,6 +367,16 @@
     async function cargarFeed(tipo) {
       const cont = document.getElementById("vista-contenido");
       cont.innerHTML = "<div style='padding: 2.5rem; text-align: center;' class='esqueleto'>Cargando publicaciones...</div>";
+
+      if (tipo === "avance") {
+        document.getElementById("seccion-redactor").style.display = "none";
+        const caja = document.createElement("div");
+        caja.style.padding = "1.25rem";
+        cont.innerHTML = "";
+        cont.appendChild(caja);
+        return montarLineaTiempo(caja);
+      }
+      document.getElementById("seccion-redactor").style.display = miUsuario ? "flex" : "none";
 
       try {
         const pubs = await obtenerFeed(tipo);

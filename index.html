@@ -191,6 +191,16 @@
     </section>
 
     <!-- Voces del territorio: personajes animados (ilustraciones generadas con Vertex AI) -->
+    <section class="seccion-sitio" id="avance">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <h2>Así avanza Avancemos</h2>
+          <p class="seccion-subtitulo">Lo que hemos hecho, lo que viene y cómo crece la red. Todo en abierto.</p>
+        </div>
+        <div id="linea-tiempo" style="max-width: 760px; margin: 0 auto;"></div>
+      </div>
+    </section>
+
     <section class="seccion-sitio seccion-sitio-alt" id="voces-territorio">
       <div class="contenedor">
         <div class="seccion-encabezado">
@@ -463,6 +473,7 @@
   <!-- Scripts de la Aplicación -->
   <script type="module">
     import { obtenerEstadisticasPublicas, obtenerPropuestas, obtenerReferentes } from "./js/servicios/cms.js";
+    import { montarLineaTiempo } from "./js/ui/linea-tiempo.js";
     import { obtenerFeedPublico } from "./js/servicios/publicaciones.js";
     import { renderizarTarjetaPublicacion } from "./js/ui/tarjeta-publicacion.js";
     import { inicializarWidgetSoporte } from "./js/ui/widget-soporte.js";
@@ -536,6 +547,8 @@
         grilla.appendChild(tarjeta);
       });
     });
+
+    montarLineaTiempo(document.getElementById("linea-tiempo"), { limite: 10 });
 
     // Cargar publicaciones oficiales
     obtenerFeedPublico(null, null, 3).then(pubs => {

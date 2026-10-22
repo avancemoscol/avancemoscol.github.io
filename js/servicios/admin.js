@@ -194,3 +194,7 @@ export const eliminarFormulario = (id) => rpc("admin_eliminar_formulario", { p_i
 export const listarRespuestasFormulario = (id, estado = "pendiente") => rpc("admin_respuestas_formulario", { p_id: id, p_estado: estado });
 export const revisarRespuestaFormulario = (id, estado) => rpc("admin_revisar_respuesta", { p_id: id, p_estado: estado });
 export const resultadosFormulario = (slug) => rpc("resultados_formulario", { p_slug: slug });
+
+export const listarHitos = () => rpc("admin_hitos");
+export const guardarHito = (id, datos) => rpc("admin_guardar_hito", { p_id: id || null, p_datos: datos });
+export const eliminarHito = (id) => rpc("admin_eliminar_hito", { p_id: id });
