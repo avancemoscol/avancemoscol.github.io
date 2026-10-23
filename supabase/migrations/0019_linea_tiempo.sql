@@ -1,5 +1,5 @@
 -- =============================================================================
--- Migración 0017: Línea de tiempo del movimiento ("lo que se ha hecho / lo que sigue")
+-- Migración 0019: Línea de tiempo del movimiento ("lo que se ha hecho / lo que sigue")
 -- Hitos creados por el administrador + eventos aprobados y públicos, en un solo
 -- listado abierto a visitantes, más unas cifras generales del movimiento.
 -- =============================================================================
