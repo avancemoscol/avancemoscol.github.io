@@ -162,10 +162,6 @@
         ctx.fillText("Sube tu foto", C, C - 10);
         ctx.font = "400 30px 'Plus Jakarta Sans', sans-serif"; ctx.fillText("para verla aquí", C, C + 36);
       }
-      // Marca Avancemos discreta abajo de la foto
-      const g = ctx.createLinearGradient(0, C + R_FOTO - 170, 0, C + R_FOTO);
-      g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.45)");
-      ctx.fillStyle = g; ctx.fillRect(0, C + R_FOTO - 170, N, 170);
       ctx.restore();
       dibujarMarca();
 
@@ -175,20 +171,20 @@
       textoEnArco([{ t: a1 ? a1 + " " : "", color: color.texto }, { t: a2, color: color.resalte }], "abajo", R_FOTO + 100, 82);
     }
 
+    const logo = new Image();
+    logo.onload = () => dibujar();
+    logo.src = "assets/logo-llave.png";
+
     function dibujarMarca() {
-      // Chevrones del logo (mismos trazos de assets/logo.svg) + nombre
-      const x = C, y = C + R_FOTO - 78;
+      // Insignia con el logo de Avancemos, abajo y al centro de la foto
+      if (!logo.complete || !logo.naturalWidth) return;
+      const r = 62, x = C, y = C + R_FOTO - r - 22;
       ctx.save();
-      ctx.lineCap = "round"; ctx.lineJoin = "round";
-      ctx.strokeStyle = "#5EEAD4"; ctx.lineWidth = 8;
-      ctx.beginPath(); ctx.moveTo(x - 80, y + 14); ctx.lineTo(x - 62, y - 10); ctx.lineTo(x - 44, y + 14); ctx.stroke();
-      ctx.strokeStyle = "#F5B94E"; ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.moveTo(x - 71, y + 26); ctx.lineTo(x - 62, y + 15); ctx.lineTo(x - 53, y + 26); ctx.stroke();
-      ctx.fillStyle = "#FFFFFF"; ctx.font = '800 46px "Plus Jakarta Sans", system-ui, sans-serif';
-      ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-      ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 6;
-      ctx.fillText("avancemos", x - 30, y + 24);
+      ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 14;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath(); ctx.arc(x, y, r + 7, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
+      ctx.drawImage(logo, x - r, y - r, 2 * r, 2 * r);
     }
 
     // Foto: carga (respeta la orientación EXIF), zoom y arrastre
