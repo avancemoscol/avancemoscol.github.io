@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es-CO" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu foto con marco · Avancemos</title>
+  <meta name="description" content="Sube tu foto, ponle el marco de Avancemos con un lema del centro y descárgala para compartirla en tus redes.">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/publico.css">
+  <style>
+    .marco-grid { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 2rem; align-items: start; }
+    @media (max-width: 800px) { .marco-grid { grid-template-columns: 1fr; } }
+    #lienzo { width: 100%; height: auto; aspect-ratio: 1; border-radius: 50%; background: var(--borde-suave); touch-action: none; cursor: grab; display: block; box-shadow: 0 8px 30px rgba(11,36,64,.18); }
+    #lienzo.arrastrando { cursor: grabbing; }
+    .marco-panel { display: grid; gap: 1.1rem; }
+    .marco-colores { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .marco-color { width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 3px solid transparent; outline: 1px solid var(--borde-suave); cursor: pointer; }
+    .marco-color[aria-pressed="true"] { border-color: var(--texto, #111); }
+    .marco-ayuda { font-size: var(--fs-sm); color: var(--texto-suave); }
+  </style>
+</head>
+<body>
+  <header class="sitio-header">
+    <div class="contenedor sitio-nav">
+      <a href="index.html" class="sitio-logo" aria-label="Inicio"><img src="assets/logo.svg" alt="Avancemos Logo"></a>
+      <div class="sitio-acciones">
+        <a href="unete.html" class="btn btn-primario btn-sm">Únete</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor" style="padding: 2rem 1rem 4rem;">
+    <div class="seccion-encabezado" style="text-align:center; margin-bottom: 1.5rem;">
+      <h1>Ponle el marco de Avancemos a tu foto</h1>
+      <p class="seccion-subtitulo">Sube tu foto, elige el lema y el color, y descárgala para compartirla. Tu foto no sale de tu dispositivo.</p>
+    </div>
+
+    <div class="marco-grid">
+      <canvas id="lienzo" width="1080" height="1080" aria-label="Vista previa de tu foto con el marco"></canvas>
+
+      <div class="marco-panel">
+        <label class="campo">
+          <span class="campo-etiqueta">1. Tu foto</span>
+          <input class="campo-input" type="file" id="archivo" accept="image/*">
+        </label>
+        <label class="campo">
+          <span class="campo-etiqueta">Acercar o alejar</span>
+          <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
+          <span class="marco-ayuda">Arrastra la foto con el dedo o el mouse para encuadrarla.</span>
+        </label>
+
+        <div class="campo">
+          <span class="campo-etiqueta">2. Color del marco</span>
+          <div class="marco-colores" id="colores"></div>
+        </div>
+
+        <label class="campo">
+          <span class="campo-etiqueta">3. Lema</span>
+          <select class="campo-select" id="lema"></select>
+        </label>
+        <div style="display:grid; gap:0.6rem;">
+          <input class="campo-input" id="t-arriba" maxlength="22" aria-label="Texto de arriba" placeholder="Texto de arriba">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
+            <input class="campo-input" id="t-abajo1" maxlength="16" aria-label="Texto de abajo, parte blanca" placeholder="Abajo (blanco)">
+            <input class="campo-input" id="t-abajo2" maxlength="16" aria-label="Texto de abajo, parte resaltada" placeholder="Abajo (resaltado)">
+          </div>
+        </div>
+
+        <button class="btn btn-primario" id="descargar" type="button">⬇️ Descargar mi foto</button>
+        <p class="marco-ayuda">Se descarga como imagen cuadrada de 1080 × 1080, lista para perfil de WhatsApp, Instagram, X o Facebook.</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const cv = document.getElementById("lienzo");
+    const ctx = cv.getContext("2d");
+    const N = cv.width, C = N / 2, R_EXT = 540, R_FOTO = 405;
+    const COLORES = [
+      { nombre: "Amarillo cálido", marco: "#F7CB55", texto: "#0B2440", resalte: "#0B7A6E" },
+      { nombre: "Turquesa Avancemos", marco: "#0B7A6E", texto: "#FFFFFF", resalte: "#F5B94E" },
+      { nombre: "Azul noche", marco: "#0B2440", texto: "#FFFFFF", resalte: "#F5B94E" },
+      { nombre: "Verde bosque", marco: "#14532D", texto: "#FFFFFF", resalte: "#FDE68A" },
+      { nombre: "Naranja", marco: "#C2410C", texto: "#FFFFFF", resalte: "#FDE68A" }
+    ];
+    const LEMAS = [
+      ["YO ME UNO", "AL CENTRO QUE", "AVANZA"],
+      ["YO ME UNO", "A", "AVANCEMOS"],
+      ["NI EXTREMOS NI EXCUSAS", "SOLUCIONES PARA", "COLOMBIA"],
+      ["COLOMBIA AVANZA", "CUANDO NOS", "ESCUCHAMOS"],
+      ["DIÁLOGO, EVIDENCIA", "Y", "RESULTADOS"]
+    ];
+    let color = COLORES[0], foto = null, zoom = 1, dx = 0, dy = 0;
+
+    const el = (id) => document.getElementById(id);
+    const tArriba = el("t-arriba"), tAbajo1 = el("t-abajo1"), tAbajo2 = el("t-abajo2");
+
+    LEMAS.forEach((l, i) => el("lema").add(new Option(`${l[0]} · ${l[1]} ${l[2]}`, i)));
+    function aplicarLema(i) { [tArriba.value, tAbajo1.value, tAbajo2.value] = LEMAS[i]; dibujar(); }
+    el("lema").addEventListener("change", (e) => aplicarLema(+e.target.value));
+
+    COLORES.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "marco-color"; b.title = c.nombre; b.setAttribute("aria-label", c.nombre);
+      b.style.background = c.marco; b.setAttribute("aria-pressed", i === 0);
+      b.addEventListener("click", () => {
+        color = c;
+        el("colores").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+        dibujar();
+      });
+      el("colores").appendChild(b);
+    });
+
+    // Texto sobre un arco. lado "arriba" (lee en sentido horario) o "abajo" (letras derechas)
+    function textoEnArco(segmentos, lado, radio, tam) {
+      const fuente = (t) => { ctx.font = `800 ${t}px "Plus Jakarta Sans", system-ui, sans-serif`; };
+      const max = lado === "arriba" ? 2.7 : 2.9; // radianes disponibles
+      fuente(tam);
+      const medir = () => segmentos.reduce((s, g) => s + [...g.t].reduce((a, ch) => a + ctx.measureText(ch).width + tam * 0.05, 0), 0);
+      while (medir() / radio > max && tam > 28) { tam -= 2; fuente(tam); }
+      const total = medir() / radio;
+      let ang = lado === "arriba" ? -Math.PI / 2 - total / 2 : Math.PI / 2 + total / 2;
+      ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      for (const g of segmentos) {
+        ctx.fillStyle = g.color;
+        for (const ch of g.t) {
+          const w = ctx.measureText(ch).width + tam * 0.05, paso = w / radio;
+          const a = lado === "arriba" ? ang + paso / 2 : ang - paso / 2;
+          ctx.save();
+          ctx.translate(C + radio * Math.cos(a), C + radio * Math.sin(a));
+          ctx.rotate(lado === "arriba" ? a + Math.PI / 2 : a - Math.PI / 2);
+          ctx.fillText(ch, 0, 0);
+          ctx.restore();
+          ang += lado === "arriba" ? paso : -paso;
+        }
+      }
+    }
+
+    function dibujar() {
+      ctx.clearRect(0, 0, N, N);
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+      // Anillo
+      ctx.fillStyle = color.marco;
+      ctx.beginPath(); ctx.arc(C, C, R_EXT, 0, Math.PI * 2); ctx.fill();
+
+      // Foto circular
+      ctx.save();
+      ctx.beginPath(); ctx.arc(C, C, R_FOTO, 0, Math.PI * 2); ctx.clip();
+      ctx.fillStyle = "#E7ECEF"; ctx.fillRect(0, 0, N, N);
+      if (foto) {
+        const base = Math.max(2 * R_FOTO / foto.width, 2 * R_FOTO / foto.height) * zoom;
+        const w = foto.width * base, h = foto.height * base;
+        ctx.drawImage(foto, C - w / 2 + dx, C - h / 2 + dy, w, h);
+      } else {
+        ctx.fillStyle = "#7B8794"; ctx.font = "600 44px 'Plus Jakarta Sans', sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("Sube tu foto", C, C - 10);
+        ctx.font = "400 30px 'Plus Jakarta Sans', sans-serif"; ctx.fillText("para verla aquí", C, C + 36);
+      }
+      // Marca Avancemos discreta abajo de la foto
+      const g = ctx.createLinearGradient(0, C + R_FOTO - 170, 0, C + R_FOTO);
+      g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.45)");
+      ctx.fillStyle = g; ctx.fillRect(0, C + R_FOTO - 170, N, 170);
+      ctx.restore();
+      dibujarMarca();
+
+      // Textos
+      textoEnArco([{ t: tArriba.value.toUpperCase(), color: color.texto }], "arriba", R_FOTO + 36, 82);
+      const a1 = tAbajo1.value.toUpperCase(), a2 = tAbajo2.value.toUpperCase();
+      textoEnArco([{ t: a1 ? a1 + " " : "", color: color.texto }, { t: a2, color: color.resalte }], "abajo", R_FOTO + 100, 82);
+    }
+
+    function dibujarMarca() {
+      // Chevrones del logo (mismos trazos de assets/logo.svg) + nombre
+      const x = C, y = C + R_FOTO - 78;
+      ctx.save();
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = "#5EEAD4"; ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.moveTo(x - 80, y + 14); ctx.lineTo(x - 62, y - 10); ctx.lineTo(x - 44, y + 14); ctx.stroke();
+      ctx.strokeStyle = "#F5B94E"; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(x - 71, y + 26); ctx.lineTo(x - 62, y + 15); ctx.lineTo(x - 53, y + 26); ctx.stroke();
+      ctx.fillStyle = "#FFFFFF"; ctx.font = '800 46px "Plus Jakarta Sans", system-ui, sans-serif';
+      ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+      ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 6;
+      ctx.fillText("avancemos", x - 30, y + 24);
+      ctx.restore();
+    }
+
+    // Foto: carga (respeta la orientación EXIF), zoom y arrastre
+    el("archivo").addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      try {
+        foto = await createImageBitmap(f, { imageOrientation: "from-image" });
+        zoom = 1; dx = dy = 0; el("zoom").value = 1; dibujar();
+      } catch { alert("No se pudo leer esa imagen. Prueba con una foto JPG o PNG."); }
+    });
+    el("zoom").addEventListener("input", (e) => { zoom = +e.target.value; limitar(); dibujar(); });
+    function limitar() {
+      if (!foto) return;
+      const base = Math.max(2 * R_FOTO / foto.width, 2 * R_FOTO / foto.height) * zoom;
+      const mx = Math.max(0, (foto.width * base - 2 * R_FOTO) / 2), my = Math.max(0, (foto.height * base - 2 * R_FOTO) / 2);
+      dx = Math.min(mx, Math.max(-mx, dx)); dy = Math.min(my, Math.max(-my, dy));
+    }
+    let arrastre = null;
+    cv.addEventListener("pointerdown", (e) => { if (!foto) return; arrastre = { x: e.clientX, y: e.clientY, dx, dy }; cv.setPointerCapture(e.pointerId); cv.classList.add("arrastrando"); });
+    cv.addEventListener("pointermove", (e) => {
+      if (!arrastre) return;
+      const k = N / cv.getBoundingClientRect().width;
+      dx = arrastre.dx + (e.clientX - arrastre.x) * k; dy = arrastre.dy + (e.clientY - arrastre.y) * k;
+      limitar(); dibujar();
+    });
+    const soltar = () => { arrastre = null; cv.classList.remove("arrastrando"); };
+    cv.addEventListener("pointerup", soltar); cv.addEventListener("pointercancel", soltar);
+
+    [tArriba, tAbajo1, tAbajo2].forEach(i => i.addEventListener("input", dibujar));
+
+    el("descargar").addEventListener("click", () => {
+      if (!foto) return alert("Primero sube tu foto.");
+      // Fondo transparente fuera del círculo: se exporta tal cual
+      cv.toBlob((blob) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = "yo-me-uno-avancemos.png";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      }, "image/png");
+    });
+
+    aplicarLema(0);
+    document.fonts.load('800 40px "Plus Jakarta Sans"').then(dibujar).catch(() => {});
+  </script>
+</body>
+</html>
