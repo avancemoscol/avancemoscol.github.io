@@ -176,22 +176,27 @@
     logo.src = "assets/logo-llave.png";
 
     function dibujarMarca() {
-      // Insignia redonda: logo arriba y "avancemos" abajo, amarillo sobre azul noche, borde blanco
+      // Sello: logo a la izquierda y "avancemos" a la derecha, dentro de un rectángulo redondeado azul noche
       if (!logo.complete || !logo.naturalWidth) return;
-      const r = 96, borde = 6, cy = C + 262;
+      const alto = 92, radio = 22, borde = 6, pad = 14, l = 70, hueco = 10, cy = C + 292;
       ctx.save();
+      ctx.font = '800 40px "Plus Jakarta Sans", system-ui, sans-serif';
+      const texto = "avancemos", ancho = ctx.measureText(texto).width;
+      const total = pad + l + hueco + ancho + pad + 6;
+      const x0 = C - total / 2, y0 = cy - alto / 2;
+
       ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 14;
       ctx.fillStyle = "#FFFFFF";
-      ctx.beginPath(); ctx.arc(C, cy, r + borde, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
+      ctx.beginPath(); ctx.roundRect(x0 - borde, y0 - borde, total + borde * 2, alto + borde * 2, radio + borde); ctx.fill();
+      ctx.shadowColor = "transparent";
       ctx.fillStyle = "#001536";
-      ctx.beginPath(); ctx.arc(C, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x0, y0, total, alto, radio); ctx.fill();
+      ctx.restore();
 
-      const l = 100;
-      ctx.drawImage(logo, C - l / 2, cy - 78, l, l);
-      ctx.fillStyle = "#FDCB05"; ctx.font = '800 27px "Plus Jakarta Sans", system-ui, sans-serif';
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText("avancemos", C, cy + 54);
+      ctx.drawImage(logo, x0 + pad, cy - l / 2, l, l);
+      ctx.fillStyle = "#FDCB05"; ctx.font = '800 40px "Plus Jakarta Sans", system-ui, sans-serif';
+      ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      ctx.fillText(texto, x0 + pad + l + hueco, cy + 2);
     }
 
     // Foto: carga (respeta la orientación EXIF), zoom y arrastre
