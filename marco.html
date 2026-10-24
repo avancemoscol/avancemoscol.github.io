@@ -178,11 +178,11 @@
     function dibujarMarca() {
       // Sello: logo a la izquierda y "avancemos" a la derecha, dentro de un rectángulo redondeado azul noche
       if (!logo.complete || !logo.naturalWidth) return;
-      const alto = 92, radio = 22, borde = 6, pad = 14, l = 70, hueco = 10, cy = C + 292;
+      const alto = 92, radio = 46, borde = 6, pad = 11, l = 70, hueco = 10, cy = C + 292;
       ctx.save();
       ctx.font = '800 40px "Plus Jakarta Sans", system-ui, sans-serif';
       const texto = "avancemos", ancho = ctx.measureText(texto).width;
-      const total = pad + l + hueco + ancho + pad + 6;
+      const total = pad + l + hueco + ancho + 30;
       const x0 = C - total / 2, y0 = cy - alto / 2;
 
       ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 14;
