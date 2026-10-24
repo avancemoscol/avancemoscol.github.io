@@ -176,30 +176,22 @@
     logo.src = "assets/logo-llave.png";
 
     function dibujarMarca() {
-      // Sello: logo + palabra "avancemos" en amarillo sobre azul noche, legible sobre cualquier foto
+      // Insignia redonda: logo arriba y "avancemos" abajo, amarillo sobre azul noche, borde blanco
       if (!logo.complete || !logo.naturalWidth) return;
-      const r = 50, alto = 64, borde = 6, cy = C + 292;
+      const r = 96, borde = 6, cy = C + 262;
       ctx.save();
-      ctx.font = '800 40px "Plus Jakarta Sans", system-ui, sans-serif';
-      const texto = "avancemos", ancho = ctx.measureText(texto).width;
-      const total = r * 2 + ancho + 56;               // logo + texto + márgenes
-      const x0 = C - total / 2;
-      const px = x0 + r, pw = total - r, py = cy - alto / 2;
-
-      // Píldora azul con borde blanco y sombra suave
       ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 14;
       ctx.fillStyle = "#FFFFFF";
-      ctx.beginPath(); ctx.roundRect(px - borde, py - borde, pw + borde * 2, alto + borde * 2, (alto + borde * 2) / 2); ctx.fill();
-      ctx.arc(x0 + r, cy, r + borde, 0, Math.PI * 2); ctx.fill();
-      ctx.shadowColor = "transparent";
-      ctx.fillStyle = "#001536";
-      ctx.beginPath(); ctx.roundRect(px, py, pw, alto, alto / 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(C, cy, r + borde, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
+      ctx.fillStyle = "#001536";
+      ctx.beginPath(); ctx.arc(C, cy, r, 0, Math.PI * 2); ctx.fill();
 
-      ctx.drawImage(logo, x0, cy - r, r * 2, r * 2);
-      ctx.fillStyle = "#FDCB05"; ctx.font = '800 40px "Plus Jakarta Sans", system-ui, sans-serif';
-      ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      ctx.fillText(texto, x0 + r * 2 + 14, cy + 2);
+      const l = 100;
+      ctx.drawImage(logo, C - l / 2, cy - 78, l, l);
+      ctx.fillStyle = "#FDCB05"; ctx.font = '800 27px "Plus Jakarta Sans", system-ui, sans-serif';
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("avancemos", C, cy + 54);
     }
 
     // Foto: carga (respeta la orientación EXIF), zoom y arrastre
